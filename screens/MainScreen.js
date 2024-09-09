@@ -55,8 +55,10 @@ const MainScreen = ({ navigation }) => {
 	useEffect(() => {
 		const groupedTransactionsReduce = transactions.reduce((result, transaction) => {
 			const { amount, type, date, category } = transaction;
+			console.log(transaction)
 			const parsedAmount = parseFloat(amount);
 			const { id: categoryId } = category;
+
 
 			if (date.startsWith(monthOnDisplay)) {
 				const formattedDate = date; // format 'YYYY-MM-DD'

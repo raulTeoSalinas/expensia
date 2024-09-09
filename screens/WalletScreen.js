@@ -224,16 +224,16 @@ const WalletScreen = ({ navigation }) => {
 
             <Text style={{ color: Colors.primary, fontFamily: 'poppins-bold', fontSize: 18, textAlign: 'justify', marginTop: 25, paddingHorizontal: 30 }}>{strings.walletScreen.title2}</Text>
             {userAccounts.map((account, i) => (
-                
-                    <TouchableOpacity key={i} onPress={openEditAccount.bind(null, account)} style={styles.cardTotals}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
-                                <MaterialCommunityIcons name={account.icon} size={24} color={Colors.accent} />
-                                <Text style={styles.txtAccount}>{account.name}</Text>
-                            </View>
-                                <MaterialCommunityIcons name="lead-pencil" size={28} color={Colors.light} />
+
+                <TouchableOpacity key={i} onPress={openEditAccount.bind(null, account)} style={styles.cardTotals}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                            <MaterialCommunityIcons name={account.icon} size={24} color={Colors.accent} />
+                            <Text style={styles.txtAccount}>{account.name}</Text>
                         </View>
-                    </TouchableOpacity>
+                        <MaterialCommunityIcons name="lead-pencil" size={28} color={Colors.light} />
+                    </View>
+                </TouchableOpacity>
 
             ))}
             <View style={{ alignItems: 'center' }}>

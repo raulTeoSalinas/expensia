@@ -1,5 +1,5 @@
 // React / React-Native
-import { LogBox} from 'react-native';
+import { LogBox, View, ActivityIndicator, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect, useContext } from 'react';
 import { useFonts } from 'expo-font';
@@ -26,6 +26,7 @@ import GoBackBtn from './components/GoBackBtn';
 import Colors from './utils/colors';
 import { es, en } from "./utils/languages";
 // AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import expensiaAsyncStorage from './context/expensiaAsyncStorage';
 // Context
 import { ExpensiaContext } from "./context/expensiaContext";
@@ -101,44 +102,51 @@ const TabNavigation = () => {
   );
 }
 
-const App = () => {
+const StackNavigation = () => {
 
-  const { checkUserExists } = expensiaAsyncStorage;
-  const [userExist, setUserExist] = useState();
+  const [isLoading, setIsLoading] = useState(true);
+  const { user, setUser } = useContext(ExpensiaContext);
 
   useEffect(() => {
-    checkUserExists(setUserExist);
+    const fetchUser = async () => {
+      try {
+        const userString = await AsyncStorage.getItem("user");
+
+        if (userString !== null) {
+          const user = JSON.parse(userString);
+          setUser(user); // Asegúrate de que setUser sea una función válida
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.log("Error al obtener el usuario:", error);
+        setUser(null);
+      } finally {
+        setIsLoading(false); // Finaliza la carga una vez se obtenga el usuario
+      }
+    };
+    fetchUser(); // Llama la función solo una vez, al montar el componente
   }, []);
 
-  const [fontsLoaded] = useFonts({
-    'poppins': require('./assets/fonts/Poppins-Light.ttf'),
-    'poppins-bold': require('./assets/fonts/Poppins-SemiBold.ttf'),
-  });
 
-  if (!fontsLoaded) {
-    // Puedes mostrar una pantalla de carga o un indicador mientras las fuentes se cargan
-    return null;
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#06002e" }}>
+        <Image
+          source={require('./assets/splash.png')}
+          style={{ width: '100%', height: '100%', }}
+          resizeMode="contain"
+        />
+      </View>
+    )
   }
 
   return (
-    <ExpensiaContextProvider>
-      <StatusBar style='dark' />
-      <NavigationContainer>
+    <Stack.Navigator>
 
-        <Stack.Navigator initialRouteName={userExist ? "Tabs" : "CreateUser"}>
-
-
+      {user ? (
+        <>
           <Stack.Screen name="Tabs" component={TabNavigation} options={{ headerShown: false, gestureEnabled: false }} />
-
-          <Stack.Screen name="CreateUser" component={CreateUserScreen} options={{ headerShown: false }} />
-
-
-          <Stack.Screen name="CreateAccounts" component={CreateAccountsScreen}
-            options={{
-              headerShown: false
-            }}
-          />
-
           <Stack.Screen name='TypeTransaction' component={TypeTransactionScreen}
             options={{
               animation: 'slide_from_bottom',
@@ -173,8 +181,42 @@ const App = () => {
               headerTintColor: Colors.primary,
             }}
           />
+        </>
+      ) :
+        (
+          <>
+            <Stack.Screen name="CreateUser" component={CreateUserScreen} options={{ headerShown: false }} />
 
-        </Stack.Navigator>
+
+            <Stack.Screen name="CreateAccounts" component={CreateAccountsScreen}
+              options={{
+                headerShown: false
+              }}
+            />
+          </>
+        )
+      }
+    </Stack.Navigator>
+  )
+}
+
+const App = () => {
+
+  const [fontsLoaded] = useFonts({
+    'poppins': require('./assets/fonts/Poppins-Light.ttf'),
+    'poppins-bold': require('./assets/fonts/Poppins-SemiBold.ttf'),
+  });
+
+  if (!fontsLoaded) {
+    // Puedes mostrar una pantalla de carga o un indicador mientras las fuentes se cargan
+    return null;
+  }
+
+  return (
+    <ExpensiaContextProvider>
+      <StatusBar style='dark' />
+      <NavigationContainer>
+        <StackNavigation />
       </NavigationContainer>
     </ExpensiaContextProvider>
   );

@@ -42,8 +42,6 @@ const TransactionScreen = ({ navigation, route }) => {
 
     const idTransactionClicked = route.params && route.params.id ? route.params.id : null;
 
-    const typeTrans = route.params && route.params.typeTrans ? route.params.typeTrans : null;
-
     const { addTransactionAsync, editTransactionAsync, deleteTransactionAsync, addOrRestAmountAsync } = expensiaAsyncStorage;
 
     const [modalDeleteTranVisible, setModalDeleteTranVisible] = useState(false);
@@ -58,7 +56,20 @@ const TransactionScreen = ({ navigation, route }) => {
 
     const [selectedCategory, setSelectedCategory] = useState();
 
+    const [typeTrans, setTypeTrans] = useState(false)
 
+    useEffect(() => {
+        if (idTransactionClicked) {
+            const transactionClicked = transactions.find((tran) => tran.id === idTransactionClicked);
+
+            if (transactionClicked) {
+                setTypeTrans(transactionClicked.type); // Make sure the transaction is found
+            }
+        } else {
+            const typeTransParam = route.params?.typeTrans || null; // Use optional chaining for safer access
+            setTypeTrans(typeTransParam);
+        }
+    }, [idTransactionClicked, transactions, route.params]);
 
 
     useEffect(() => {
@@ -153,7 +164,7 @@ const TransactionScreen = ({ navigation, route }) => {
             setSelectedCategory(categories[0]);
         }
 
-    }, [])
+    }, [typeTrans])
 
 
     useEffect(() => {
@@ -193,12 +204,12 @@ const TransactionScreen = ({ navigation, route }) => {
     }, []);
 
     const handleSaveAndGoBack = async () => {
-
+        console.log(typeTrans)
         if (text === '' || text === '.') {
             setTxtEmptyLoad(false)
         } else {
             const amount = text.replace(/,/g, '');
-            if (amount > selectedValue.amount && typeTrans !==  "i") {
+            if (amount > selectedValue.amount && typeTrans !== "i") {
                 Alert.alert("Transacción Fallida", "No tienes suficientes fondos en la cuenta seleccionada.")
             } else {
                 setIsSaving(true)
@@ -222,13 +233,36 @@ const TransactionScreen = ({ navigation, route }) => {
                     navigation.goBack();
                 } else {
                     const transactionClicked = transactions.find((tran) => tran.id === idTransactionClicked);
-                    id = idTransactionClicked;
-                    type = transactionClicked.type;
-                    editTransactionAsync(id, type, amount, account, date, category, description);
-                    editTransaction(id, type, amount, account, date, category, description);
-                    const editedAmount = amount - transactions.find((tran) => tran.id === idTransactionClicked)?.amount;
-                    addOrRestAmount(editedAmount, type, account);
-                    await addOrRestAmountAsync(editedAmount, type, account);
+                    console.log(transactionClicked.account.id)
+                    console.log(account.id)
+                    if (transactionClicked.account.id === account.id) {
+                        id = idTransactionClicked;
+                        type = transactionClicked.type;
+                        editTransactionAsync(id, type, amount, account, date, category, description);
+                        editTransaction(id, type, amount, account, date, category, description);
+                        const editedAmount = amount - transactions.find((tran) => tran.id === idTransactionClicked)?.amount;
+                        addOrRestAmount(editedAmount, type, account);
+                        await addOrRestAmountAsync(editedAmount, type, account);
+                    } else {
+                        id = idTransactionClicked;
+                        type = transactionClicked.type;
+                        editTransactionAsync(id, type, amount, account, date, category, description);
+                        editTransaction(id, type, amount, account, date, category, description);
+                        addOrRestAmount(amount, type, account);
+                        await addOrRestAmountAsync(amount, type, account);
+                        switch (transactionClicked.type) {
+                            case "i": addOrRestAmount(transactionClicked.amount, "e", transactionClicked.account); // type "e" to delete amount from account
+                                await addOrRestAmountAsync(transactionClicked.amount, "e", transactionClicked.account);
+                                break;
+                            case "e": addOrRestAmount(transactionClicked.amount, "i", transactionClicked.account); // type "i" to add amount from account
+                                await addOrRestAmountAsync(transactionClicked.amount, "i", transactionClicked.account);
+                                break;
+                            case "l": addOrRestAmount(transactionClicked.amount, "i", transactionClicked.account);
+                                await addOrRestAmountAsync(transactionClicked.amount, "i", transactionClicked.account);
+                                break
+                        }
+                    }
+
                     navigation.goBack();
                 }
             }

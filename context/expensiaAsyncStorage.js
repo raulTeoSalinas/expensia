@@ -89,15 +89,15 @@ const deleteTransactionAsync = async (id) => {
   };
 
 
-  const checkUserExists = async (setUserExist) => {
+  const checkUserExists = async () => {
     try {
-      const existingUser = await AsyncStorage.getItem('user');
-      setUserExist(existingUser !== null);
+      return !!(await AsyncStorage.getItem('user'));
     } catch (error) {
       console.log('Error al verificar el objeto de usuario:', error);
+      return false;
     }
   };
-
+  
   const createUserAsync = async (name, accounts, language) => {
     try {
       const user = {

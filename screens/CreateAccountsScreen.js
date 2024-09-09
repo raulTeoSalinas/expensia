@@ -139,7 +139,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
 
         createUserAsync(userName, accountsRightAmount, language);
         createUser(userName, accountsRightAmount, language)
-        navigation.navigate("Tabs")
+
     }
 
     return (
@@ -394,7 +394,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 10,
         width: "40%",
-        
+
     },
     cancelButtonText: {
         fontFamily: 'poppins',

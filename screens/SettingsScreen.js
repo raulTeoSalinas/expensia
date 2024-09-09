@@ -22,10 +22,10 @@ import { ExpensiaContext } from "../context/expensiaContext";
 // Icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const SettingsScreen = ({navigation}) => {
+const SettingsScreen = ({ navigation }) => {
 
     const { clearTransactionsAsync, deleteUserAsync, editUserLanguageAsync, updateUserNameAsync, togglePrivacyAsyncStorage } = expensiaAsyncStorage;
-    const { user, editUserLanguage, updateUserName, togglePrivacy, clearTransactions } = useContext(ExpensiaContext);
+    const { user, editUserLanguage, updateUserName, togglePrivacy, clearTransactions, deleteUser } = useContext(ExpensiaContext);
     const strings = user && user.language === "en" ? en : es;
 
     const [modalVisibleLanguage, setModalVisibleLanguage] = useState(false);
@@ -71,13 +71,20 @@ const SettingsScreen = ({navigation}) => {
         setModalVisibleDeleteTransactions(!modalVisibleDeleteTransactions);
     }
 
-    const handleDeleteAll = () => {
-        clearTransactionsAsync();
-        clearTransactions();
-        deleteUserAsync();
-        setModalVisibleDeleteAll(!modalVisibleDeleteAll);
-        navigation.navigate("CreateUser");
-    }
+    const handleDeleteAll = async () => {
+        try {
+            await clearTransactionsAsync();
+            clearTransactions();
+
+            await deleteUserAsync();
+            setModalVisibleDeleteAll(false);
+
+            deleteUser();
+        } catch (error) {
+            console.log("Error deleting user or clearing transactions:", error);
+        }
+    };
+
 
     return (
         <ScreenContainer>
@@ -100,7 +107,7 @@ const SettingsScreen = ({navigation}) => {
                 <SettingsBtn
                     title={strings.settingsScreen.changePrivacy}
                     description={strings.settingsScreen.descriptionPrivacy}
-                    icon={ user && !user.privacy ? "eye" : "eye-off" }
+                    icon={user && !user.privacy ? "eye" : "eye-off"}
                     iconColor={Colors.secondary}
                     onPress={handleTogglePrivacy}
                 />
