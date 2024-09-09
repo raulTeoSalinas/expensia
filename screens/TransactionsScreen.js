@@ -4,10 +4,11 @@ import {
     StyleSheet,
     SafeAreaView,
     View,
-    Text,    
+    Text,
     TextInput,
     Dimensions,
-    FlatList
+    FlatList,
+    Platform
 } from "react-native";
 // Utils
 import Colors from "../utils/colors";

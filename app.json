@@ -23,7 +23,10 @@
         {
           "initialOrientation": "PORTRAIT"
         }
-      ]
+      ],
+      "expo-font",
+      "expo-asset",
+      "expo-router"
     ],
     "android": {
       "adaptiveIcon": {

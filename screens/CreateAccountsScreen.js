@@ -11,6 +11,7 @@ import {
     Image,
     ScrollView
 } from "react-native";
+import { Asset } from "expo-asset";
 // Utils
 import Colors from "../utils/colors";
 import { es, en } from "../utils/languages";
@@ -184,7 +185,6 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                 ))}
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity style={styles.opacity} onPress={() => { setModalVisible(!modalVisible); setTxtAccount("") }} >
-
                         <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
                         <Text style={{ color: Colors.secondary, fontFamily: 'poppins' }}>{strings.createAccountsScreen.addAccountBtn}</Text>
                     </TouchableOpacity>

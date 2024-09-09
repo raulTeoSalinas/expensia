@@ -3,14 +3,13 @@ import { useContext, useState, useEffect } from "react";
 import {
     View,
     Text,
-    SafeAreaView,
-    ScrollView,
     StyleSheet,
     TouchableOpacity,
     TextInput,
     Image,
     Modal,
-    Alert
+    Alert,
+    Platform
 } from "react-native";
 //Icons
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -25,6 +24,7 @@ import ScreenContainer from "../components/ScreenContainer";
 import Header from "../components/Header";
 // AsyncStorage
 import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
+import { Asset } from "expo-asset";
 
 const WalletScreen = ({ navigation }) => {
 
@@ -239,7 +239,7 @@ const WalletScreen = ({ navigation }) => {
             <View style={{ alignItems: 'center' }}>
                 <TouchableOpacity style={styles.opacity} onPress={openAddAccount} >
 
-                    <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
+                    <Image style={styles.buttonIcon} source={Asset.fromModule(require('../assets/images/icon-plus.png'))} />
                     <Text style={{ color: Colors.secondary, fontFamily: 'poppins' }}>{strings.walletScreen.addAccountBtn}</Text>
                 </TouchableOpacity>
 

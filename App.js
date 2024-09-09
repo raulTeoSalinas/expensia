@@ -30,7 +30,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import expensiaAsyncStorage from './context/expensiaAsyncStorage';
 // Context
 import { ExpensiaContext } from "./context/expensiaContext";
-
+import { Asset } from "expo-asset";
 
 LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
 
@@ -133,7 +133,7 @@ const StackNavigation = () => {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#06002e" }}>
         <Image
-          source={require('./assets/splash.png')}
+          source={Asset.fromModule(require('./assets/splash.png'))}
           style={{ width: '100%', height: '100%', }}
           resizeMode="contain"
         />
@@ -208,8 +208,7 @@ const App = () => {
   });
 
   if (!fontsLoaded) {
-    // Puedes mostrar una pantalla de carga o un indicador mientras las fuentes se cargan
-    return null;
+    return null; // Optionally, return a loading screen or spinner
   }
 
   return (

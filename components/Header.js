@@ -13,6 +13,7 @@ import { useNavigation } from "@react-navigation/native";
 import GradientText from './TextGradient';
 // Utils
 import Colors from '../utils/colors';
+import { Asset } from "expo-asset";
 
 const Header = ({ darkText, gradientText, addBtn }) => {
 
@@ -30,9 +31,9 @@ const Header = ({ darkText, gradientText, addBtn }) => {
             </View>
             {addBtn &&
                 <TouchableOpacity style={styles.opacity} onPress={handleFloatBtnNavigate} >
-                    <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
+                    <Image style={styles.buttonIcon} source={Asset.fromModule(require('../assets/images/icon-plus.png'))} />
                 </TouchableOpacity>
-             }
+            }
         </View>
     );
 
@@ -64,8 +65,8 @@ const styles = StyleSheet.create({
         height: 90
     },
     rowContainer: {
-        flexDirection: "row", 
-        justifyContent: 'center', 
-        alignItems: 'center' 
+        flexDirection: "row",
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });
