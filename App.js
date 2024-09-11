@@ -20,6 +20,7 @@ import ExpensiaContextProvider from './context/expensiaContext';
 import CreateUserScreen from './screens/CreateUserScreen';
 import CreateAccountsScreen from './screens/CreateAccountsScreen';
 import DayTransactionScreen from './screens/DayTransactionScreen';
+import CreateCCScreen from "./screens/CreateCCScreen";
 // Components
 import GoBackBtn from './components/GoBackBtn';
 // Utils
@@ -30,6 +31,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import expensiaAsyncStorage from './context/expensiaAsyncStorage';
 // Context
 import { ExpensiaContext } from "./context/expensiaContext";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+
 
 
 LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
@@ -106,8 +110,19 @@ const StackNavigation = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const { user, setUser } = useContext(ExpensiaContext);
+  const { clearTransactionsAsync, deleteUserAsync, editUserLanguageAsync, updateUserNameAsync, togglePrivacyAsyncStorage } = expensiaAsyncStorage;
+  const handleDeleteAll = async () => {
+    try {
+      await clearTransactionsAsync();
 
+      await deleteUserAsync();
+      setModalVisibleDeleteAll(false);
+    } catch (error) {
+      console.log("Error deleting user or clearing transactions:", error);
+    }
+  };
   useEffect(() => {
+    // handleDeleteAll()
     const fetchUser = async () => {
       try {
         const userString = await AsyncStorage.getItem("user");
@@ -193,6 +208,11 @@ const StackNavigation = () => {
                 headerShown: false
               }}
             />
+            <Stack.Screen name="CreateCCScreen" component={CreateCCScreen}
+              options={{
+                headerShown: false
+              }}
+            />
           </>
         )
       }
@@ -214,10 +234,14 @@ const App = () => {
 
   return (
     <ExpensiaContextProvider>
-      <StatusBar style='dark' />
-      <NavigationContainer>
-        <StackNavigation />
-      </NavigationContainer>
+      <GestureHandlerRootView>
+        <BottomSheetModalProvider>
+          <StatusBar style='dark' />
+          <NavigationContainer>
+            <StackNavigation />
+          </NavigationContainer>
+        </BottomSheetModalProvider>
+      </GestureHandlerRootView>
     </ExpensiaContextProvider>
   );
 };

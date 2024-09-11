@@ -5,206 +5,207 @@ import Transaction from "../models/transaction";
 
 
 const addTransactionAsync = async (id, type, amount, account, date, category, description) => {
-    try {
-        //Esperamos async de getNextId
-        if (id !== null) {
-            //Creamos la transacción
-            const transaction = new Transaction(id, type, amount, account, date, category, description);
+  try {
+    //Esperamos async de getNextId
+    if (id !== null) {
+      //Creamos la transacción
+      const transaction = new Transaction(id, type, amount, account, date, category, description);
 
-            // Obtén las transacciones existentes de AsyncStorage
-            let transactionsAsyn = [];
-            const existingTransactions = await AsyncStorage.getItem('transactions');
-            if (existingTransactions !== null) {
-                // Si hay transacciones existentes, conviértelas en un array de objetos
-                transactionsAsyn = JSON.parse(existingTransactions);
-            }
-            // Agrega la nueva transacción al array
-            transactionsAsyn.push(transaction);
-
-            // Guarda el array de transacciones actualizado en AsyncStorage
-            await AsyncStorage.setItem('transactions', JSON.stringify(transactionsAsyn));
-        }
-    } catch (e) {
-        console.log('No se pudo acceder a AsyncStorage')
-    }
-}
-
-const editTransactionAsync = async (id, type, amount, account, date, category, description) => {
-
-    try {
-
-        const transaction = new Transaction(id, type, amount, account, date, category, description);
-        // Obtén las transacciones existentes de AsyncStorage
-        let transactionsAsyn = [];
-        const existingTransactions = await AsyncStorage.getItem('transactions');
-
-        if (existingTransactions !== null) {
-            // Si hay transacciones existentes, conviértelas en un array de objetos
-            transactionsAsyn = JSON.parse(existingTransactions);
-        }
-        // Encuentra la transacción que deseas editar en el array
-        const transactionIndex = transactionsAsyn.findIndex(tran => tran.id === id);
-
-        if (transactionIndex !== -1) {
-            // Realiza las modificaciones en la transacción existente
-            transactionsAsyn[transactionIndex] = transaction;
-
-            // Guarda el array de transacciones actualizado en AsyncStorage
-            await AsyncStorage.setItem('transactions', JSON.stringify(transactionsAsyn));
-        } else {
-            console.log('No se encontró la transacción a editar');
-        }
-        
-    } catch (e) {
-        console.log("No se pudo acceder al id correspondiente")
-    }
-}
-
-const deleteTransactionAsync = async (id) => {
-    try {
       // Obtén las transacciones existentes de AsyncStorage
-      const existingTransactions = await AsyncStorage.getItem('transactions');
       let transactionsAsyn = [];
-  
+      const existingTransactions = await AsyncStorage.getItem('transactions');
       if (existingTransactions !== null) {
         // Si hay transacciones existentes, conviértelas en un array de objetos
         transactionsAsyn = JSON.parse(existingTransactions);
       }
-  
-      // Encuentra el índice de la transacción que se desea eliminar
-      const transactionIndex = transactionsAsyn.findIndex((tran) => tran.id === id);
-  
-      if (transactionIndex !== -1) {
-        // Elimina la transacción del array
-        transactionsAsyn.splice(transactionIndex, 1);
-  
-        // Guarda el array de transacciones actualizado en AsyncStorage
-        await AsyncStorage.setItem('transactions', JSON.stringify(transactionsAsyn));
-      } else {
-        console.log('No se encontró la transacción a eliminar');
-      }
-    } catch (error) {
-      console.log('Error al eliminar la transacción:', error);
+      // Agrega la nueva transacción al array
+      transactionsAsyn.push(transaction);
+
+      // Guarda el array de transacciones actualizado en AsyncStorage
+      await AsyncStorage.setItem('transactions', JSON.stringify(transactionsAsyn));
     }
-  };
+  } catch (e) {
+    console.log('No se pudo acceder a AsyncStorage')
+  }
+}
+
+const editTransactionAsync = async (id, type, amount, account, date, category, description) => {
+
+  try {
+
+    const transaction = new Transaction(id, type, amount, account, date, category, description);
+    // Obtén las transacciones existentes de AsyncStorage
+    let transactionsAsyn = [];
+    const existingTransactions = await AsyncStorage.getItem('transactions');
+
+    if (existingTransactions !== null) {
+      // Si hay transacciones existentes, conviértelas en un array de objetos
+      transactionsAsyn = JSON.parse(existingTransactions);
+    }
+    // Encuentra la transacción que deseas editar en el array
+    const transactionIndex = transactionsAsyn.findIndex(tran => tran.id === id);
+
+    if (transactionIndex !== -1) {
+      // Realiza las modificaciones en la transacción existente
+      transactionsAsyn[transactionIndex] = transaction;
+
+      // Guarda el array de transacciones actualizado en AsyncStorage
+      await AsyncStorage.setItem('transactions', JSON.stringify(transactionsAsyn));
+    } else {
+      console.log('No se encontró la transacción a editar');
+    }
+
+  } catch (e) {
+    console.log("No se pudo acceder al id correspondiente")
+  }
+}
+
+const deleteTransactionAsync = async (id) => {
+  try {
+    // Obtén las transacciones existentes de AsyncStorage
+    const existingTransactions = await AsyncStorage.getItem('transactions');
+    let transactionsAsyn = [];
+
+    if (existingTransactions !== null) {
+      // Si hay transacciones existentes, conviértelas en un array de objetos
+      transactionsAsyn = JSON.parse(existingTransactions);
+    }
+
+    // Encuentra el índice de la transacción que se desea eliminar
+    const transactionIndex = transactionsAsyn.findIndex((tran) => tran.id === id);
+
+    if (transactionIndex !== -1) {
+      // Elimina la transacción del array
+      transactionsAsyn.splice(transactionIndex, 1);
+
+      // Guarda el array de transacciones actualizado en AsyncStorage
+      await AsyncStorage.setItem('transactions', JSON.stringify(transactionsAsyn));
+    } else {
+      console.log('No se encontró la transacción a eliminar');
+    }
+  } catch (error) {
+    console.log('Error al eliminar la transacción:', error);
+  }
+};
 
 
-  const checkUserExists = async () => {
-    try {
-      return !!(await AsyncStorage.getItem('user'));
-    } catch (error) {
-      console.log('Error al verificar el objeto de usuario:', error);
-      return false;
-    }
-  };
-  
-  const createUserAsync = async (name, accounts, language) => {
-    try {
-      const user = {
-        name: name,
-        accounts: accounts,
-        privacy: false,
-        language: language
-      };
-      
-      // Guarda el objeto de usuario en AsyncStorage
-      await AsyncStorage.setItem('user', JSON.stringify(user));
-    } catch (error) {
-      console.log('Error al crear el usuario:', error);
-    }
-  };
+const checkUserExists = async () => {
+  try {
+    return !!(await AsyncStorage.getItem('user'));
+  } catch (error) {
+    console.log('Error al verificar el objeto de usuario:', error);
+    return false;
+  }
+};
 
-  const addOrRestAmountAsync = async (amount, type, account) => {
-    try {
-      // Obtener el objeto "user" almacenado en AsyncStorage
-      const user = await AsyncStorage.getItem('user');
-      
-      if (user) {
-        // Convertir el objeto "user" a un objeto JavaScript
-        const prevUser = JSON.parse(user);
-  
-        // Crear una copia del arreglo de cuentas
-        const updatedAccounts = prevUser.accounts.map(prevAccount => {
-          if (prevAccount.id === account.id) {
-            if (type === 'i') {
-              return {
-                ...prevAccount,
-                amount: parseFloat(prevAccount.amount) + parseFloat(amount)
-              };
-            } else {
-              return {
-                ...prevAccount,
-                amount: parseFloat(prevAccount.amount) - parseFloat(amount)
-              };
-            }
-          }
-          return prevAccount;
-        });
-  
-        // Actualizar el objeto "user" con el arreglo de cuentas actualizado
-        const updatedUser = {
-          ...prevUser,
-          accounts: updatedAccounts
-        };
-  
-        // Guardar el objeto "user" actualizado en AsyncStorage
-        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-  
-        // La operación se completó con éxito
-        console.log('La cantidad se ha sumado o restado con éxito.');
-      } else {
-        // No se encontró el objeto "user" en AsyncStorage
-        console.log('No se encontró el objeto "user" en AsyncStorage.');
-      }
-    } catch (error) {
-      // Ocurrió un error durante la operación
-      console.error('Error al sumar o restar la cantidad:', error);
-    }
-  };
+const createUserAsync = async (name, accounts, language) => {
+  try {
+    const user = {
+      name: name,
+      accounts: accounts,
+      privacy: false,
+      language: language
+    };
 
-  const editAccountAsync = async (id, name, icon) => {
-    try {
-      // Obtener el objeto "user" almacenado en AsyncStorage
-      const user = await AsyncStorage.getItem('user');
-      
-      if (user) {
-        // Convertir el objeto "user" a un objeto JavaScript
-        const prevUser = JSON.parse(user);
-  
-        const updatedAccounts = prevUser.accounts.map(prevAccount => {
-          if (prevAccount.id === id) {
+    // Guarda el objeto de usuario en AsyncStorage
+    await AsyncStorage.setItem('user', JSON.stringify(user));
+  } catch (error) {
+    console.log('Error al crear el usuario:', error);
+  }
+};
+
+const addOrRestAmountAsync = async (amount, type, account) => {
+  try {
+    // Obtener el objeto "user" almacenado en AsyncStorage
+    const user = await AsyncStorage.getItem('user');
+
+    if (user) {
+      // Convertir el objeto "user" a un objeto JavaScript
+      const prevUser = JSON.parse(user);
+
+      // Crear una copia del arreglo de cuentas
+      const updatedAccounts = prevUser.accounts.map(prevAccount => {
+        if (prevAccount.id === account.id) {
+          if (type === 'i') {
             return {
               ...prevAccount,
-              name: name,
-              icon: icon
+              amount: parseFloat(prevAccount.amount) + parseFloat(amount)
+            };
+          } else {
+            return {
+              ...prevAccount,
+              amount: parseFloat(prevAccount.amount) - parseFloat(amount)
             };
           }
-          return prevAccount;
-        });
-  
-        // Actualizar el objeto "user" con el arreglo de cuentas actualizado
-        const updatedUser = {
-          ...prevUser,
-          accounts: updatedAccounts
-        };
-  
-        // Guardar el objeto "user" actualizado en AsyncStorage
-        await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
-  
-        // La cuenta se ha editado con éxito
-        console.log('La cuenta se ha editado con éxito.');
-      } else {
-        // No se encontró el objeto "user" en AsyncStorage
-        console.log('No se encontró el objeto "user" en AsyncStorage.');
-      }
-    } catch (error) {
-      // Ocurrió un error durante la operación
-      console.error('Error al editar la cuenta:', error);
-    }
-  };
+        }
+        return prevAccount;
+      });
 
-  
-const addAccountAsync = async (name, icon) => {
+      // Actualizar el objeto "user" con el arreglo de cuentas actualizado
+      const updatedUser = {
+        ...prevUser,
+        accounts: updatedAccounts
+      };
+
+      // Guardar el objeto "user" actualizado en AsyncStorage
+      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+
+      // La operación se completó con éxito
+      console.log('La cantidad se ha sumado o restado con éxito.');
+    } else {
+      // No se encontró el objeto "user" en AsyncStorage
+      console.log('No se encontró el objeto "user" en AsyncStorage.');
+    }
+  } catch (error) {
+    // Ocurrió un error durante la operación
+    console.error('Error al sumar o restar la cantidad:', error);
+  }
+};
+
+const editAccountAsync = async (id, name, icon, isCC) => {
+  try {
+    // Obtener el objeto "user" almacenado en AsyncStorage
+    const user = await AsyncStorage.getItem('user');
+
+    if (user) {
+      // Convertir el objeto "user" a un objeto JavaScript
+      const prevUser = JSON.parse(user);
+
+      const updatedAccounts = prevUser.accounts.map(prevAccount => {
+        if (prevAccount.id === id) {
+          return {
+            ...prevAccount,
+            name: name,
+            icon: icon,
+            isCC: isCC
+          };
+        }
+        return prevAccount;
+      });
+
+      // Actualizar el objeto "user" con el arreglo de cuentas actualizado
+      const updatedUser = {
+        ...prevUser,
+        accounts: updatedAccounts
+      };
+
+      // Guardar el objeto "user" actualizado en AsyncStorage
+      await AsyncStorage.setItem('user', JSON.stringify(updatedUser));
+
+      // La cuenta se ha editado con éxito
+      console.log('La cuenta se ha editado con éxito.');
+    } else {
+      // No se encontró el objeto "user" en AsyncStorage
+      console.log('No se encontró el objeto "user" en AsyncStorage.');
+    }
+  } catch (error) {
+    // Ocurrió un error durante la operación
+    console.error('Error al editar la cuenta:', error);
+  }
+};
+
+
+const addAccountAsync = async (name, icon, isCC) => {
   try {
     // Obtener el objeto "user" almacenado en AsyncStorage
     const user = await AsyncStorage.getItem('user');
@@ -219,7 +220,8 @@ const addAccountAsync = async (name, icon) => {
         id: newId,
         name: name,
         icon: icon,
-        amount: 0
+        amount: 0,
+        isCC: isCC
       };
 
       const updatedAccounts = [...prevUser.accounts, newAccount];
@@ -276,7 +278,7 @@ const deleteAccountAsync = async (id) => {
     console.error('Error al eliminar la cuenta:', error);
   }
 };
-  
+
 const togglePrivacyAsyncStorage = async () => {
   try {
     const userFromStorage = await AsyncStorage.getItem('user');
@@ -322,21 +324,21 @@ const editUserLanguageAsync = async (language) => {
 
 const clearTransactionsAsync = async () => {
   try {
-      // Eliminar las transacciones almacenadas en AsyncStorage
-      await AsyncStorage.removeItem('transactions');
-      console.log('Transacciones eliminadas correctamente');
+    // Eliminar las transacciones almacenadas en AsyncStorage
+    await AsyncStorage.removeItem('transactions');
+    console.log('Transacciones eliminadas correctamente');
   } catch (error) {
-      console.log('Error al eliminar las transacciones:', error);
+    console.log('Error al eliminar las transacciones:', error);
   }
 };
 
 const deleteUserAsync = async () => {
   try {
-      // Eliminar las transacciones almacenadas en AsyncStorage
-      await AsyncStorage.removeItem('user');
-      console.log('User eliminado Correctamente');
+    // Eliminar las transacciones almacenadas en AsyncStorage
+    await AsyncStorage.removeItem('user');
+    console.log('User eliminado Correctamente');
   } catch (error) {
-      console.log('Error al eliminar las transacciones:', error);
+    console.log('Error al eliminar las transacciones:', error);
   }
 };
 
@@ -370,22 +372,22 @@ const updateUserNameAsync = async (newName) => {
 
 
 const expensiaAsyncStorage = {
-    addTransactionAsync: addTransactionAsync,
-    editTransactionAsync: editTransactionAsync,
-    deleteTransactionAsync: deleteTransactionAsync,
-    checkUserExists: checkUserExists,
-    createUserAsync: createUserAsync,
-    addOrRestAmountAsync: addOrRestAmountAsync,
-    editAccountAsync: editAccountAsync,
-    addAccountAsync: addAccountAsync,
-    deleteAccountAsync: deleteAccountAsync,
-    togglePrivacyAsyncStorage: togglePrivacyAsyncStorage,
-    editUserLanguageAsync: editUserLanguageAsync,
-    clearTransactionsAsync: clearTransactionsAsync,
-    deleteUserAsync: deleteUserAsync,
-    updateUserNameAsync: updateUserNameAsync
-    
-    
+  addTransactionAsync: addTransactionAsync,
+  editTransactionAsync: editTransactionAsync,
+  deleteTransactionAsync: deleteTransactionAsync,
+  checkUserExists: checkUserExists,
+  createUserAsync: createUserAsync,
+  addOrRestAmountAsync: addOrRestAmountAsync,
+  editAccountAsync: editAccountAsync,
+  addAccountAsync: addAccountAsync,
+  deleteAccountAsync: deleteAccountAsync,
+  togglePrivacyAsyncStorage: togglePrivacyAsyncStorage,
+  editUserLanguageAsync: editUserLanguageAsync,
+  clearTransactionsAsync: clearTransactionsAsync,
+  deleteUserAsync: deleteUserAsync,
+  updateUserNameAsync: updateUserNameAsync
+
+
 }
 
 export default expensiaAsyncStorage;

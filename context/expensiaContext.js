@@ -103,14 +103,15 @@ const ExpensiaContextProvider = ({ children }) => {
     );
   };
 
-  const editAccount = (id, name, icon) => {
+  const editAccount = (id, name, icon, isCC) => {
     setUser(prevUser => {
       const updatedAccounts = prevUser.accounts.map(prevAccount => {
         if (prevAccount.id === id) {
           return {
             ...prevAccount,
             name: name,
-            icon: icon
+            icon: icon,
+            isCC: isCC
           };
         }
         return prevAccount;
@@ -125,7 +126,7 @@ const ExpensiaContextProvider = ({ children }) => {
 
 
 
-  const addAccount = (name, icon) => {
+  const addAccount = (name, icon, isCC) => {
     setUser(prevUser => {
       const newId = prevUser.accounts.length === 0 ? 1 : Math.max(...prevUser.accounts.map(account => account.id)) + 1;
 
@@ -133,7 +134,8 @@ const ExpensiaContextProvider = ({ children }) => {
         id: newId,
         name: name,
         icon: icon,
-        amount: 0
+        amount: 0,
+        isCC: isCC
       };
 
       const updatedAccounts = [...prevUser.accounts, newAccount];

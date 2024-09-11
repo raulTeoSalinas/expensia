@@ -1,5 +1,5 @@
 // React / React-Native
-import { useContext, useState, useEffect } from "react";
+import { useState, useEffect, useContext, useRef, useMemo, useCallback } from "react";
 import {
     View,
     Text,
@@ -19,11 +19,13 @@ import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
 // Components
+import Knob from "../components/Knob";
 import ModalSelect from "../components/ModalSelect";
 import ScreenContainer from "../components/ScreenContainer";
 import Header from "../components/Header";
 // AsyncStorage
 import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
+import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 
 const WalletScreen = ({ navigation }) => {
@@ -31,7 +33,6 @@ const WalletScreen = ({ navigation }) => {
 
     const { user, addOrRestAmount, editAccount, addAccount, deleteAccount } = useContext(ExpensiaContext);
     const strings = user && user.language === "en" ? en : es;
-    const [modalVisible, setModalVisible] = useState(false);
 
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true);
     const [userAccounts, setUserAccounts] = useState([]);
@@ -44,8 +45,12 @@ const WalletScreen = ({ navigation }) => {
 
     useEffect(() => {
         setUserAccounts(user.accounts);
-        setSelectedFrom(user.accounts[0]);
-        setSelectedTo(user.accounts[1]);
+
+        if (user.accounts.length > 1) {
+            setSelectedFrom(user.accounts[0]);
+            setSelectedTo(user.accounts[1]);
+        }
+
     }, [user])
 
     const [textAmount, setTextAmount] = useState('');
@@ -63,11 +68,6 @@ const WalletScreen = ({ navigation }) => {
     const handleChangeTxtAccount = (inputText) => {
         setTxtAccount(inputText)
         setTxtAccountEmptyLoad(true)
-    }
-
-
-    const handleCancelButton = () => {
-        setModalVisible(!modalVisible)
     }
 
 
@@ -111,31 +111,33 @@ const WalletScreen = ({ navigation }) => {
             const icon = selectedIcon;
 
             if (!isEdited) {
-                addAccount(name, icon);
-                addAccountAsync(name, icon);
+                addAccount(name, icon, isCC);
+                addAccountAsync(name, icon, isCC);
             } else {
                 const id = selectedAccount.id;
-                editAccount(id, name, icon);
-                editAccountAsync(id, name, icon);
+                editAccount(id, name, icon, isCC);
+                editAccountAsync(id, name, icon, isCC);
             }
 
-            setModalVisible(!modalVisible)
+            closeModal()
         }
     }
 
     const openAddAccount = () => {
-        setModalVisible(!modalVisible);
+        handleOpenModal()
         setTxtAccount("");
         setIsEdited(false);
         setSelectedIcon("bank");
         setTxtAccountEmptyLoad(true)
+        setIsCC(false)
     }
 
     const openEditAccount = (account) => {
-        setModalVisible(!modalVisible);
+        handleOpenModal()
         setTxtAccount(account.name);
         setIsEdited(true);
         setSelectedIcon(account.icon)
+        setIsCC(account?.isCC ? true : false)
         setTxtAccountEmptyLoad(true)
         setSelectedAccount(account)
     }
@@ -145,7 +147,7 @@ const WalletScreen = ({ navigation }) => {
             setTxtEmptyLoad(false)
         } else {
             if (selectedFrom.amount < parseFloat(textAmount.replace(/,/g, ''))) {
-                Alert.alert("Transacción Fallida", "No tienes suficientes fondos en la cuenta seleccionada.")
+                Alert.alert(strings.walletScreen.alertFailedTransferTitle, strings.walletScreen.alertFailedTransferDesc)
             } else {
 
                 setIsTransferring(true);
@@ -172,13 +174,34 @@ const WalletScreen = ({ navigation }) => {
 
     const handleDeleteAccount = () => {
         if (parseFloat(selectedAccount.amount) > 0) {
-            Alert.alert("Error al borrar", "No se puede eliminar una cuenta con fondos existentes. Transfiere antes tus ingresos a otra cuenta")
+            Alert.alert(strings.walletScreen.alertFailedDeleAccTitle, strings.walletScreen.alertFailedDeleAccDesc)
         } else {
             const id = selectedAccount.id;
             deleteAccount(id);
             deleteAccountAsync(id);
         }
-        setModalVisible(!modalVisible)
+        closeModal()
+    }
+
+
+    // Ref for Modal
+    const presentRef = useRef(null);
+
+    // Memoized snap points for Present modal
+    const snapPoints = useMemo(() => ["40%"], []);
+
+    // Function to close the Present modal.
+    const closeModal = () => presentRef.current?.close();
+
+    // Function to open the Present modal.
+    const handleOpenModal = useCallback(() => {
+        presentRef.current?.present();
+    }, []);
+
+    const [isCC, setIsCC] = useState(false);
+
+    const changeIsCC = () => {
+        setIsCC(!isCC)
     }
 
     return (
@@ -261,72 +284,84 @@ const WalletScreen = ({ navigation }) => {
                 handleSelectedModal={handleSelectedTo}
             />
 
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                statusBarTranslucent={true}
-                onRequestClose={() => {
-
-                    setModalVisible(!modalVisible);
-                }}
+            <BottomSheetModal
+                index={0}
+                ref={presentRef}
+                snapPoints={snapPoints}
+                handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
+                handleComponent={() =>
+                    <View style={{ justifyContent: "center", alignItems: "center" }}>
+                        <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
+                        </View>
+                    </View>}
+                backgroundStyle={{ backgroundColor: Colors.light, borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
             >
-                <View style={{ backgroundColor: '#06002e99', flex: 1, justifyContent: 'center', alignItems: 'center' }} >
-                    <View style={{ width: '90%', borderRadius: 10, overflow: "hidden", borderTopRightRadius: 10, backgroundColor: Colors.light, paddingHorizontal: 20, paddingVertical: 25 }}>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                            <View style={{ flex: 1, justifyContent: 'center' }}>
-                                <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.primary, textAlign: 'center', fontSize: 18 }}>
-                                    {isEdited ? strings.walletScreen.modalEditAccountTitle : strings.walletScreen.modalAddAccountTitle}
-                                </Text>
-                            </View>
-                            {isEdited &&
-                                <TouchableOpacity onPress={handleDeleteAccount}>
-                                    <MaterialCommunityIcons name="trash-can" color='red' size={24} style={{ alignSelf: 'flex-end' }} />
-                                </TouchableOpacity>
-                            }
-                        </View>
-
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Colors.primary, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 20, marginTop: 10 }}>
-                            <MaterialCommunityIcons name={selectedIcon} size={24} color={Colors.accent} style={{ marginRight: 20 }} />
-                            <TextInput
-                                style={[styles.txtAccountInput, txtAccountEmptyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
-                                onChangeText={handleChangeTxtAccount}
-                                value={txtAccount}
-                                returnKeyType='done'
-                                inputMode='text'
-                                placeholder="Ej. Banco"
-                                blurOnSubmit
-                                maxLength={18}
-                            />
-
-                        </View>
-                        <Text style={{ fontFamily: 'Poppins-SemiBold', marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
-                            <TouchableOpacity onPress={() => setSelectedIcon("bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bank" && { backgroundColor: Colors.primary }]}>
-                                <MaterialCommunityIcons name="bank" size={24} color={Colors.accent} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setSelectedIcon("cash")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "cash" && { backgroundColor: Colors.primary }]}>
-                                <MaterialCommunityIcons name="cash" size={24} color={Colors.accent} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setSelectedIcon("piggy-bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "piggy-bank" && { backgroundColor: Colors.primary }]}>
-                                <MaterialCommunityIcons name="piggy-bank" size={24} color={Colors.accent} />
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setSelectedIcon("bitcoin")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bitcoin" && { backgroundColor: Colors.primary }]}>
-                                <MaterialCommunityIcons name="bitcoin" size={24} color={Colors.accent} />
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={{ flexDirection: "row", justifyContent: 'space-around', alignItems: 'center', marginTop: 20 }}>
-                            <TouchableOpacity onPress={handleCancelButton} style={{ paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "50%" }}>
-                                <Text style={{ fontFamily: 'Poppins-Light', color: Colors.secondary, textAlign: 'center' }}>{strings.walletScreen.cancelBtnTxt}</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity onPress={handleAddAccount} style={{ backgroundColor: Colors.secondary, paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "50%" }}>
-                                <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light, textAlign: 'center' }}>{isEdited ? strings.walletScreen.saveBtnTxt : strings.walletScreen.createBtnTxt}</Text>
-                            </TouchableOpacity>
+                <View style={{ justifyContent: isEdited ? "space-between" : "flex-end", width: "95%", flexDirection: "row" }}>
+                    {isEdited &&
+                        <TouchableOpacity style={{ marginLeft: 20 }} onPress={handleDeleteAccount}>
+                            <MaterialCommunityIcons name="trash-can" color='red' size={24} />
+                        </TouchableOpacity>
+                    }
+                    <TouchableOpacityMod onPress={() => closeModal()} >
+                        <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
+                    </TouchableOpacityMod>
+                </View>
+                <View style={{ width: '100%', borderRadius: 10, overflow: "hidden", borderTopRightRadius: 10, backgroundColor: Colors.light, paddingHorizontal: 20, paddingBottom: 25 }}>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <View style={{ flex: 1, justifyContent: 'center' }}>
+                            <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.primary, textAlign: 'center', fontSize: 18 }}>
+                                {isEdited ? strings.walletScreen.modalEditAccountTitle : strings.walletScreen.modalAddAccountTitle}
+                            </Text>
                         </View>
                     </View>
+
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Colors.primary, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 20, marginTop: 10 }}>
+                        <MaterialCommunityIcons name={selectedIcon} size={24} color={Colors.accent} style={{ marginRight: 20 }} />
+                        <BottomSheetTextInput
+                            style={[styles.txtAccountInput, txtAccountEmptyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
+                            onChangeText={handleChangeTxtAccount}
+                            value={txtAccount}
+                            returnKeyType='done'
+                            inputMode='text'
+                            placeholder="Ej. Banco"
+                            blurOnSubmit
+                            maxLength={18}
+                        />
+
+                    </View>
+                    <View style={{ flexDirection: "row", marginTop: 16 }}>
+                        <Text style={{ fontFamily: 'Poppins-SemiBold', marginRight: 4 }}>{strings.walletScreen.isCC}</Text>
+                        <Knob isActive={isCC} onPress={changeIsCC} />
+
+                    </View>
+
+                    <Text style={{ fontFamily: 'Poppins-SemiBold', marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
+                        <TouchableOpacity onPress={() => setSelectedIcon("bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bank" && { backgroundColor: Colors.primary }]}>
+                            <MaterialCommunityIcons name="bank" size={24} color={Colors.accent} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setSelectedIcon("cash")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "cash" && { backgroundColor: Colors.primary }]}>
+                            <MaterialCommunityIcons name="cash" size={24} color={Colors.accent} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setSelectedIcon("piggy-bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "piggy-bank" && { backgroundColor: Colors.primary }]}>
+                            <MaterialCommunityIcons name="piggy-bank" size={24} color={Colors.accent} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => setSelectedIcon("bitcoin")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bitcoin" && { backgroundColor: Colors.primary }]}>
+                            <MaterialCommunityIcons name="bitcoin" size={24} color={Colors.accent} />
+                        </TouchableOpacity>
+                        <TouchableOpacityMod onPress={() => setSelectedIcon("credit-card-outline")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon === "credit-card-outline" && { backgroundColor: Colors.primary }]}>
+                            <MaterialCommunityIcons name="credit-card-outline" size={24} color={Colors.accent} />
+                        </TouchableOpacityMod>
+                    </View>
+
+                    <View style={{ flexDirection: "row", justifyContent: 'space-around', alignItems: 'center', marginTop: 20 }}>
+                        <TouchableOpacity onPress={handleAddAccount} style={{ backgroundColor: Colors.secondary, paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "95%" }}>
+                            <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light, textAlign: 'center' }}>{isEdited ? strings.walletScreen.saveBtnTxt : strings.walletScreen.createBtnTxt}</Text>
+                        </TouchableOpacity>
+                    </View>
+
                 </View>
-            </Modal>
+            </BottomSheetModal>
 
 
         </ScreenContainer>

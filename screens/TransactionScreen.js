@@ -185,7 +185,7 @@ const TransactionScreen = ({ navigation, route }) => {
                         <GradientText style={{ fontFamily: 'Poppins-SemiBold', fontSize: 20 }}>{children}</GradientText></>),
                 headerRight: () => (
                     <TouchableOpacity onPress={() => setModalDeleteTranVisible(!modalDeleteTranVisible)}>
-                        <Ionicons name="ios-trash-outline" size={24} color="red" />
+                        <Ionicons name="trash-outline" size={24} color="red" />
                     </TouchableOpacity>
 
                 ),
@@ -204,12 +204,12 @@ const TransactionScreen = ({ navigation, route }) => {
     }, []);
 
     const handleSaveAndGoBack = async () => {
-        console.log(typeTrans)
+        console.log(selectedValue)
         if (text === '' || text === '.') {
             setTxtEmptyLoad(false)
         } else {
             const amount = text.replace(/,/g, '');
-            if (amount > selectedValue.amount && typeTrans !== "i") {
+            if (amount > selectedValue.amount && typeTrans !== "i" && !selectedValue?.isCC) {
                 Alert.alert("Transacción Fallida", "No tienes suficientes fondos en la cuenta seleccionada.")
             } else {
                 setIsSaving(true)

@@ -20,23 +20,28 @@ import GradientText from "../components/TextGradient";
 // Icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-
+// AsyncStorage
+import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
+// Context
+import { ExpensiaContext } from "../context/expensiaContext";
 import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 
-const CreateAccountsScreen = ({ navigation, route }) => {
+const CreateCCScreen = ({ navigation, route }) => {
 
     const userName = route.params.userName;
 
-    const language = route.params.language
+    const language = route.params.language;
+
+    const liquidAccounts = route.params.accounts;
 
     const strings = language === "en" ? en : es;
 
+    const { createUser } = useContext(ExpensiaContext);
+    const { createUserAsync } = expensiaAsyncStorage;
 
     const initialAccounts = [
-        { id: 1, name: strings.createAccountsScreen.bank, icon: 'bank', amount: '', isCC: false },
-        { id: 2, name: strings.createAccountsScreen.cash, icon: 'cash', amount: '', isCC: false },
-        { id: 3, name: strings.createAccountsScreen.savings, icon: 'piggy-bank', amount: '', isCC: false }
+        { id: liquidAccounts[liquidAccounts.length - 1].id + 1, name: strings.createCCScreen.bank, icon: 'credit-card-outline', amount: '', isCC: true },
     ];
     const [accounts, setAccounts] = useState(initialAccounts)
 
@@ -110,10 +115,11 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                 name: txtAccount,
                 icon: selectedIcon,
                 amount: "",
-                isCC: false
+                isCC: true
             }
             setAccounts(prevAccounts => [...prevAccounts, newAccount]);
             closeModal()
+            console.log(newAccount.id)
         }
     }
 
@@ -128,18 +134,23 @@ const CreateAccountsScreen = ({ navigation, route }) => {
             // Convert to zero if it is an empty string or a dot.
             if (amount === '' || amount === '.') {
                 amount = '0';
+            } else {
+
+                amount = `-${amount}`
             }
+
 
             // Return the modified account.
             return { ...account, amount };
         });
+        const allAccounts = [...liquidAccounts, ...accountsRightAmount];
 
+        console.log(userName)
+        console.log(allAccounts)
+        console.log(language)
+        createUserAsync(userName, allAccounts, language);
+        createUser(userName, allAccounts, language)
 
-        // createUserAsync(userName, accountsRightAmount, language);
-        // createUser(userName, accountsRightAmount, language)
-        if (accounts.length > 0) {
-            navigation.navigate("CreateCCScreen", { accounts: accountsRightAmount, userName: userName, language: language });
-        }
     }
 
     // Ref for Modal
@@ -158,21 +169,16 @@ const CreateAccountsScreen = ({ navigation, route }) => {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
-
             <ScrollView style={styles.mainContainer}>
 
 
-                <View style={{ flexDirection: 'row', paddingHorizontal: 30 }}>
-                    <Text style={styles.txtWelcome}>{strings.createAccountsScreen.welcome}</Text>
-                    <GradientText style={styles.txtWelcome}>{userName}</GradientText>
+                <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
+                    <Text style={styles.txtWelcome}>{strings.createCCScreen.header1}</Text>
+                    <GradientText style={styles.txtWelcome}>{strings.createCCScreen.header2}</GradientText>
                 </View>
-                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-Light', fontSize: 18, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTxt}</Text>
-                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 12, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTDC}</Text>
-                {
-                    accounts.length < 1 && (
-                        <Text style={{ color: "red", fontFamily: 'Poppins-SemiBold', fontSize: 16, textAlign: 'center', marginTop: 30, paddingHorizontal: 30 }}>{strings.createAccountsScreen.noAccounts}</Text>
-                    )
-                }
+                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-Light', fontSize: 18, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.registerTxt}</Text>
+                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 18, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.onlyAdd}</Text>
+                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 12, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.registerTDC}</Text>
                 {accounts.map((account, i) => (
                     <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <View style={styles.cardTotals}>
@@ -280,12 +286,11 @@ const CreateAccountsScreen = ({ navigation, route }) => {
 
 
             </ScrollView>
-
         </SafeAreaView>
     );
 }
 
-export default CreateAccountsScreen;
+export default CreateCCScreen;
 
 const styles = StyleSheet.create({
     mainContainer: {
@@ -404,7 +409,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     iconButton: {
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
         paddingVertical: 5,
         borderRadius: 10,
     },
@@ -433,7 +438,6 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.secondary,
         paddingHorizontal: 20,
         paddingVertical: 8,
-        marginTop: 30,
         borderRadius: 10,
         width: "95%",
     },

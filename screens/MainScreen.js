@@ -126,6 +126,16 @@ const MainScreen = ({ navigation }) => {
 		navigation.navigate("Wallet")
 	}
 
+	const sortedAccounts = (userDisplay && userDisplay.accounts)
+		? userDisplay.accounts.sort((a, b) => {
+			// Ordena las cuentas con isCC: true al final
+			if (a.isCC && !b.isCC) return 1;
+			if (!a.isCC && b.isCC) return -1;
+			return 0; // Mantiene el orden original para las cuentas sin isCC
+		})
+		: [];
+
+
 	const series = [123, 321, 123, 789, 537]
 	const sliceColor = ['#fbd203', '#ffb300']
 
@@ -135,7 +145,7 @@ const MainScreen = ({ navigation }) => {
 			<Header darkText={strings.mainScreen.headerDarkTxt} gradientText={userDisplay && userDisplay.name} addBtn />
 
 			<View style={styles.cardTotals}>
-				{userDisplay && userDisplay.accounts.map((account, i) => (
+				{userDisplay && sortedAccounts.map((account, i) => (
 					<Row key={i} description={`${strings.mainScreen.rowDescription}${account.name}:`} value={!userDisplay.privacy ? `$${formatNumberWithCommas(account.amount)}` : "•••••"} icon={account.icon} />
 				))}
 			</View>
