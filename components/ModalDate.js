@@ -1,5 +1,5 @@
 // React / React-Native
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext, useRef, useMemo, useCallback, useEffect } from "react";
 import {
     Modal,
     View,
@@ -16,7 +16,8 @@ import { es, en } from "../utils/languages";
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
-
+import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDate }) => {
 
@@ -32,44 +33,66 @@ const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDat
         setReRender(!reRender) //We change the boolean state to re-render Calendar component.
     }, [user])
 
+    useEffect(() => {
+        if (modalVisible) {
+            handleOpenModal()
+        } else {
+            closeModal()
+        }
+    }, [modalVisible])
+
+    // Ref for Modal
+    const presentRef = useRef(null);
+
+    // Memoized snap points for Present modal
+    const snapPoints = useMemo(() => ["30%", "60%", "90%"], []);
+
+    // Function to close the Present modal.
+    const closeModal = () => presentRef.current?.close();
+
+    // Function to open the Present modal.
+    const handleOpenModal = useCallback(() => {
+        presentRef.current?.present();
+    }, []);
+
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            statusBarTranslucent={true}
-            onRequestClose={() => {
-
-                setModalVisible(!modalVisible);
-
-            }}>
-            <View style={styles.background} >
-
-                <View style={styles.mainContainer}>
-                    <Calendar
-                        key={reRender}
-                        onDayPress={day => {
-                            setSelectedDate(day.dateString);
-                            setModalVisible(!setModalVisible)
-                        }}
-                        markedDates={{
-                            [selectedDate]: { selected: true }
-                        }}
-                        theme={theme}
-                    />
-
-                    <TouchableOpacity activeOpacity={0.8} onPress={() => setModalVisible(!modalVisible)}>
-                        <View style={styles.btnContainer}>
-                            <Text style={styles.txtBtn}>{strings.modalSelect.btnAccept}</Text>
-                        </View>
-                    </TouchableOpacity>
+        <BottomSheetModal
+            index={1}
+            ref={presentRef}
+            snapPoints={snapPoints}
+            enableDismissOnClose
+            onDismiss={() => setModalVisible(false)}
+            handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
+            handleComponent={() => <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
                 </View>
-
-
-
+            </View>}
+            backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+        >
+            <View style={{ alignItems: "flex-end", width: "95%" }}>
+                <TouchableOpacityMod onPress={() => closeModal()} >
+                    <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
+                </TouchableOpacityMod>
             </View>
 
-        </Modal>
+            <View style={styles.mainContainer}>
+                <Calendar
+                    key={reRender}
+                    onDayPress={day => {
+                        setSelectedDate(day.dateString);
+                        setModalVisible(!setModalVisible)
+                    }}
+                    markedDates={{
+                        [selectedDate]: { selected: true }
+                    }}
+                    theme={theme}
+                />
+            </View>
+
+
+
+
+        </BottomSheetModal>
     )
 
 }
@@ -96,9 +119,10 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     mainContainer: {
-        width: '90%',
+        width: '100%',
         borderTopLeftRadius: 10,
         overflow: "hidden",
-        borderTopRightRadius: 10
+        borderTopRightRadius: 10,
+        marginTop: 24
     }
 });

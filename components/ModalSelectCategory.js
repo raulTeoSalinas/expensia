@@ -11,16 +11,18 @@ import {
 } from "react-native";
 // Utils
 import Colors from "../utils/colors";
-import formatNumberWithCommas from "../utils/formatNumberWithCommas";
+
 // Icons
 import { MaterialIcons } from '@expo/vector-icons';
 // Context
-import { useContext } from "react";
+import { useContext, useRef, useMemo, useCallback, useEffect } from "react";
 import { ExpensiaContext } from "../context/expensiaContext";
 // Languages
 import { es, en } from "../utils/languages";
 //Categories
 import Category from "../utils/category";
+import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
 const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, handleSelectedModal }) => {
@@ -38,54 +40,73 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
         setModalVisible(!modalVisible)
     }
 
+    useEffect(() => {
+        if (modalVisible) {
+            handleOpenModal()
+        } else {
+            closeModal()
+        }
+    }, [modalVisible])
+
+    // Ref for Modal
+    const presentRef = useRef(null);
+
+    // Memoized snap points for Present modal
+    const snapPoints = useMemo(() => ["30%", "60%", "90%"], []);
+
+    // Function to close the Present modal.
+    const closeModal = () => presentRef.current?.close();
+
+    // Function to open the Present modal.
+    const handleOpenModal = useCallback(() => {
+        presentRef.current?.present();
+    }, []);
+
     return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            statusBarTranslucent={true}
-            onRequestClose={() => {
-
-                setModalVisible(!modalVisible);
-            }}>
-            <View style={styles.mainContainer} >
-
-                <View style={styles.moduleBox}>
-
-                    <ScrollView contentContainerStyle={{ justifyContent: 'center', flexGrow: 1, alignItems: 'center', paddingBottom: 15 }}>
-                        {selectedValue && categories.map((category, index) => (
-
-                            <TouchableOpacity
-                                key={index}
-                                style={[styles.rowModule, selectedValue.id === category.id && styles.rowSelectedModule]}
-                                onPress={handleSendSelected.bind(null, category)}
-                            >
-                                <View style={{ flexDirection: "row", alignItems: "center" }}>
-                                    {category.src !== '' ?
-                                        <Image style={styles.iconCategory} source={category.src} />
-                                        : <View style={styles.iconCategory}></View>
-                                    }
-
-                                    <Text style={styles.txtModule}>{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
-                                </View>
-                                {selectedValue.id === category.id && <MaterialIcons name="check" size={24} color={Colors.primary} />}
-                            </TouchableOpacity>
-                        ))
-                        }
-                    </ScrollView>
-                    <TouchableOpacity onPress={() => setModalVisible(!modalVisible)}>
-                        <View style={styles.btnContainer}>
-                            <Text style={styles.txtBtn}>{strings.modalSelect.btnAccept}</Text>
-                        </View>
-                    </TouchableOpacity>
+        <BottomSheetModal
+            index={1}
+            ref={presentRef}
+            snapPoints={snapPoints}
+            enableDismissOnClose
+            onDismiss={() => setModalVisible(false)}
+            handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
+            handleComponent={() => <View style={{ justifyContent: "center", alignItems: "center" }}>
+                <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
                 </View>
-
-
-
+            </View>}
+            backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+        >
+            <View style={{ alignItems: "flex-end", width: "95%" }}>
+                <TouchableOpacityMod onPress={() => closeModal()} >
+                    <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
+                </TouchableOpacityMod>
             </View>
 
+            <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center', marginTop: 24 }}>
+                {selectedValue && categories.map((category, index) => (
 
-        </Modal>
+                    <TouchableOpacity
+                        key={index}
+                        style={[styles.rowModule, selectedValue.id === category.id && styles.rowSelectedModule]}
+                        onPress={handleSendSelected.bind(null, category)}
+                    >
+                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                            {category.src !== '' ?
+                                <Image style={styles.iconCategory} source={category.src} />
+                                : <View style={styles.iconCategory}></View>
+                            }
+
+                            <Text style={styles.txtModule}>{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
+                        </View>
+                        {selectedValue.id === category.id && <MaterialIcons name="check" size={24} color={Colors.primary} />}
+                    </TouchableOpacity>
+                ))
+                }
+            </ScrollView>
+
+
+
+        </BottomSheetModal>
     )
 
 }

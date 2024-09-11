@@ -272,7 +272,7 @@ const WalletScreen = ({ navigation }) => {
             <ModalSelect
                 modalVisible={modalFromVisible}
                 setModalVisible={setModalFromVisible}
-                data={userAccounts}
+                data={userAccounts.filter(account => !account?.isCC)}
                 selectedValue={selectedFrom}
                 handleSelectedModal={handleSelectedFrom}
             />
@@ -294,7 +294,7 @@ const WalletScreen = ({ navigation }) => {
                         <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
                         </View>
                     </View>}
-                backgroundStyle={{ backgroundColor: Colors.light, borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+                backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
             >
                 <View style={{ justifyContent: isEdited ? "space-between" : "flex-end", width: "95%", flexDirection: "row" }}>
                     {isEdited &&
@@ -306,7 +306,7 @@ const WalletScreen = ({ navigation }) => {
                         <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
                     </TouchableOpacityMod>
                 </View>
-                <View style={{ width: '100%', borderRadius: 10, overflow: "hidden", borderTopRightRadius: 10, backgroundColor: Colors.light, paddingHorizontal: 20, paddingBottom: 25 }}>
+                <View style={{ width: '100%', borderRadius: 10, overflow: "hidden", borderTopRightRadius: 10, paddingHorizontal: 20, paddingBottom: 25 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flex: 1, justifyContent: 'center' }}>
                             <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.primary, textAlign: 'center', fontSize: 18 }}>

@@ -7,7 +7,6 @@ import {
     SafeAreaView,
     TextInput,
     TouchableOpacity,
-    Modal,
     Image,
     ScrollView
 } from "react-native";
@@ -145,11 +144,34 @@ const CreateCCScreen = ({ navigation, route }) => {
         });
         const allAccounts = [...liquidAccounts, ...accountsRightAmount];
 
-        console.log(userName)
-        console.log(allAccounts)
-        console.log(language)
         createUserAsync(userName, allAccounts, language);
         createUser(userName, allAccounts, language)
+
+    }
+    const handleCreateUserNoCC = () => {
+        // Filter and modify accounts.
+        const accountsRightAmount = accounts.map((account) => {
+            let amount = account.amount;
+
+            // Remove commas from the quantity.
+            amount = amount.replace(/,/g, '');
+
+            // Convert to zero if it is an empty string or a dot.
+            if (amount === '' || amount === '.') {
+                amount = '0';
+            } else {
+
+                amount = `-${amount}`
+            }
+
+
+            // Return the modified account.
+            return { ...account, amount };
+        });
+
+
+        createUserAsync(userName, liquidAccounts, language);
+        createUser(userName, liquidAccounts, language)
 
     }
 
@@ -172,7 +194,7 @@ const CreateCCScreen = ({ navigation, route }) => {
             <ScrollView style={styles.mainContainer}>
 
 
-                <View style={{ flexDirection: 'row', marginHorizontal: 15 }}>
+                <View style={{ flexDirection: 'row', marginHorizontal: 30, flexWrap: "wrap" }}>
                     <Text style={styles.txtWelcome}>{strings.createCCScreen.header1}</Text>
                     <GradientText style={styles.txtWelcome}>{strings.createCCScreen.header2}</GradientText>
                 </View>
@@ -218,8 +240,13 @@ const CreateCCScreen = ({ navigation, route }) => {
                 </View>
 
                 <View>
-                    <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: '20%', marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
-                        <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light }}>{strings.createAccountsScreen.startBtn}</Text>
+                    <TouchableOpacity onPress={handleCreateUserNoCC} style={{ alignItems: "center", marginTop: '20%', backgroundColor: Colors.accent, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
+                        <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light }}>{strings.createCCScreen.noCC}</Text>
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: 32, marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
+                        <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light }}>{strings.createCCScreen.startBtn}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -234,7 +261,7 @@ const CreateCCScreen = ({ navigation, route }) => {
                         <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
                         </View>
                     </View>}
-                    backgroundStyle={{ backgroundColor: Colors.light, borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+                    backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
                 >
                     <View style={{ alignItems: "flex-end", width: "95%" }}>
                         <TouchableOpacityMod onPress={() => closeModal()} >
@@ -371,7 +398,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         overflow: 'hidden',
         borderTopRightRadius: 10,
-        backgroundColor: Colors.light,
         paddingHorizontal: 20,
         paddingVertical: 25,
     },

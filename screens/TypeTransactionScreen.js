@@ -34,7 +34,7 @@ const TypeTransactionScreen = () => {
                 <Text style={styles.txtType}>{strings.typeTransactionScreen.addExpenseTxt}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={handleTransactionNavigate.bind(null, "l")} activeOpacity={0.8} style={[styles.typeContainer, { backgroundColor: '#06002eb3' }]}>
-                <Text style={styles.txtType}>{strings.typeTransactionScreen.addLoanTxt}</Text>
+                <Text style={[styles.txtType, { marginHorizontal: 5 }]}>{strings.typeTransactionScreen.addLoanTxt}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.7} style={styles.opacity} onPress={navigation.goBack}  >

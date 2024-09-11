@@ -34,7 +34,8 @@ export const es = {
         onlyAdd: "Por favor, añade únicamente el monto total que debes.",
         registerTDC: "Puedes saltar esta pantalla si no tienes tarjetas de crédito.",
         bank: "Crédito Banco",
-        startBtn: "Siguiente",
+        startBtn: "Agregar tarjetas de crédito",
+        noCC: "No tengo tarjetas de crédito.",
         addAccountBtn: "Añadir Cuenta",
         modalAddAccountTitle: "Añade Una Nueva Cuenta",
         chooseIconTxt: "Escoge Un Icono",
@@ -135,7 +136,7 @@ export const es = {
         noDescription: "No hay descripción.",
     },
     modalSelect: {
-        btnAccept: 'Aceptar'
+        chooseAccount: 'Seleccione su cuenta'
     }
 }
 
@@ -176,7 +177,8 @@ export const en = {
         registerTDC: "You can skip this screen if you don't have credit cards.",
         noAccounts: "Please add at least one liquid account.",
         bank: "Bank Credit",
-        startBtn: "Next",
+        startBtn: "Add credit cards",
+        noCC: "I don't have credit cards.",
         addAccountBtn: "Add Account",
         modalAddAccountTitle: "Add a New Account",
         chooseIconTxt: "Choose an Icon",
@@ -277,6 +279,6 @@ export const en = {
         noDescription: "No description."
     },
     modalSelect: {
-        btnAccept: 'Accept'
+        chooseAccount: 'Select Your Account'
     }
 }

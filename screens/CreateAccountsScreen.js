@@ -85,11 +85,6 @@ const CreateAccountsScreen = ({ navigation, route }) => {
         });
     };
 
-    const handleCancelButton = () => {
-        setModalVisible(!modalVisible)
-    }
-
-
     const [txtAccount, setTxtAccount] = useState('');
 
     const [txtAccountEmptyLoad, setTxtAccountEmptyLoad] = useState(true);
@@ -228,7 +223,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                         <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
                         </View>
                     </View>}
-                    backgroundStyle={{ backgroundColor: Colors.light, borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+                    backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
                 >
                     <View style={{ alignItems: "flex-end", width: "95%" }}>
                         <TouchableOpacityMod onPress={() => closeModal()} >
@@ -366,7 +361,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         overflow: 'hidden',
         borderTopRightRadius: 10,
-        backgroundColor: Colors.light,
         paddingHorizontal: 20,
         paddingVertical: 25,
     },

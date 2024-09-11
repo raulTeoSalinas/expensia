@@ -1,5 +1,5 @@
 // React / React-Native
-import { LogBox, View, ActivityIndicator, Image } from 'react-native';
+import { LogBox, View, ActivityIndicator, Image, Text } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect, useContext } from 'react';
 import { useFonts } from 'expo-font';
@@ -55,7 +55,7 @@ const TabNavigation = () => {
       initialRouteName="MainScreen"
       screenOptions={
         {
-          tabBarStyle: { backgroundColor: Colors.primary },
+          tabBarStyle: { backgroundColor: Colors.primary, width: "auto" },
           tabBarLabelStyle: { fontFamily: 'Poppins-Light', fontSize: 10 },
           tabBarInactiveTintColor: "#8f8f8f97",
           tabBarActiveTintColor: Colors.light,

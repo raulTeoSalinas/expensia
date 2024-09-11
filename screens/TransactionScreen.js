@@ -33,6 +33,7 @@ import { ExpensiaContext } from "../context/expensiaContext";
 import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
 //Categories
 import Category from "../utils/category";
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 
 const TransactionScreen = ({ navigation, route }) => {
@@ -270,87 +271,89 @@ const TransactionScreen = ({ navigation, route }) => {
     };
 
     return (
-        <SafeAreaView style={styles.mainContainer}>
-            <ScrollView>
-                <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }} >
-                    <View style={styles.row}>
-                        <Text style={styles.label}>{strings.transactionScreen.amount}</Text>
-                        <View style={{ flexDirection: "row", alignItems: 'center' }}>
-                            <MaterialIcons name="attach-money" size={24} color={Colors.primary} />
+        <BottomSheetModalProvider>
+            <SafeAreaView style={styles.mainContainer}>
+                <ScrollView>
+                    <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }} >
+                        <View style={styles.row}>
+                            <Text style={styles.label}>{strings.transactionScreen.amount}</Text>
+                            <View style={{ flexDirection: "row", alignItems: 'center' }}>
+                                <MaterialIcons name="attach-money" size={24} color={Colors.primary} />
+                                <TextInput
+                                    style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
+                                    onChangeText={handleChangeText}
+                                    value={text}
+                                    keyboardType="decimal-pad"
+                                    returnKeyType='done'
+                                />
+                            </View>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.label}>{strings.transactionScreen.account}</Text>
+                            <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectVisible(!modalSelectVisible)}>
+                                <Text style={styles.txtFakeInput}>{selectedValue.name}</Text>
+                                <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Text style={styles.label}>{strings.transactionScreen.date}</Text>
+                            <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalDateVisible(!modalDateVisible)}>
+                                <Text style={styles.txtFakeInput}>{selectedDate}</Text>
+                                <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={styles.row}>
+                            <Text style={styles.label}>{strings.transactionScreen.category}</Text>
+                            <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectCategoryVisible(!modalSelectCategoryVisible)}>
+                                <Text style={styles.txtFakeInput}>
+                                    {
+                                        selectedCategory?.nameEN && user && user.language === "en"
+                                            ? selectedCategory.nameEN.length > 10
+                                                ? selectedCategory.nameEN.substring(0, 10) + "..."
+                                                : selectedCategory.nameEN
+                                            : selectedCategory?.nameES && selectedCategory.nameES.length > 10
+                                                ? selectedCategory.nameES.substring(0, 10) + "..."
+                                                : selectedCategory?.nameES
+                                    }
+                                </Text>
+                                <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
+                            </TouchableOpacity>
+                        </View>
+
+                        <View style={{ marginTop: '8%', marginHorizontal: '9%' }}>
+                            <Text style={[styles.label, { marginBottom: 10 }]}>{strings.transactionScreen.description} <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionScreen.optional}</Text></Text>
                             <TextInput
-                                style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
-                                onChangeText={handleChangeText}
-                                value={text}
-                                keyboardType="decimal-pad"
+                                style={[styles.txtInput, styles.txtDescription]}
+                                onChangeText={handleChangeTxtDescription}
+                                multiline
+                                inputMode='text'
+                                blurOnSubmit
+                                value={txtDescription}
                                 returnKeyType='done'
+                                maxLength={125}
                             />
                         </View>
-                    </View>
-                    <View style={styles.row}>
-                        <Text style={styles.label}>{strings.transactionScreen.account}</Text>
-                        <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectVisible(!modalSelectVisible)}>
-                            <Text style={styles.txtFakeInput}>{selectedValue.name}</Text>
-                            <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
+
+                        <TouchableOpacity style={styles.touchBtn} onPress={handleSaveAndGoBack}>
+                            <View style={[styles.btnContainer, isSaving && { backgroundColor: Colors.accent }]}>
+                                <Text style={styles.txtBtn}>{isSaving ? strings.transactionScreen.savingTxt : strings.transactionScreen.saveBtn}</Text>
+                            </View>
                         </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.row}>
-                        <Text style={styles.label}>{strings.transactionScreen.date}</Text>
-                        <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalDateVisible(!modalDateVisible)}>
-                            <Text style={styles.txtFakeInput}>{selectedDate}</Text>
-                            <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.row}>
-                        <Text style={styles.label}>{strings.transactionScreen.category}</Text>
-                        <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectCategoryVisible(!modalSelectCategoryVisible)}>
-                            <Text style={styles.txtFakeInput}>
-                                {
-                                    selectedCategory?.nameEN && user && user.language === "en"
-                                        ? selectedCategory.nameEN.length > 10
-                                            ? selectedCategory.nameEN.substring(0, 10) + "..."
-                                            : selectedCategory.nameEN
-                                        : selectedCategory?.nameES && selectedCategory.nameES.length > 10
-                                            ? selectedCategory.nameES.substring(0, 10) + "..."
-                                            : selectedCategory?.nameES
-                                }
-                            </Text>
-                            <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={{ marginTop: '8%', marginHorizontal: '9%' }}>
-                        <Text style={[styles.label, { marginBottom: 10 }]}>{strings.transactionScreen.description} <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionScreen.optional}</Text></Text>
-                        <TextInput
-                            style={[styles.txtInput, styles.txtDescription]}
-                            onChangeText={handleChangeTxtDescription}
-                            multiline
-                            inputMode='text'
-                            blurOnSubmit
-                            value={txtDescription}
-                            returnKeyType='done'
-                            maxLength={125}
-                        />
-                    </View>
-
-                    <TouchableOpacity style={styles.touchBtn} onPress={handleSaveAndGoBack}>
-                        <View style={[styles.btnContainer, isSaving && { backgroundColor: Colors.accent }]}>
-                            <Text style={styles.txtBtn}>{isSaving ? strings.transactionScreen.savingTxt : strings.transactionScreen.saveBtn}</Text>
-                        </View>
-                    </TouchableOpacity>
 
 
-                </Pressable>
-                <ModalSelectCategory modalVisible={modalSelectCategoryVisible} setModalVisible={setModalSelectCategoryVisible} selectedValue={selectedCategory} handleSelectedModal={handleSelectedCategory} />
-                <ModalSelect modalVisible={modalSelectVisible} setModalVisible={setModalSelectVisible} data={userAccounts} selectedValue={selectedValue} handleSelectedModal={handleSelectedModal} />
-                <ModalDate modalVisible={modalDateVisible} setModalVisible={setModalDateVisible} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-                <ModalDeleteTran modalVisible={modalDeleteTranVisible} setModalVisible={setModalDeleteTranVisible} onPressDelete={onPressDelete} />
-            </ScrollView>
+                    </Pressable>
+                    <ModalSelectCategory modalVisible={modalSelectCategoryVisible} setModalVisible={setModalSelectCategoryVisible} selectedValue={selectedCategory} handleSelectedModal={handleSelectedCategory} />
+                    <ModalSelect modalVisible={modalSelectVisible} setModalVisible={setModalSelectVisible} data={userAccounts} selectedValue={selectedValue} handleSelectedModal={handleSelectedModal} />
+                    <ModalDate modalVisible={modalDateVisible} setModalVisible={setModalDateVisible} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+                    <ModalDeleteTran modalVisible={modalDeleteTranVisible} setModalVisible={setModalDeleteTranVisible} onPressDelete={onPressDelete} />
+                </ScrollView>
 
 
 
-        </SafeAreaView>
+            </SafeAreaView>
+        </BottomSheetModalProvider>
     );
 }
 

@@ -21,7 +21,7 @@ const ModalSettingsBtns = ({ setModalVisible, modalVisible, children, warning, t
 
     return (
         <Modal
-            animationType="slide"
+            animationType="fade"
             transparent={true}
             visible={modalVisible}
             statusBarTranslucent={true}
