@@ -24,7 +24,7 @@ import ScreenContainer from "../components/ScreenContainer";
 import Header from "../components/Header";
 // AsyncStorage
 import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
-import { Asset } from "expo-asset";
+
 
 const WalletScreen = ({ navigation }) => {
 
@@ -186,7 +186,7 @@ const WalletScreen = ({ navigation }) => {
 
             <Header darkText={strings.walletScreen.headerDarkTxt} gradientText={strings.walletScreen.headerGradientTxt} />
 
-            <Text style={{ color: Colors.primary, fontFamily: 'poppins-bold', fontSize: 18, textAlign: 'justify', paddingHorizontal: 30 }}>{strings.walletScreen.title1}</Text>
+            <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 18, textAlign: 'justify', paddingHorizontal: 30 }}>{strings.walletScreen.title1}</Text>
             <View style={styles.cardTransfer}>
 
                 <View style={styles.row}>
@@ -222,7 +222,7 @@ const WalletScreen = ({ navigation }) => {
                 </View>
             </View>
 
-            <Text style={{ color: Colors.primary, fontFamily: 'poppins-bold', fontSize: 18, textAlign: 'justify', marginTop: 25, paddingHorizontal: 30 }}>{strings.walletScreen.title2}</Text>
+            <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 18, textAlign: 'justify', marginTop: 25, paddingHorizontal: 30 }}>{strings.walletScreen.title2}</Text>
             {userAccounts.map((account, i) => (
 
                 <TouchableOpacity key={i} onPress={openEditAccount.bind(null, account)} style={styles.cardTotals}>
@@ -239,8 +239,8 @@ const WalletScreen = ({ navigation }) => {
             <View style={{ alignItems: 'center' }}>
                 <TouchableOpacity style={styles.opacity} onPress={openAddAccount} >
 
-                    <Image style={styles.buttonIcon} source={Asset.fromModule(require('../assets/images/icon-plus.png'))} />
-                    <Text style={{ color: Colors.secondary, fontFamily: 'poppins' }}>{strings.walletScreen.addAccountBtn}</Text>
+                    <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
+                    <Text style={{ color: Colors.secondary, fontFamily: 'Poppins-Light' }}>{strings.walletScreen.addAccountBtn}</Text>
                 </TouchableOpacity>
 
             </View>
@@ -275,7 +275,7 @@ const WalletScreen = ({ navigation }) => {
                     <View style={{ width: '90%', borderRadius: 10, overflow: "hidden", borderTopRightRadius: 10, backgroundColor: Colors.light, paddingHorizontal: 20, paddingVertical: 25 }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                             <View style={{ flex: 1, justifyContent: 'center' }}>
-                                <Text style={{ fontFamily: 'poppins-bold', color: Colors.primary, textAlign: 'center', fontSize: 18 }}>
+                                <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.primary, textAlign: 'center', fontSize: 18 }}>
                                     {isEdited ? strings.walletScreen.modalEditAccountTitle : strings.walletScreen.modalAddAccountTitle}
                                 </Text>
                             </View>
@@ -300,7 +300,7 @@ const WalletScreen = ({ navigation }) => {
                             />
 
                         </View>
-                        <Text style={{ fontFamily: 'poppins-bold', marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
+                        <Text style={{ fontFamily: 'Poppins-SemiBold', marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
                         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
                             <TouchableOpacity onPress={() => setSelectedIcon("bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bank" && { backgroundColor: Colors.primary }]}>
                                 <MaterialCommunityIcons name="bank" size={24} color={Colors.accent} />
@@ -318,10 +318,10 @@ const WalletScreen = ({ navigation }) => {
 
                         <View style={{ flexDirection: "row", justifyContent: 'space-around', alignItems: 'center', marginTop: 20 }}>
                             <TouchableOpacity onPress={handleCancelButton} style={{ paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "50%" }}>
-                                <Text style={{ fontFamily: 'poppins', color: Colors.secondary, textAlign: 'center' }}>{strings.walletScreen.cancelBtnTxt}</Text>
+                                <Text style={{ fontFamily: 'Poppins-Light', color: Colors.secondary, textAlign: 'center' }}>{strings.walletScreen.cancelBtnTxt}</Text>
                             </TouchableOpacity>
                             <TouchableOpacity onPress={handleAddAccount} style={{ backgroundColor: Colors.secondary, paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "50%" }}>
-                                <Text style={{ fontFamily: 'poppins-bold', color: Colors.light, textAlign: 'center' }}>{isEdited ? strings.walletScreen.saveBtnTxt : strings.walletScreen.createBtnTxt}</Text>
+                                <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light, textAlign: 'center' }}>{isEdited ? strings.walletScreen.saveBtnTxt : strings.walletScreen.createBtnTxt}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     welcome: {
         fontSize: 25,
         marginTop: Platform.OS === 'ios' ? 20 : 40,
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary
     },
     cardTransfer: {
@@ -373,7 +373,7 @@ const styles = StyleSheet.create({
 
         color: Colors.light,
         textAlign: 'center',
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         includeFontPadding: false
     },
     row: {
@@ -397,13 +397,13 @@ const styles = StyleSheet.create({
         includeFontPadding: false
     },
     txtFakeInput: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         fontSize: 15,
         color: Colors.primary
 
     },
     label: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.light,
     },
     txtInput: {
@@ -412,7 +412,7 @@ const styles = StyleSheet.create({
         width: '70%',
         borderRadius: 10,
         paddingHorizontal: 15,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         borderWidth: 0.5,
         borderColor: Colors.secondary,
@@ -436,7 +436,7 @@ const styles = StyleSheet.create({
     },
     txtAccount: {
         color: Colors.light,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         includeFontPadding: false,
         marginLeft: 10
     },
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 10,
         paddingHorizontal: 15,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         borderWidth: 0.5,
         borderColor: Colors.secondary,

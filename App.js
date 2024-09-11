@@ -30,7 +30,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import expensiaAsyncStorage from './context/expensiaAsyncStorage';
 // Context
 import { ExpensiaContext } from "./context/expensiaContext";
-import { Asset } from "expo-asset";
+
 
 LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.']);
 
@@ -52,7 +52,7 @@ const TabNavigation = () => {
       screenOptions={
         {
           tabBarStyle: { backgroundColor: Colors.primary },
-          tabBarLabelStyle: { fontFamily: 'poppins', fontSize: 10 },
+          tabBarLabelStyle: { fontFamily: 'Poppins-Light', fontSize: 10 },
           tabBarInactiveTintColor: "#8f8f8f97",
           tabBarActiveTintColor: Colors.light,
           tabBarIndicatorStyle: { backgroundColor: Colors.accent, top: 0, height: 4 }
@@ -133,7 +133,7 @@ const StackNavigation = () => {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#06002e" }}>
         <Image
-          source={Asset.fromModule(require('./assets/splash.png'))}
+          source={require('./assets/splash.png')}
           style={{ width: '100%', height: '100%', }}
           resizeMode="contain"
         />
@@ -162,7 +162,7 @@ const StackNavigation = () => {
               headerBackVisible: false,
               headerTitleAlign: 'center',
               headerLeft: GoBackBtn,
-              headerTitleStyle: { fontFamily: 'poppins-bold' },
+              headerTitleStyle: { fontFamily: 'Poppins-SemiBold' },
               headerStyle: { backgroundColor: Colors.light },
               headerTintColor: Colors.primary,
               presentation: 'modal',
@@ -176,7 +176,7 @@ const StackNavigation = () => {
               headerBackVisible: false,
               headerTitleAlign: 'center',
               headerLeft: GoBackBtn,
-              headerTitleStyle: { fontFamily: 'poppins-bold' },
+              headerTitleStyle: { fontFamily: 'Poppins-SemiBold' },
               headerStyle: { backgroundColor: Colors.light },
               headerTintColor: Colors.primary,
             }}
@@ -203,8 +203,9 @@ const StackNavigation = () => {
 const App = () => {
 
   const [fontsLoaded] = useFonts({
-    'poppins': require('./assets/fonts/Poppins-Light.ttf'),
-    'poppins-bold': require('./assets/fonts/Poppins-SemiBold.ttf'),
+    'Poppins-SemiBold': require('./assets/fonts/Poppins-SemiBold.ttf'),
+    'Poppins-Light': require('./assets/fonts/Poppins-Light.ttf'),
+
   });
 
   if (!fontsLoaded) {

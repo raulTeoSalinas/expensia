@@ -102,7 +102,7 @@ const TransactionsScreen = ({ navigation }) => {
                 numColumns={1}
                 ListEmptyComponent={() => (
                     <View>
-                        <Text style={{ fontFamily: 'poppins' }}>{strings.transactionsScreen.emptyListTxt}</Text>
+                        <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionsScreen.emptyListTxt}</Text>
                     </View>
                 )}
             />
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     welcome: {
         fontSize: 25,
         marginTop: Platform.OS === 'ios' ? 0 : 40,
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary
     },
     buttonIcon: {
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
         height: 40,
 
         paddingHorizontal: 15,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         width: '90%',
 

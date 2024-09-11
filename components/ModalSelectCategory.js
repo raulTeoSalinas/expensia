@@ -7,7 +7,7 @@ import {
     StyleSheet,
     ScrollView,
     Image,
-    
+
 } from "react-native";
 // Utils
 import Colors from "../utils/colors";
@@ -65,7 +65,7 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
                                         <Image style={styles.iconCategory} source={category.src} />
                                         : <View style={styles.iconCategory}></View>
                                     }
-                                    
+
                                     <Text style={styles.txtModule}>{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
                                 </View>
                                 {selectedValue.id === category.id && <MaterialIcons name="check" size={24} color={Colors.primary} />}
@@ -93,7 +93,7 @@ export default ModalSelectCategory;
 
 const styles = StyleSheet.create({
     txtModule: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         fontSize: 18,
         color: Colors.primary
     },
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 20,
     },
     txtBtn: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.light,
         textAlign: 'center'
     },

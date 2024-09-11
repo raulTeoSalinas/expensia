@@ -17,10 +17,10 @@ import GradientText from "../components/TextGradient";
 import { LinearGradient } from "expo-linear-gradient";
 
 
-const {width} = Dimensions.get('window')
+const { width } = Dimensions.get('window')
 
 const CreateUserScreen = ({ navigation }) => {
-    
+
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true);
     const [text, setText] = useState('');
     const [language, setLanguage] = useState("en");
@@ -41,12 +41,12 @@ const CreateUserScreen = ({ navigation }) => {
         } else {
 
             navigation.navigate("CreateAccounts", { userName: text, language: language });
-            
+
         }
     }
 
     return (
-        <LinearGradient style={{flex: 1}} colors={[Colors.secondary, Colors.accent, Colors.accent, Colors.secondary ]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
+        <LinearGradient style={{ flex: 1 }} colors={[Colors.secondary, Colors.accent, Colors.accent, Colors.secondary]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
             <View style={styles.mainContainer}>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -77,7 +77,7 @@ const CreateUserScreen = ({ navigation }) => {
 
                 <TouchableOpacity onPress={handleNavigateAccounts}>
                     <View style={styles.btnContainer}>
-                        <Text style={{ fontFamily: 'poppins', color: Colors.light }}>{strings.createUserScreen.acceptBtn}</Text>
+                        <Text style={{ fontFamily: 'Poppins-Light', color: Colors.light }}>{strings.createUserScreen.acceptBtn}</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -94,17 +94,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: 'white',
-        borderTopLeftRadius: width-100,
-        borderBottomRightRadius: width-100
+        borderTopLeftRadius: width - 100,
+        borderBottomRightRadius: width - 100
     },
     txtWelcome: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary,
         fontSize: 25,
         marginBottom: '10%'
     },
     txtName: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         marginTop: 20
     },
     txtInput: {
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
         width: 270,
         borderRadius: 10,
         paddingHorizontal: 15,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         borderWidth: 0.5,
         borderColor: Colors.secondary,
@@ -129,21 +129,21 @@ const styles = StyleSheet.create({
         marginBottom: "10%"
     },
     containerLanguage: {
-        
+
         borderRadius: 10,
 
         padding: 15
     },
-    selectedLanguage : {
+    selectedLanguage: {
         borderColor: Colors.secondary,
         borderWidth: 0.5,
     },
     btnContainer: {
-        backgroundColor: Colors.primary, 
-        paddingHorizontal: 20, 
-        paddingVertical: 5, 
-        marginTop: "15%", 
+        backgroundColor: Colors.primary,
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        marginTop: "15%",
         borderRadius: 10,
-        
+
     }
 });

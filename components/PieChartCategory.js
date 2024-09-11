@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     },
     pieChartText: {
         position: 'absolute',
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         zIndex: 1,
     },
     categoryContainer: {
@@ -114,10 +114,10 @@ const styles = StyleSheet.create({
     },
     categoryName: {
         marginLeft: "2%",
-        fontFamily: "poppins-bold",
+        fontFamily: "Poppins-SemiBold",
     },
     transactionAmount: {
-        fontFamily: "poppins",
+        fontFamily: "Poppins-Light",
     },
 
 });

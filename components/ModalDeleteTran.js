@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         paddingVertical: 25
     },
     headerText: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary,
         textAlign: 'center'
     },
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
         width: 110
     },
     cancelButtonText: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.accent,
         textAlign: 'center'
     },
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
         width: 110,
     },
     deleteButtonText: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.light,
         textAlign: 'center'
     }

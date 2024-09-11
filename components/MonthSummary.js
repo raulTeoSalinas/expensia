@@ -35,11 +35,11 @@ const MonthSummary = ({ income, expenses }) => {
             <View style={styles.resumenDescription}>
                 <View style={styles.rowTitle}>
                     <View style={styles.dotIncome}></View>
-                    <Text style={styles.textIncomeExpenses}>{strings.mainScreen.income}<Text> { user && !user.privacy ?  `$${formatNumberWithCommas(income)}` : '•••••' }</Text></Text>
+                    <Text style={styles.textIncomeExpenses}>{strings.mainScreen.income}<Text> {user && !user.privacy ? `$${formatNumberWithCommas(income)}` : '•••••'}</Text></Text>
                 </View>
                 <View style={styles.rowTitle}>
                     <View style={styles.dotExpenses}></View>
-                    <Text style={styles.textIncomeExpenses}>{strings.mainScreen.expenses}<Text> { user && !user.privacy ?  `$${formatNumberWithCommas(expenses)}` : '•••••' }</Text></Text>
+                    <Text style={styles.textIncomeExpenses}>{strings.mainScreen.expenses}<Text> {user && !user.privacy ? `$${formatNumberWithCommas(expenses)}` : '•••••'}</Text></Text>
                 </View>
             </View>
         </View>
@@ -53,11 +53,11 @@ const styles = StyleSheet.create({
         marginTop: '5%'
     },
     resumenTitle: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         fontSize: 15,
         textAlign: "center",
         color: Colors.primary,
-        
+
     },
     incomeBar: {
         backgroundColor: Colors.secondary,
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
         height: 10
     },
     textIncomeExpenses: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary
     },
     resumenDescription: {
@@ -103,10 +103,10 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.accent,
         marginRight: 7,
         marginBottom: Platform.OS === 'ios' ? 0 : 4,
-    }, 
+    },
     rowTitle: {
-        flexDirection: 'row', 
-        alignItems: 'center' 
+        flexDirection: 'row',
+        alignItems: 'center'
     }
-    
+
 });

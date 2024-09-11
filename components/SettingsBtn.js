@@ -60,14 +60,12 @@ const styles = StyleSheet.create({
 
     },
     txtTitle: {
-        fontFamily: 'poppins-bold',
-        fontWeight: 'bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary
     },
     txtDescription: {
-        fontFamily: 'poppins',
-        color: Colors.primary,
-        fontWeight: 100
+        fontFamily: 'Poppins-Light',
+        color: Colors.primary
     }
 })
 

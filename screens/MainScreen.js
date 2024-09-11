@@ -142,11 +142,11 @@ const MainScreen = ({ navigation }) => {
 			<View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
 				<TouchableOpacity onPress={handleTransfer} style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<MaterialCommunityIcons name="bank-transfer" size={28} color={Colors.secondary} />
-					<Text style={{ fontFamily: 'poppins-bold' }}>{strings.mainScreen.transferBtn}</Text>
+					<Text style={{ fontFamily: 'Poppins-SemiBold' }}>{strings.mainScreen.transferBtn}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={handleHideTotals} style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<MaterialCommunityIcons name={userDisplay && !userDisplay.privacy ? "eye" : "eye-off"} size={24} color={Colors.secondary} />
-					<Text style={{ fontFamily: 'poppins-bold' }}>{strings.mainScreen.hideBtn}</Text>
+					<Text style={{ fontFamily: 'Poppins-SemiBold' }}>{strings.mainScreen.hideBtn}</Text>
 				</TouchableOpacity>
 			</View>
 
@@ -216,7 +216,7 @@ const styles = StyleSheet.create({
 	welcome: {
 		fontSize: 25,
 		marginTop: Platform.OS === 'ios' ? 0 : 40,
-		fontFamily: 'poppins-bold',
+		fontFamily: 'Poppins-SemiBold',
 		color: Colors.primary
 	},
 	buttonIcon: {
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
 
 	},
 	txtMarked: {
-		fontFamily: 'poppins',
+		fontFamily: 'Poppins-Light',
 		color: Colors.primary
 	},
 	containerLabelMarked: {

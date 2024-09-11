@@ -54,7 +54,7 @@ const ModalSelect = ({ modalVisible, setModalVisible, data, selectedValue, handl
                             >
                                 <View>
                                     <Text style={styles.txtModule}>{item.name}</Text>
-                                    <Text style={[styles.txtModule, { fontFamily: 'poppins' }]}>${formatNumberWithCommas(item.amount)}</Text>
+                                    <Text style={[styles.txtModule, { fontFamily: 'Poppins-Light' }]}>${formatNumberWithCommas(item.amount)}</Text>
                                 </View>
                                 {selectedValue.id === item.id && <MaterialIcons name="check" size={24} color={Colors.primary} />}
                             </TouchableOpacity>
@@ -80,7 +80,7 @@ export default ModalSelect;
 
 const styles = StyleSheet.create({
     txtModule: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         fontSize: 18,
         color: Colors.primary
     },
@@ -114,14 +114,14 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 20,
     },
     txtBtn: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.light,
         textAlign: 'center'
     },
     mainContainer: {
-        backgroundColor: '#06002e99', 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center' 
+        backgroundColor: '#06002e99',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 });

@@ -1,12 +1,13 @@
 // React / React-Native
 import { useState, useEffect, useContext } from "react";
-import { 
-    Modal, 
-    View, 
-    Text, 
-    TouchableOpacity, 
-    StyleSheet } 
-from "react-native";
+import {
+    Modal,
+    View,
+    Text,
+    TouchableOpacity,
+    StyleSheet
+}
+    from "react-native";
 // Utils
 import Colors from "../utils/colors";
 import { calendarEN, calendarES, theme } from "../utils/calendarSettings";
@@ -17,7 +18,7 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { ExpensiaContext } from "../context/expensiaContext";
 
 
-const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDate}) => {
+const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDate }) => {
 
     const { user } = useContext(ExpensiaContext);
     const languageCalendar = user && user.language === "en" ? calendarEN : calendarES;
@@ -26,10 +27,10 @@ const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDat
     const [reRender, setReRender] = useState(false);
 
     useEffect(() => {
-		LocaleConfig.locales["default"] = languageCalendar;
-		LocaleConfig.defaultLocale = 'default';
-		setReRender(!reRender) //We change the boolean state to re-render Calendar component.
-	}, [user])
+        LocaleConfig.locales["default"] = languageCalendar;
+        LocaleConfig.defaultLocale = 'default';
+        setReRender(!reRender) //We change the boolean state to re-render Calendar component.
+    }, [user])
 
     return (
         <Modal
@@ -57,7 +58,7 @@ const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDat
                         theme={theme}
                     />
 
-                    <TouchableOpacity activeOpacity={0.8}  onPress={() => setModalVisible(!modalVisible)}>
+                    <TouchableOpacity activeOpacity={0.8} onPress={() => setModalVisible(!modalVisible)}>
                         <View style={styles.btnContainer}>
                             <Text style={styles.txtBtn}>{strings.modalSelect.btnAccept}</Text>
                         </View>
@@ -84,20 +85,20 @@ const styles = StyleSheet.create({
 
     },
     txtBtn: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.light,
         textAlign: 'center'
     },
     background: {
-        backgroundColor: '#06002e99', 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center' 
+        backgroundColor: '#06002e99',
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     mainContainer: {
-        width: '90%', 
-        borderTopLeftRadius: 10, 
-        overflow: "hidden", 
-        borderTopRightRadius: 10 
+        width: '90%',
+        borderTopLeftRadius: 10,
+        overflow: "hidden",
+        borderTopRightRadius: 10
     }
 });

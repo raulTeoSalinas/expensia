@@ -1,5 +1,5 @@
 // React / React-Native
-import { useState, useContext} from "react";
+import { useState, useContext } from "react";
 import {
     View,
     Text,
@@ -13,7 +13,7 @@ import { es, en } from "../utils/languages";
 import { ExpensiaContext } from "../context/expensiaContext";
 
 
-const SelectType = ({getTypeSelected, resetFlat}) => {
+const SelectType = ({ getTypeSelected, resetFlat }) => {
 
     const { user } = useContext(ExpensiaContext);
     const strings = user && user.language === "en" ? en : es;
@@ -21,50 +21,50 @@ const SelectType = ({getTypeSelected, resetFlat}) => {
     const [typeSelected, setTypeSelected] = useState('all');
 
     const handleTypeSelect = (type) => {
-      setTypeSelected(type);
-      getTypeSelected(type);
+        setTypeSelected(type);
+        getTypeSelected(type);
     };
 
     return (
         <View style={styles.rowContainer}>
 
-            <TouchableOpacity onPress={()=>handleTypeSelect('all')}>
+            <TouchableOpacity onPress={() => handleTypeSelect('all')}>
 
-                <View style={[styles.container, typeSelected === 'all' && {backgroundColor: Colors.secondary} ]}>
+                <View style={[styles.container, typeSelected === 'all' && { backgroundColor: Colors.secondary }]}>
 
-                    <Text style={[styles.txt, typeSelected === 'all' && {color: Colors.light} ]}>{strings.transactionsScreen.selectTypeAll}</Text>
-
-                </View>
-
-            </TouchableOpacity >
-            <TouchableOpacity onPress={()=>handleTypeSelect('income')}>
-
-                <View style={[styles.container, typeSelected === 'income' && {backgroundColor: Colors.secondary} ]}>
-
-                    <Text style={[styles.txt, typeSelected === 'income' && {color: Colors.light} ]}>{strings.transactionsScreen.selectTypeIncome}</Text>
+                    <Text style={[styles.txt, typeSelected === 'all' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeAll}</Text>
 
                 </View>
 
             </TouchableOpacity >
-            <TouchableOpacity onPress={()=>handleTypeSelect('expenses')}>
+            <TouchableOpacity onPress={() => handleTypeSelect('income')}>
 
-                <View style={[styles.container, typeSelected === 'expenses' && {backgroundColor: Colors.secondary} ]}>
+                <View style={[styles.container, typeSelected === 'income' && { backgroundColor: Colors.secondary }]}>
 
-                    <Text style={[styles.txt, typeSelected === 'expenses' && {color: Colors.light} ]}>{strings.transactionsScreen.selectTypeExpenses}</Text>
+                    <Text style={[styles.txt, typeSelected === 'income' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeIncome}</Text>
 
                 </View>
 
             </TouchableOpacity >
-            <TouchableOpacity onPress={()=>handleTypeSelect('loans')}>
+            <TouchableOpacity onPress={() => handleTypeSelect('expenses')}>
 
-                <View style={[styles.container, typeSelected === 'loans' && {backgroundColor: Colors.secondary} ]}>
+                <View style={[styles.container, typeSelected === 'expenses' && { backgroundColor: Colors.secondary }]}>
 
-                    <Text style={[styles.txt, typeSelected === 'loans' && {color: Colors.light} ]}>{strings.transactionsScreen.selectTypeLoans}</Text>
+                    <Text style={[styles.txt, typeSelected === 'expenses' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeExpenses}</Text>
+
+                </View>
+
+            </TouchableOpacity >
+            <TouchableOpacity onPress={() => handleTypeSelect('loans')}>
+
+                <View style={[styles.container, typeSelected === 'loans' && { backgroundColor: Colors.secondary }]}>
+
+                    <Text style={[styles.txt, typeSelected === 'loans' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeLoans}</Text>
 
                 </View>
 
             </TouchableOpacity>
-            </View>
+        </View>
     )
 };
 
@@ -81,13 +81,13 @@ const styles = StyleSheet.create({
 
     },
     txt: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary,
         includeFontPadding: false
     },
     rowContainer: {
-        flexDirection: "row", 
-        justifyContent: 'space-evenly', 
+        flexDirection: "row",
+        justifyContent: 'space-evenly',
         marginVertical: 12
     }
 });

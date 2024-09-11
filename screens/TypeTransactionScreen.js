@@ -8,7 +8,7 @@ import { ExpensiaContext } from "../context/expensiaContext";
 // Utils
 import { es, en } from "../utils/languages";
 
-import { Asset } from "expo-asset";
+
 
 
 const TypeTransactionScreen = () => {
@@ -38,7 +38,7 @@ const TypeTransactionScreen = () => {
             </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.7} style={styles.opacity} onPress={navigation.goBack}  >
-                <Image style={styles.buttonIcon} source={Asset.fromModule(require('../assets/images/icon-close.png'))} />
+                <Image style={styles.buttonIcon} source={require('../assets/images/icon-close.png')} />
             </TouchableOpacity>
 
         </View>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     txtType: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: 'white',
         fontSize: 20,
         textAlign: 'center'

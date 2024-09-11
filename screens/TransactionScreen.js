@@ -179,10 +179,10 @@ const TransactionScreen = ({ navigation, route }) => {
             navigation.setOptions({
                 headerTitle: ({ children }) => (
                     <>
-                        <Text style={{ fontFamily: 'poppins-bold', fontSize: 20, color: Colors.primary }}>
+                        <Text style={{ fontFamily: 'Poppins-SemiBold', fontSize: 20, color: Colors.primary }}>
                             {strings.transactionScreen.headerEdit}
                         </Text>
-                        <GradientText style={{ fontFamily: 'poppins-bold', fontSize: 20 }}>{children}</GradientText></>),
+                        <GradientText style={{ fontFamily: 'Poppins-SemiBold', fontSize: 20 }}>{children}</GradientText></>),
                 headerRight: () => (
                     <TouchableOpacity onPress={() => setModalDeleteTranVisible(!modalDeleteTranVisible)}>
                         <Ionicons name="ios-trash-outline" size={24} color="red" />
@@ -321,7 +321,7 @@ const TransactionScreen = ({ navigation, route }) => {
                     </View>
 
                     <View style={{ marginTop: '8%', marginHorizontal: '9%' }}>
-                        <Text style={[styles.label, { marginBottom: 10 }]}>{strings.transactionScreen.description} <Text style={{ fontFamily: 'poppins' }}>{strings.transactionScreen.optional}</Text></Text>
+                        <Text style={[styles.label, { marginBottom: 10 }]}>{strings.transactionScreen.description} <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionScreen.optional}</Text></Text>
                         <TextInput
                             style={[styles.txtInput, styles.txtDescription]}
                             onChangeText={handleChangeTxtDescription}
@@ -388,7 +388,7 @@ const styles = StyleSheet.create({
         elevation: 12,
     },
     label: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         fontSize: 18,
         color: Colors.primary,
     },
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
         width: 150,
         borderRadius: 10,
         paddingHorizontal: 15,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         borderWidth: 0.5,
         borderColor: Colors.secondary,
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
 
     },
     txtFakeInput: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         color: Colors.primary
 
@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
 
     },
     txtBtn: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.light,
         textAlign: 'center'
     },

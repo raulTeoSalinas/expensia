@@ -8,7 +8,7 @@ import GradientText from "./TextGradient";
 // Utils
 import Colors from "../utils/colors";
 
-const HeaderTitle = ({title, children}) => {
+const HeaderTitle = ({ title, children }) => {
 
     return (
         <>
@@ -25,12 +25,12 @@ export default HeaderTitle;
 
 const styles = StyleSheet.create({
     txt: {
-        fontFamily: 'poppins-bold', 
-        fontSize: 20, 
-        color: Colors.primary 
+        fontFamily: 'Poppins-SemiBold',
+        fontSize: 20,
+        color: Colors.primary
     },
     gradientTxt: {
-        fontFamily: 'poppins-bold', 
-        fontSize: 20 
+        fontFamily: 'Poppins-SemiBold',
+        fontSize: 20
     }
 });

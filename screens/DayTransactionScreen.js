@@ -1,6 +1,6 @@
 // React / React-Native
 import { useLayoutEffect, useContext } from "react";
-import { SafeAreaView, StyleSheet, FlatList, View, Text} from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, View, Text } from "react-native";
 // Utils
 import Colors from "../utils/colors";
 import { es, en } from "../utils/languages";
@@ -22,9 +22,9 @@ const DayTransactionScreen = ({ route, navigation }) => {
     useLayoutEffect(() => {
         navigation.setOptions({
             title: ` ${dayClicked}`,
-            headerTitle: ({children}) => <HeaderTitle title={strings.transactionsScreen.headerGradientTxt} children={children}/>
+            headerTitle: ({ children }) => <HeaderTitle title={strings.transactionsScreen.headerGradientTxt} children={children} />
         })
-        
+
     }, [])
 
     // Filtrar las transacciones por la fecha clickeada
@@ -52,7 +52,7 @@ const DayTransactionScreen = ({ route, navigation }) => {
                 numColumns={1}
                 ListEmptyComponent={() => (
                     <View>
-                        <Text style={{ fontFamily: 'poppins' }}>{strings.transactionsScreen.emptyListTxt}</Text>
+                        <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionsScreen.emptyListTxt}</Text>
                     </View>
                 )}
             />

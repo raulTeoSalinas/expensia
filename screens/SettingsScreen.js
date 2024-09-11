@@ -219,12 +219,12 @@ const styles = StyleSheet.create({
         borderColor: Colors.secondary
     },
     languageTxt: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         includeFontPadding: false,
         color: Colors.primary
     },
     modalTxt: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         includeFontPadding: false,
         color: Colors.primary,
         textAlign: 'center'
@@ -238,7 +238,7 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 10,
         paddingHorizontal: 15,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         borderWidth: 0.5,
         borderColor: Colors.secondary,

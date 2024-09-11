@@ -15,7 +15,7 @@ import { ExpensiaContext } from "../context/expensiaContext";
 
 const ModalSettingsBtns = ({ setModalVisible, modalVisible, children, warning, title, actionAccept }) => {
 
-    const { user} = useContext(ExpensiaContext);
+    const { user } = useContext(ExpensiaContext);
 
     const strings = user && user.language === "en" ? en : es;
 
@@ -39,7 +39,7 @@ const ModalSettingsBtns = ({ setModalVisible, modalVisible, children, warning, t
                             <Text style={styles.txtCancel}>{strings.settingsScreen.cancelBtn}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={actionAccept} style={styles.opacities}>
-                            <View style={[styles.btnAccept, warning && {backgroundColor: 'red'}]}>
+                            <View style={[styles.btnAccept, warning && { backgroundColor: 'red' }]}>
                                 <Text style={styles.txtAccept}>{warning ? strings.settingsScreen.deleteBtn : strings.settingsScreen.acceptBtn}</Text>
                             </View>
                         </TouchableOpacity>
@@ -73,12 +73,12 @@ const styles = StyleSheet.create({
         marginTop: '8%'
     },
     txtCancel: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.secondary,
         includeFontPadding: false
     },
     txtAccept: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.light,
         includeFontPadding: false
     },
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         paddingVertical: 5
     },
     title: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         fontSize: 18,
         textAlign: 'center',
         marginBottom: '8%'

@@ -81,15 +81,15 @@ const styles = StyleSheet.create({
         borderColor: '#ffffff'
     },
     txtBold: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.light,
     },
     txt: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.light,
     },
     txtAmount: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.light,
         fontSize: 18
     }

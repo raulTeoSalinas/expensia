@@ -11,7 +11,7 @@ import {
     Image,
     ScrollView
 } from "react-native";
-import { Asset } from "expo-asset";
+
 // Utils
 import Colors from "../utils/colors";
 import { es, en } from "../utils/languages";
@@ -152,7 +152,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                     <Text style={styles.txtWelcome}>{strings.createAccountsScreen.welcome}</Text>
                     <GradientText style={styles.txtWelcome}>{userName}</GradientText>
                 </View>
-                <Text style={{ color: Colors.primary, fontFamily: 'poppins', fontSize: 18, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTxt}</Text>
+                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-Light', fontSize: 18, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTxt}</Text>
                 {accounts.map((account, i) => (
                     <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                         <View style={styles.cardTotals}>
@@ -186,14 +186,14 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity style={styles.opacity} onPress={() => { setModalVisible(!modalVisible); setTxtAccount("") }} >
                         <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
-                        <Text style={{ color: Colors.secondary, fontFamily: 'poppins' }}>{strings.createAccountsScreen.addAccountBtn}</Text>
+                        <Text style={{ color: Colors.secondary, fontFamily: 'Poppins-Light' }}>{strings.createAccountsScreen.addAccountBtn}</Text>
                     </TouchableOpacity>
 
                 </View>
 
                 <View>
                     <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: '20%', marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
-                        <Text style={{ fontFamily: 'poppins-bold', color: Colors.light }}>{strings.createAccountsScreen.startBtn}</Text>
+                        <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light }}>{strings.createAccountsScreen.startBtn}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
         paddingVertical: 50,
     },
     txtWelcome: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary,
         fontSize: 25
     },
@@ -296,14 +296,14 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     txtAccount: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.light,
         includeFontPadding: false,
         marginLeft: 10
     },
     txtInput: {
         width: 80,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         includeFontPadding: false,
     },
     buttonIcon: {
@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
         flex: 1,
         borderRadius: 10,
         paddingHorizontal: 15,
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         fontSize: 15,
         borderWidth: 0.5,
         borderColor: Colors.secondary,
@@ -343,7 +343,7 @@ const styles = StyleSheet.create({
         paddingVertical: 25,
     },
     modalTitle: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.primary,
         textAlign: 'center',
         fontSize: 18,
@@ -366,7 +366,7 @@ const styles = StyleSheet.create({
         borderWidth: 2,
     },
     chooseIconText: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         marginTop: 15,
     },
     iconsContainer: {
@@ -397,7 +397,7 @@ const styles = StyleSheet.create({
 
     },
     cancelButtonText: {
-        fontFamily: 'poppins',
+        fontFamily: 'Poppins-Light',
         color: Colors.secondary,
         textAlign: 'center',
     },
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
         width: "40%",
     },
     createButtonText: {
-        fontFamily: 'poppins-bold',
+        fontFamily: 'Poppins-SemiBold',
         color: Colors.light,
         textAlign: 'center',
     },
