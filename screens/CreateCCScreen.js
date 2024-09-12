@@ -110,7 +110,7 @@ const CreateCCScreen = ({ navigation, route }) => {
             setTxtAccountEmptyLoad(false)
         } else {
             const newAccount = {
-                id: accounts.length - 1 == -1 ? 1 : accounts[accounts.length - 1].id + 1, //This its to get the nextId
+                id: accounts.length - 1 == -1 ? liquidAccounts[liquidAccounts.length - 1].id + 1 : accounts[accounts.length - 1].id + 1, //This its to get the nextId
                 name: txtAccount,
                 icon: selectedIcon,
                 amount: "",

@@ -205,13 +205,12 @@ const TransactionScreen = ({ navigation, route }) => {
     }, []);
 
     const handleSaveAndGoBack = async () => {
-        console.log(selectedValue)
         if (text === '' || text === '.') {
             setTxtEmptyLoad(false)
         } else {
             const amount = text.replace(/,/g, '');
-            if (amount > selectedValue.amount && typeTrans !== "i" && !selectedValue?.isCC) {
-                Alert.alert("Transacción Fallida", "No tienes suficientes fondos en la cuenta seleccionada.")
+            if (parseFloat(amount) > parseFloat(selectedValue.amount) && typeTrans !== "i" && !selectedValue?.isCC) {
+                Alert.alert(strings.walletScreen.alertFailedTransferTitle, strings.walletScreen.alertFailedTransferDesc)
             } else {
                 setIsSaving(true)
 
