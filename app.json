@@ -25,8 +25,7 @@
         }
       ],
       "expo-font",
-      "expo-asset",
-      "expo-router"
+      "expo-asset"
     ],
     "android": {
       "adaptiveIcon": {
@@ -49,6 +48,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/bc0de4e4-0744-495b-bb3e-6da6bbb7c784"
-    }
+    },
+    "newArchEnabled": true
   }
 }

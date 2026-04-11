@@ -288,6 +288,7 @@ const WalletScreen = ({ navigation }) => {
                 index={0}
                 ref={presentRef}
                 snapPoints={snapPoints}
+                enableDynamicSizing={false}
                 handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
                 handleComponent={() =>
                     <View style={{ justifyContent: "center", alignItems: "center" }}>

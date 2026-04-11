@@ -52,7 +52,7 @@ const TabNavigation = () => {
 
     <Tab.Navigator
       tabBarPosition='bottom'
-      initialRouteName="MainScreen"
+      initialRouteName="Summary"
       screenOptions={
         {
           tabBarStyle: { backgroundColor: Colors.primary, width: "auto" },
@@ -234,7 +234,7 @@ const App = () => {
 
   return (
     <ExpensiaContextProvider>
-      <GestureHandlerRootView>
+      <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
           <StatusBar style='dark' />
           <NavigationContainer>

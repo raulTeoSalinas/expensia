@@ -218,6 +218,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                     index={0}
                     ref={presentRef}
                     snapPoints={snapPoints}
+                    enableDynamicSizing={false}
                     handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
                     handleComponent={() => <View style={{ justifyContent: "center", alignItems: "center" }}>
                         <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>

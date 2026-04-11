@@ -67,6 +67,7 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
             index={1}
             ref={presentRef}
             snapPoints={snapPoints}
+            enableDynamicSizing={false}
             enableDismissOnClose
             onDismiss={() => setModalVisible(false)}
             handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
