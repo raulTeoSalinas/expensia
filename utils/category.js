@@ -107,20 +107,6 @@ const Category = [
         src: require('../assets/images/icon-i-interest.png')
     },
     {
-        id: 16,
-        nameEN: "Business",
-        nameES: "Negocio",
-        type: "l",
-        src: require('../assets/images/icon-l-business.png')
-    },
-    {
-        id: 17,
-        nameEN: "Person",
-        nameES: "Persona",
-        type: "l",
-        src: require('../assets/images/icon-l-person.png')
-    },
-    {
         id: 18,
         nameEN: "Other",
         nameES: "Otro",

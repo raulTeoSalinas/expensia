@@ -103,15 +103,14 @@ const ExpensiaContextProvider = ({ children }) => {
     );
   };
 
-  const editAccount = (id, name, icon, isCC) => {
+  const editAccount = (id, name, icon) => {
     setUser(prevUser => {
       const updatedAccounts = prevUser.accounts.map(prevAccount => {
         if (prevAccount.id === id) {
           return {
             ...prevAccount,
             name: name,
-            icon: icon,
-            isCC: isCC
+            icon: icon
           };
         }
         return prevAccount;

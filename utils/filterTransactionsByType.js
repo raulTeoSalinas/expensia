@@ -11,9 +11,6 @@ const filterTransactionsByType = (transactions, type) => {
         case 'expenses':
             typeTransaction = "e"
             break;
-        case 'loans':
-            typeTransaction = "l"
-            break;
     }
 
     if (type === 'all') {

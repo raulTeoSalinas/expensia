@@ -139,9 +139,6 @@ const TransactionScreen = ({ navigation, route }) => {
             case "e": addOrRestAmount(transactionClicked.amount, "i", transactionClicked.account); // type "i" to add amount from account
                 await addOrRestAmountAsync(transactionClicked.amount, "i", transactionClicked.account);
                 break;
-            case "l": addOrRestAmount(transactionClicked.amount, "i", transactionClicked.account);
-                await addOrRestAmountAsync(transactionClicked.amount, "i", transactionClicked.account);
-                break
         }
         navigation.goBack();
     }
@@ -155,8 +152,6 @@ const TransactionScreen = ({ navigation, route }) => {
                     break;
                 case "e": navigation.setOptions({ title: strings.transactionScreen.headerExpense });
                     break;
-                case "l": navigation.setOptions({ title: strings.transactionScreen.headerLoan });
-                    break
             }
             navigation.setOptions({
                 headerTitle: ({ children }) => <HeaderTitle title={strings.transactionScreen.headerRegister} children={children} />
@@ -197,8 +192,6 @@ const TransactionScreen = ({ navigation, route }) => {
                     break;
                 case "e": navigation.setOptions({ title: strings.transactionScreen.headerExpense });
                     break;
-                case "l": navigation.setOptions({ title: strings.transactionScreen.headerLoan });
-                    break
             }
 
         }
@@ -257,9 +250,6 @@ const TransactionScreen = ({ navigation, route }) => {
                             case "e": addOrRestAmount(transactionClicked.amount, "i", transactionClicked.account); // type "i" to add amount from account
                                 await addOrRestAmountAsync(transactionClicked.amount, "i", transactionClicked.account);
                                 break;
-                            case "l": addOrRestAmount(transactionClicked.amount, "i", transactionClicked.account);
-                                await addOrRestAmountAsync(transactionClicked.amount, "i", transactionClicked.account);
-                                break
                         }
                     }
 

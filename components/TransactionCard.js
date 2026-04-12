@@ -35,14 +35,12 @@ const TransactionCard = ({ id, type, amount, account, date, category, descriptio
             <View style={[styles.cardContainer,
             {
                 backgroundColor:
-                    type === 'i' ? Colors.secondary : type === 'e' ? Colors.accent : Colors.primary
+                    type === 'i' ? Colors.secondary : Colors.accent
             }
             ]}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: 'center', borderBottomWidth: 1, borderColor: Colors.light }}>
                     <Text weight="bold" color="light" size="l">
-                        {type === 'i' ? strings.transactionCard.typeIncome
-                            : type === 'e' ? strings.transactionCard.typeExpense
-                                : strings.transactionCard.typeLoan}
+                        {type === 'i' ? strings.transactionCard.typeIncome : strings.transactionCard.typeExpense}
                     </Text>
 
                     <Text weight="bold" color="light" size="l">${formatNumberWithCommas(amount)}</Text>

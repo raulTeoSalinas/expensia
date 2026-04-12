@@ -35,9 +35,6 @@ const TypeTransactionScreen = () => {
             <TouchableOpacity onPress={handleTransactionNavigate.bind(null, "e")} activeOpacity={0.8} style={[styles.typeContainer, { backgroundColor: Colors.typeExpenseBackground }]}>
                 <Text weight="bold" color="white" style={styles.txtType}>{strings.typeTransactionScreen.addExpenseTxt}</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleTransactionNavigate.bind(null, "l")} activeOpacity={0.8} style={[styles.typeContainer, { backgroundColor: Colors.typeLoanBackground }]}>
-                <Text weight="bold" color="white" style={[styles.txtType, { marginHorizontal: 5 }]}>{strings.typeTransactionScreen.addLoanTxt}</Text>
-            </TouchableOpacity>
 
             <TouchableOpacity activeOpacity={0.7} style={styles.opacity} onPress={navigation.goBack}  >
                 <Image style={styles.buttonIcon} source={require('../assets/images/icon-close.png')} />

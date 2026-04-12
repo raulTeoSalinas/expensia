@@ -10,11 +10,11 @@ const Row = ({ description, value, icon }) => {
 
 	return (
 		<View style={styles.rows}>
-			<Text color="light" size="m">{description}</Text>
 			<View style={styles.moneyIcon}>
-				<Text weight="bold" color="light" style={styles.textBold}>{value}</Text>
 				<MaterialCommunityIcons name={icon} size={24} color={Colors.accent} />
+				<Text color="light" size="m">{description}</Text>
 			</View>
+			<Text weight="bold" color="light">{value}</Text>
 		</View>
 	);
 }
@@ -28,11 +28,9 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginVertical: 4
 	},
-	textBold: {
-		marginRight: 10
-	},
 	moneyIcon: {
 		flexDirection: 'row',
 		alignItems: 'center',
+		gap: 10
 	}
 });

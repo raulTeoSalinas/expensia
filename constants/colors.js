@@ -38,7 +38,6 @@ const Colors = {
     knobTrack: '#d3d3d3',
     typeIncomeBackground: '#2706f9b3',
     typeExpenseBackground: '#f906d8b3',
-    typeLoanBackground: '#06002eb3',
     miniChartSlices: ['#fbd203', '#ffb300'],
 
     calendarDisabled: '#d9e1e8',

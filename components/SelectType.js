@@ -30,7 +30,7 @@ const SelectType = ({ getTypeSelected, resetFlat }) => {
 
             <TouchableOpacity onPress={() => handleTypeSelect('all')}>
 
-                <View style={[styles.container, typeSelected === 'all' && { backgroundColor: Colors.secondary }]}>
+                <View style={[styles.container, typeSelected === 'all' && { backgroundColor: Colors.primary }]}>
 
                     <Text weight="bold" color={typeSelected === 'all' ? 'light' : 'primary'} style={styles.txt}>{strings.transactionsScreen.selectTypeAll}</Text>
 
@@ -48,22 +48,13 @@ const SelectType = ({ getTypeSelected, resetFlat }) => {
             </TouchableOpacity >
             <TouchableOpacity onPress={() => handleTypeSelect('expenses')}>
 
-                <View style={[styles.container, typeSelected === 'expenses' && { backgroundColor: Colors.secondary }]}>
+                <View style={[styles.container, typeSelected === 'expenses' && { backgroundColor: Colors.accent }]}>
 
                     <Text weight="bold" color={typeSelected === 'expenses' ? 'light' : 'primary'} style={styles.txt}>{strings.transactionsScreen.selectTypeExpenses}</Text>
 
                 </View>
 
             </TouchableOpacity >
-            <TouchableOpacity onPress={() => handleTypeSelect('loans')}>
-
-                <View style={[styles.container, typeSelected === 'loans' && { backgroundColor: Colors.secondary }]}>
-
-                    <Text weight="bold" color={typeSelected === 'loans' ? 'light' : 'primary'} style={styles.txt}>{strings.transactionsScreen.selectTypeLoans}</Text>
-
-                </View>
-
-            </TouchableOpacity>
         </View>
     )
 };
@@ -85,7 +76,9 @@ const styles = StyleSheet.create({
     },
     rowContainer: {
         flexDirection: "row",
-        justifyContent: 'space-evenly',
-        marginVertical: 12
+        justifyContent: 'flex-start',
+        marginVertical: 12,
+        marginHorizontal: '5%',
+        gap: 10
     }
 });

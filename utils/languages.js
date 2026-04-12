@@ -56,10 +56,9 @@ export const es = {
         headerDarkTxt: "Mis ",
         headerGradientTxt: "Transacciones",
         searchPlaceHolder: "Buscar por descripción",
-        selectTypeAll: "Todos",
+        selectTypeAll: "Todas",
         selectTypeIncome: "Ingresos",
         selectTypeExpenses: "Gastos",
-        selectTypeLoans: "Préstamos",
         emptyListTxt: "No hay transacciones",
     },
     walletScreen: {
@@ -88,14 +87,12 @@ export const es = {
     typeTransactionScreen: {
         addIncomeTxt: "Añade un Ingreso",
         addExpenseTxt: "Añade un Gasto",
-        addLoanTxt: "Hice un préstamo"
     },
     transactionScreen: {
         headerRegister: "Registra un ",
         headerEdit: "Edita un ",
         headerIncome: "Ingreso",
         headerExpense: "Gasto",
-        headerLoan: "Préstamo",
         amount: "Cantidad:",
         account: "Cuenta:",
         date: "Fecha:",
@@ -128,7 +125,6 @@ export const es = {
     transactionCard: {
         typeIncome: "Ingreso",
         typeExpense: "Gasto",
-        typeLoan: "Préstamo",
         account: "Cuenta: ",
         date: "Fecha: ",
         category: "Categoría: ",
@@ -137,6 +133,11 @@ export const es = {
     },
     modalSelect: {
         chooseAccount: 'Seleccione su cuenta'
+    },
+    monthYearPicker: {
+        title: "Mes y año",
+        confirm: "Aceptar",
+        cancel: "Cancelar",
     }
 }
 
@@ -202,7 +203,6 @@ export const en = {
         selectTypeAll: "All",
         selectTypeIncome: "Income",
         selectTypeExpenses: "Expenses",
-        selectTypeLoans: "Loans",
         emptyListTxt: "No transactions",
     },
     walletScreen: {
@@ -231,14 +231,12 @@ export const en = {
     typeTransactionScreen: {
         addIncomeTxt: "Add an Income",
         addExpenseTxt: "Add an Expense",
-        addLoanTxt: "I  Lent  Money"
     },
     transactionScreen: {
         headerRegister: "Register ",
         headerEdit: "Edit ",
         headerIncome: "Income",
         headerExpense: "Expense",
-        headerLoan: "Loan",
         amount: "Amount:",
         account: "Account:",
         date: "Date:",
@@ -271,7 +269,6 @@ export const en = {
     transactionCard: {
         typeIncome: "Income",
         typeExpense: "Expense",
-        typeLoan: "Loan",
         account: "Account: ",
         date: "Date: ",
         category: "Category: ",
@@ -280,5 +277,10 @@ export const en = {
     },
     modalSelect: {
         chooseAccount: 'Select Your Account'
+    },
+    monthYearPicker: {
+        title: "Month & year",
+        confirm: "OK",
+        cancel: "Cancel",
     }
 }

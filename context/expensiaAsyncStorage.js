@@ -162,7 +162,7 @@ const addOrRestAmountAsync = async (amount, type, account) => {
   }
 };
 
-const editAccountAsync = async (id, name, icon, isCC) => {
+const editAccountAsync = async (id, name, icon) => {
   try {
     // Obtener el objeto "user" almacenado en AsyncStorage
     const user = await AsyncStorage.getItem('user');
@@ -176,8 +176,7 @@ const editAccountAsync = async (id, name, icon, isCC) => {
           return {
             ...prevAccount,
             name: name,
-            icon: icon,
-            isCC: isCC
+            icon: icon
           };
         }
         return prevAccount;

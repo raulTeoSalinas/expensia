@@ -1,5 +1,5 @@
 // React / React-Native
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useCallback } from "react";
 import {
 	Platform,
 	StyleSheet,
@@ -21,12 +21,15 @@ import MonthSummary from "../components/MonthSummary";
 import ScreenContainer from "../components/ScreenContainer";
 import Header from "../components/Header";
 import PieChartCategory from "../components/PieChartCategory";
+import MonthYearPickerModal from "../components/MonthYearPickerModal";
+import CalendarTappableMonthTitle from "../components/CalendarTappableMonthTitle";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
 // Icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 // AsyncStorage
 import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
+import { useMonthYearPicker } from "@hooks/useMonthYearPicker";
 
 
 
@@ -41,7 +44,6 @@ const MainScreen = ({ navigation }) => {
 
 	const income = { key: 'income', color: Colors.secondary };
 	const expense = { key: 'expense', color: Colors.accent };
-	const loan = { key: 'loan', color: Colors.primary };
 
 	const [groupedTransactions, setGroupedTransactions] = useState({});
 	const [monthOnDisplay, setMonthOnDisplay] = useState(getCurrentDate().slice(0, 7));
@@ -52,10 +54,40 @@ const MainScreen = ({ navigation }) => {
 	//Boolean State, used as a Key for Calendar Component. It helps to re-render Calendar component every time user change language.
 	const [reRender, setReRender] = useState(false);
 
+	const handleMonthYearPicked = useCallback(({ year, month }) => {
+		const m = String(month).padStart(2, "0");
+		setMonthOnDisplay(`${year}-${m}`);
+	}, []);
+
+	const {
+		monthPickerVisible,
+		calendarRemountKey,
+		pickerAnchor,
+		openMonthYearPicker,
+		confirmMonthYear,
+		closeMonthPicker,
+	} = useMonthYearPicker({
+		getInitialAnchor: () => {
+			const d = getCurrentDate();
+			return { year: parseInt(d.slice(0, 4), 10), month: parseInt(d.slice(5, 7), 10) };
+		},
+		onConfirm: handleMonthYearPicked,
+	});
+
+	const calendarRenderHeader = useCallback(
+		(monthXDate) => (
+			<CalendarTappableMonthTitle
+				month={monthXDate}
+				onPress={openMonthYearPicker}
+				accessibilityLabel={strings.monthYearPicker.title}
+			/>
+		),
+		[openMonthYearPicker, strings.monthYearPicker.title]
+	);
+
 	useEffect(() => {
 		const groupedTransactionsReduce = transactions.reduce((result, transaction) => {
 			const { amount, type, date, category } = transaction;
-			console.log(transaction)
 			const parsedAmount = parseFloat(amount);
 			const { id: categoryId } = category;
 
@@ -87,13 +119,6 @@ const MainScreen = ({ navigation }) => {
 								updatedMarkedDates[formattedDate].dots.push(expense);
 							}
 							break;
-						case "l":
-							result.monthExpense ? (result.monthExpense += parsedAmount) : (result.monthExpense = parsedAmount);
-							result.typeL[categoryId] = (result.typeL[categoryId] || 0) + parsedAmount;
-							if (!existingDots.some((dot) => dot.key === 'loan')) {
-								updatedMarkedDates[formattedDate].dots.push(loan);
-							}
-							break;
 						default:
 							break;
 					}
@@ -103,7 +128,7 @@ const MainScreen = ({ navigation }) => {
 			}
 
 			return result;
-		}, { typeI: {}, typeE: {}, typeL: {} });
+		}, { typeI: {}, typeE: {} });
 		if (transactions.length === 0) {
 			setMarkedDates({})
 		}
@@ -146,7 +171,7 @@ const MainScreen = ({ navigation }) => {
 
 			<View style={styles.cardTotals}>
 				{userDisplay && sortedAccounts.map((account, i) => (
-					<Row key={i} description={`${strings.mainScreen.rowDescription}${account.name}:`} value={!userDisplay.privacy ? `$${formatNumberWithCommas(account.amount)}` : "•••••"} icon={account.icon} />
+					<Row key={i} description={`${account.name}`} value={!userDisplay.privacy ? `$${formatNumberWithCommas(account.amount)}` : "•••••"} icon={account.icon} />
 				))}
 			</View>
 			<View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
@@ -163,7 +188,10 @@ const MainScreen = ({ navigation }) => {
 			<MonthSummary income={groupedTransactions.monthIncome ? groupedTransactions.monthIncome : 0} expenses={groupedTransactions.monthExpense ? groupedTransactions.monthExpense : 0} />
 
 			<Calendar
-				key={reRender}
+				key={`${reRender}-${calendarRemountKey}`}
+				current={`${monthOnDisplay}-01`}
+				monthFormat="MMMM yyyy"
+				renderHeader={calendarRenderHeader}
 				onDayPress={(day) => {
 					navigation.navigate("DayTransaction", { dateString: day.dateString });
 				}}
@@ -174,6 +202,14 @@ const MainScreen = ({ navigation }) => {
 				}}
 				theme={theme}
 			/>
+			<MonthYearPickerModal
+				visible={monthPickerVisible}
+				onRequestClose={closeMonthPicker}
+				onConfirm={confirmMonthYear}
+				monthNames={languageCalendar.monthNames}
+				initialYear={pickerAnchor.year}
+				initialMonth={pickerAnchor.month}
+			/>
 			<View style={styles.markedContainer}>
 				<View style={styles.containerLabelMarked}>
 					<View style={[styles.squareMarked, { backgroundColor: Colors.secondary }]}></View>
@@ -182,10 +218,6 @@ const MainScreen = ({ navigation }) => {
 				<View style={styles.containerLabelMarked}>
 					<View style={[styles.squareMarked, { backgroundColor: Colors.accent }]}></View>
 					<Text color="primary">{strings.transactionsScreen.selectTypeExpenses}</Text>
-				</View>
-				<View style={styles.containerLabelMarked}>
-					<View style={[styles.squareMarked, { backgroundColor: Colors.primary }]}></View>
-					<Text color="primary">{strings.transactionsScreen.selectTypeLoans}</Text>
 				</View>
 			</View>
 			<View style={styles.pieChartContainer}>
@@ -252,6 +284,6 @@ const styles = StyleSheet.create({
 	},
 	pieChartContainer: {
 		marginBottom: "5%"
-	}
+	},
 
 })
