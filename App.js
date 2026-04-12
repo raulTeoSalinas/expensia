@@ -1,5 +1,5 @@
 // React / React-Native
-import { LogBox, View, ActivityIndicator, Image, Text } from 'react-native';
+import { LogBox, View, ActivityIndicator, Image } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useState, useEffect, useContext } from 'react';
 import { useFonts } from 'expo-font';
@@ -24,7 +24,7 @@ import CreateCCScreen from "./screens/CreateCCScreen";
 // Components
 import GoBackBtn from './components/GoBackBtn';
 // Utils
-import Colors from './utils/colors';
+import Colors from './constants/colors';
 import { es, en } from "./utils/languages";
 // AsyncStorage
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -57,7 +57,7 @@ const TabNavigation = () => {
         {
           tabBarStyle: { backgroundColor: Colors.primary, width: "auto" },
           tabBarLabelStyle: { fontFamily: 'Poppins-Light', fontSize: 10 },
-          tabBarInactiveTintColor: "#8f8f8f97",
+          tabBarInactiveTintColor: Colors.tabBarInactive,
           tabBarActiveTintColor: Colors.light,
           tabBarIndicatorStyle: { backgroundColor: Colors.accent, top: 0, height: 4 }
         }
@@ -146,7 +146,7 @@ const StackNavigation = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#06002e" }}>
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: Colors.splashBackground }}>
         <Image
           source={require('./assets/splash.png')}
           style={{ width: '100%', height: '100%', }}

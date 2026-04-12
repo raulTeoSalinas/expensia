@@ -5,7 +5,7 @@ import {
     StyleSheet 
 } from "react-native"
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 
 const ScreenContainer = ({children}) => {
 

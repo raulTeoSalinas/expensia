@@ -4,10 +4,10 @@ import {
     Modal,
     TouchableOpacity,
     View,
-    Text
 } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 // Navigation
 import { useNavigation } from "@react-navigation/native";
 
@@ -31,13 +31,13 @@ const ModalDeleteTran = ({ modalVisible, setModalVisible, onPressDelete }) => {
 
             <View style={styles.container}>
                 <View style={styles.modalContent}>
-                    <Text style={styles.headerText}>¿Estás seguro de borrar la transacción?</Text>
+                    <Text weight="bold" color="primary" style={styles.headerText}>¿Estás seguro de borrar la transacción?</Text>
                     <View style={styles.buttonsContainer}>
                         <TouchableOpacity onPress={handleCancelButton} style={styles.cancelButton}>
-                            <Text style={styles.cancelButtonText}>Cancelar</Text>
+                            <Text color="accent" style={styles.cancelButtonText}>Cancelar</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={onPressDelete} style={styles.deleteButton}>
-                            <Text style={styles.deleteButtonText}>Borrar</Text>
+                            <Text weight="bold" color="light" style={styles.deleteButtonText}>Borrar</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -49,7 +49,7 @@ export default ModalDeleteTran;
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#06002e99',
+        backgroundColor: Colors.overlay,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'
@@ -64,8 +64,6 @@ const styles = StyleSheet.create({
         paddingVertical: 25
     },
     headerText: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary,
         textAlign: 'center'
     },
     buttonsContainer: {
@@ -81,8 +79,6 @@ const styles = StyleSheet.create({
         width: 110
     },
     cancelButtonText: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.accent,
         textAlign: 'center'
     },
     deleteButton: {
@@ -93,8 +89,6 @@ const styles = StyleSheet.create({
         width: 110,
     },
     deleteButtonText: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.light,
         textAlign: 'center'
     }
 });

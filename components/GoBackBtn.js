@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 // Navigation
 import { useNavigation } from "@react-navigation/native";
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 
 const GoBackBtn = () => {
     

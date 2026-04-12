@@ -1,14 +1,14 @@
 // React / React-Native
 import {
     View,
-    Text,
     TouchableOpacity,
     StyleSheet
-} from "react-native"
+} from "react-native";
+import Text from '@components/Text';
 // Icons
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 
 const SettingsBtn = ({ title, description, icon, iconColor, onPress }) => {
 
@@ -16,8 +16,8 @@ const SettingsBtn = ({ title, description, icon, iconColor, onPress }) => {
     return (
         <TouchableOpacity onPress={onPress} style={styles.mainContainer}>
             <View style={styles.containers}>
-                <Text style={styles.txtTitle}>{title}</Text>
-                <Text style={styles.txtDescription}>{description}</Text>
+                <Text weight="bold" color="primary">{title}</Text>
+                <Text color="primary">{description}</Text>
             </View>
             <View style={styles.containers}>
                 {icon === 'language' ?
@@ -45,8 +45,8 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.light,
         borderWidth: 1,
         borderRadius: 20,
-        borderColor: 'white',
-        shadowColor: "#000",
+        borderColor: Colors.white,
+        shadowColor: Colors.shadow,
         shadowOffset: {
             width: 0,
             height: 4,
@@ -59,13 +59,5 @@ const styles = StyleSheet.create({
     containers: {
 
     },
-    txtTitle: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary
-    },
-    txtDescription: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.primary
-    }
 })
 

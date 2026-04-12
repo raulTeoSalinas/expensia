@@ -1,6 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, View, StyleSheet } from 'react-native';
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 
 const Knob = ({ isActive, onPress }) => {
     return (
@@ -8,7 +8,7 @@ const Knob = ({ isActive, onPress }) => {
             style={[
                 styles.container,
                 {
-                    backgroundColor: isActive ? Colors.secondary : '#d3d3d3', // Cambia los colores según tu tema
+                    backgroundColor: isActive ? Colors.secondary : Colors.knobTrack,
                     alignItems: isActive ? 'flex-end' : 'flex-start'
                 }
             ]}
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
         padding: 1,
     },
     circle: {
-        backgroundColor: '#ffffff', // Cambia el color según tu tema
+        backgroundColor: Colors.white,
         height: 18,
         width: 18,
         borderRadius: 9,

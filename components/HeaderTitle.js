@@ -1,18 +1,16 @@
 // React / React-Native
-import {
-    Text,
-    StyleSheet
-} from "react-native";
+import { StyleSheet } from "react-native";
+import Text from '@components/Text';
 // Components
 import GradientText from "./TextGradient";
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 
 const HeaderTitle = ({ title, children }) => {
 
     return (
         <>
-            <Text style={styles.txt}>
+            <Text weight="bold" color="primary" style={styles.txt}>
                 {title}
             </Text>
             <GradientText style={styles.gradientTxt}>
@@ -25,9 +23,7 @@ export default HeaderTitle;
 
 const styles = StyleSheet.create({
     txt: {
-        fontFamily: 'Poppins-SemiBold',
         fontSize: 20,
-        color: Colors.primary
     },
     gradientTxt: {
         fontFamily: 'Poppins-SemiBold',

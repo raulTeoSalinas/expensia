@@ -4,14 +4,14 @@ import {
     StyleSheet,
     SafeAreaView,
     View,
-    Text,
     TextInput,
     Dimensions,
     FlatList,
     Platform
 } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import sortTransactionsByDate from "../utils/sortTransactionsByDate";
 import filterTransactionsByType from "../utils/filterTransactionsByType";
 import { es, en } from "../utils/languages";
@@ -102,7 +102,7 @@ const TransactionsScreen = ({ navigation }) => {
                 numColumns={1}
                 ListEmptyComponent={() => (
                     <View>
-                        <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionsScreen.emptyListTxt}</Text>
+                        <Text>{strings.transactionsScreen.emptyListTxt}</Text>
                     </View>
                 )}
             />
@@ -127,12 +127,6 @@ const styles = StyleSheet.create({
         marginRight: '2%',
         justifyContent: 'space-between'
     },
-    welcome: {
-        fontSize: 25,
-        marginTop: Platform.OS === 'ios' ? 0 : 40,
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary
-    },
     buttonIcon: {
         resizeMode: 'contain',
         width: 50,
@@ -155,7 +149,7 @@ const styles = StyleSheet.create({
         color: Colors.primary
     },
     txtSearchContainer: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         borderColor: Colors.secondary,
         borderWidth: 0.5,
         width: width - 40,

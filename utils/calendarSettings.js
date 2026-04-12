@@ -1,5 +1,5 @@
 // Utils
-import Colors from "./colors";
+import Colors from "../constants/colors";
 
 export const calendarES = {
   monthNames: [
@@ -44,21 +44,21 @@ export const calendarEN = {
 };
 
 export const theme = {
-  backgroundColor: '#ffffff',
-  calendarBackground: '#ffffff',
+  backgroundColor: Colors.white,
+  calendarBackground: Colors.white,
   textSectionTitleColor: Colors.secondary,
-  textSectionTitleDisabledColor: '#d9e1e8',
+  textSectionTitleDisabledColor: Colors.calendarDisabled,
   selectedDayBackgroundColor: Colors.secondary,
-  selectedDayTextColor: '#ffffff',
+  selectedDayTextColor: Colors.white,
   todayTextColor: Colors.secondary,
-  dayTextColor: '#2d4150',
-  textDisabledColor: '#d9e1e8',
-  dotColor: '#fa7a0a',
-  selectedDotColor: '#ffffff',
+  dayTextColor: Colors.calendarDayText,
+  textDisabledColor: Colors.calendarDisabled,
+  dotColor: Colors.calendarDot,
+  selectedDotColor: Colors.white,
   arrowColor: Colors.accent,
-  disabledArrowColor: '#d9e1e8',
+  disabledArrowColor: Colors.calendarDisabled,
   monthTextColor: Colors.primary,
-  indicatorColor: 'blue',
+  indicatorColor: Colors.calendarIndicator,
   textDayFontFamily: 'Poppins-Light',
   textMonthFontFamily: 'Poppins-SemiBold',
   textDayHeaderFontFamily: 'Poppins-Light',

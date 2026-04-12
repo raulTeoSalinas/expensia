@@ -2,15 +2,15 @@
 import {
     Modal,
     View,
-    Text,
     TouchableOpacity,
     StyleSheet,
     ScrollView,
     Image,
 
 } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 
 // Icons
 import { MaterialIcons } from '@expo/vector-icons';
@@ -70,16 +70,16 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
             enableDynamicSizing={false}
             enableDismissOnClose
             onDismiss={() => setModalVisible(false)}
-            handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
+            handleIndicatorStyle={{ backgroundColor: Colors.sheetHandle }}
             handleComponent={() => <View style={{ justifyContent: "center", alignItems: "center" }}>
-                <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
+                <View style={{ width: 40, height: 4, backgroundColor: Colors.sheetHandle, marginTop: 10, borderRadius: 2 }}>
                 </View>
             </View>}
-            backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+            backgroundStyle={{ backgroundColor: Colors.sheetBackground, borderWidth: 1, borderColor: Colors.sheetBorder, borderRadius: 40 }}
         >
             <View style={{ alignItems: "flex-end", width: "95%" }}>
                 <TouchableOpacityMod onPress={() => closeModal()} >
-                    <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
+                    <MaterialCommunityIcons name="close" size={24} color={Colors.sheetHandle} />
                 </TouchableOpacityMod>
             </View>
 
@@ -97,7 +97,7 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
                                 : <View style={styles.iconCategory}></View>
                             }
 
-                            <Text style={styles.txtModule}>{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
+                            <Text weight="bold" color="primary" size="l">{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
                         </View>
                         {selectedValue.id === category.id && <MaterialIcons name="check" size={24} color={Colors.primary} />}
                     </TouchableOpacity>
@@ -114,11 +114,6 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
 export default ModalSelectCategory;
 
 const styles = StyleSheet.create({
-    txtModule: {
-        fontFamily: 'Poppins-SemiBold',
-        fontSize: 18,
-        color: Colors.primary
-    },
     rowModule: {
         flexDirection: "row",
         padding: 10,
@@ -140,21 +135,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center'
     },
-    btnContainer: {
-        backgroundColor: Colors.secondary,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        width: '100%',
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-    },
-    txtBtn: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.light,
-        textAlign: 'center'
-    },
     mainContainer: {
-        backgroundColor: '#06002e99',
+        backgroundColor: Colors.overlay,
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center'

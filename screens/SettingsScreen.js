@@ -1,12 +1,12 @@
 // React / React-Native
 import { useState, useContext, useEffect } from "react";
 import {
-    Text,
     TouchableOpacity,
     View,
     StyleSheet,
     TextInput
 } from "react-native";
+import Text from '@components/Text';
 // AsyncStorage
 import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
 // Components
@@ -15,7 +15,7 @@ import Header from "../components/Header";
 import SettingsBtn from "../components/SettingsBtn";
 import ModalSettingsBtns from "../components/ModalSettingsBtns";
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
@@ -115,14 +115,14 @@ const SettingsScreen = ({ navigation }) => {
                     title={strings.settingsScreen.deleteTransactions}
                     description={strings.settingsScreen.descriptionTransactions}
                     icon="trash-can-outline"
-                    iconColor="red"
+                    iconColor={Colors.error}
                     onPress={() => setModalVisibleDeleteTransactions(!modalVisibleDeleteTransactions)}
                 />
                 <SettingsBtn
                     title={strings.settingsScreen.deleteAll}
                     description={strings.settingsScreen.descriptionAll}
                     icon="restart-alert"
-                    iconColor="red"
+                    iconColor={Colors.error}
                     onPress={() => setModalVisibleDeleteAll(!modalVisibleDeleteAll)}
                 />
             </View>
@@ -134,13 +134,13 @@ const SettingsScreen = ({ navigation }) => {
                 actionAccept={() => setModalVisibleLanguage(!modalVisibleLanguage)}
             >
                 <TouchableOpacity onPress={handleChangeLanguage.bind(null, "en")} style={[styles.containerLanguageTxt, user && user.language === 'en' && styles.containerSelectedLanguageTxt]}>
-                    <Text style={styles.languageTxt}>English</Text>
+                    <Text color="primary" style={styles.languageTxt}>English</Text>
                     {user && user.language === 'en' &&
                         <MaterialCommunityIcons name="check" size={24} color={Colors.secondary} />
                     }
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleChangeLanguage.bind(null, "es")} style={[styles.containerLanguageTxt, user && user.language === 'es' && styles.containerSelectedLanguageTxt]}>
-                    <Text style={styles.languageTxt}>Español</Text>
+                    <Text color="primary" style={styles.languageTxt}>Español</Text>
                     {user && user.language === 'es' &&
                         <MaterialCommunityIcons name="check" size={24} color={Colors.secondary} />
                     }
@@ -155,7 +155,7 @@ const SettingsScreen = ({ navigation }) => {
             >
                 <View style={styles.inputContainer}>
                     <TextInput
-                        style={[styles.txtNameInput, txtNameEmptyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
+                        style={[styles.txtNameInput, txtNameEmptyLoad ? null : { borderColor: Colors.error, borderWidth: 2 }]}
                         onChangeText={handleChangeTxtName}
                         value={txtName}
                         returnKeyType='done'
@@ -175,7 +175,7 @@ const SettingsScreen = ({ navigation }) => {
                 warning
                 actionAccept={handleDeleteTransactions}
             >
-                <Text style={styles.modalTxt}>
+                <Text color="primary" style={styles.modalTxt}>
                     {strings.settingsScreen.deleteTransactionsModal}
                 </Text>
 
@@ -219,21 +219,17 @@ const styles = StyleSheet.create({
         borderColor: Colors.secondary
     },
     languageTxt: {
-        fontFamily: 'Poppins-Light',
         includeFontPadding: false,
-        color: Colors.primary
     },
     modalTxt: {
-        fontFamily: 'Poppins-Light',
         includeFontPadding: false,
-        color: Colors.primary,
         textAlign: 'center'
     },
     inputContainer: {
         height: 40
     },
     txtNameInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         flex: 1,
         borderRadius: 10,

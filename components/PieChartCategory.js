@@ -1,11 +1,12 @@
 // React / React-Native
 import { useContext } from "react";
-import { View, Text, StyleSheet, Dimensions, useWindowDimensions } from 'react-native';
+import { View, StyleSheet, Dimensions, useWindowDimensions } from 'react-native';
+import Text from '@components/Text';
 // Third Party Libraries
 import PieChart from 'react-native-pie-chart';
 //Utils
 import Category from "../utils/category";
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import formatNumberWithCommas from "../utils/formatNumberWithCommas";
 import { es, en } from "../utils/languages";
 // Context
@@ -49,7 +50,7 @@ const PieChartCategory = ({ data, type }) => {
                     series={Object.values(data)}
                     sliceColor={Colors[typeConfig.colorPie].slice(0, Object.values(data).length)}
                 />
-                <Text style={styles.pieChartText}>
+                <Text weight="bold" style={styles.pieChartText}>
                     {typeConfig.textCircle}
                 </Text>
             </View>
@@ -61,10 +62,10 @@ const PieChartCategory = ({ data, type }) => {
                         <View key={tran} style={styles.categoryRow}>
                             <View style={[styles.colorIndicator, { backgroundColor: Colors[typeConfig.colorPie][i] }]}></View>
                             <View style={styles.categoryTextContainer}>
-                                <Text style={styles.categoryName}>
+                                <Text weight="bold" style={styles.categoryName}>
                                     {user && user.language === "en" ? category.nameEN : category.nameES}:
                                 </Text>
-                                <Text style={styles.transactionAmount}>
+                                <Text>
                                     ${formatNumberWithCommas(Object.values(data)[i])}
                                 </Text>
                             </View>
@@ -90,7 +91,6 @@ const styles = StyleSheet.create({
     },
     pieChartText: {
         position: 'absolute',
-        fontFamily: 'Poppins-SemiBold',
         zIndex: 1,
     },
     categoryContainer: {
@@ -114,10 +114,6 @@ const styles = StyleSheet.create({
     },
     categoryName: {
         marginLeft: "2%",
-        fontFamily: "Poppins-SemiBold",
-    },
-    transactionAmount: {
-        fontFamily: "Poppins-Light",
     },
 
 });

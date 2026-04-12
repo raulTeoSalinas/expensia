@@ -1,8 +1,9 @@
 // React / React-Native
 import { useLayoutEffect, useContext } from "react";
-import { SafeAreaView, StyleSheet, FlatList, View, Text } from "react-native";
+import { SafeAreaView, StyleSheet, FlatList, View } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Components
 import HeaderTitle from "../components/HeaderTitle";
@@ -52,7 +53,7 @@ const DayTransactionScreen = ({ route, navigation }) => {
                 numColumns={1}
                 ListEmptyComponent={() => (
                     <View>
-                        <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionsScreen.emptyListTxt}</Text>
+                        <Text>{strings.transactionsScreen.emptyListTxt}</Text>
                     </View>
                 )}
             />

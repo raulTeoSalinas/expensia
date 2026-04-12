@@ -2,14 +2,14 @@
 import { useState } from "react";
 import {
     View,
-    Text,
     StyleSheet,
     TextInput,
     TouchableOpacity,
     Dimensions
 } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Components
 import GradientText from "../components/TextGradient";
@@ -50,7 +50,7 @@ const CreateUserScreen = ({ navigation }) => {
             <View style={styles.mainContainer}>
 
                 <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.txtWelcome}>{strings.createUserScreen.welcomeTxt}</Text>
+                    <Text weight="bold" color="primary" style={styles.txtWelcome}>{strings.createUserScreen.welcomeTxt}</Text>
                     <GradientText style={styles.txtWelcome}>Expensia</GradientText>
                 </View>
                 <Text style={styles.txtName}>{strings.createUserScreen.chooseLanguage}</Text>
@@ -64,7 +64,7 @@ const CreateUserScreen = ({ navigation }) => {
                 </View>
                 <Text style={styles.txtName}>{strings.createUserScreen.enterFName}</Text>
                 <TextInput
-                    style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
+                    style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: Colors.error, borderWidth: 2 }]}
                     onChangeText={handleChangeText}
                     value={text}
                     maxLength={18}
@@ -77,7 +77,7 @@ const CreateUserScreen = ({ navigation }) => {
 
                 <TouchableOpacity onPress={handleNavigateAccounts}>
                     <View style={styles.btnContainer}>
-                        <Text style={{ fontFamily: 'Poppins-Light', color: Colors.light }}>{strings.createUserScreen.acceptBtn}</Text>
+                        <Text color="light">{strings.createUserScreen.acceptBtn}</Text>
                     </View>
                 </TouchableOpacity>
 
@@ -93,22 +93,20 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         borderTopLeftRadius: width - 100,
         borderBottomRightRadius: width - 100
     },
     txtWelcome: {
         fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary,
         fontSize: 25,
         marginBottom: '10%'
     },
     txtName: {
-        fontFamily: 'Poppins-Light',
         marginTop: 20
     },
     txtInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         width: 270,
         borderRadius: 10,

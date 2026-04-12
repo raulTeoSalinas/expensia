@@ -1,18 +1,18 @@
 // React / React-Native
 import {
     View,
-    Text,
     TouchableOpacity,
     Image,
     StyleSheet,
     Platform
 } from 'react-native';
+import Text from '@components/Text';
 // Navigation
 import { useNavigation } from "@react-navigation/native";
 // Components
 import GradientText from './TextGradient';
 // Utils
-import Colors from '../utils/colors';
+import Colors from '../constants/colors';
 
 
 const Header = ({ darkText, gradientText, addBtn }) => {
@@ -26,8 +26,8 @@ const Header = ({ darkText, gradientText, addBtn }) => {
     return (
         <View style={styles.welcomeContainer}>
             <View style={styles.rowContainer}>
-                <Text style={styles.welcome}>{darkText}</Text>
-                <GradientText style={styles.welcome}>{gradientText}</GradientText>
+                <Text weight="bold" color="primary" style={styles.welcome}>{darkText}</Text>
+                <GradientText weight="bold" style={styles.welcome}>{gradientText}</GradientText>
             </View>
             {addBtn &&
                 <TouchableOpacity style={styles.opacity} onPress={handleFloatBtnNavigate} >
@@ -43,8 +43,6 @@ export default Header;
 const styles = StyleSheet.create({
     welcome: {
         fontSize: 25,
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary
     },
     buttonIcon: {
         resizeMode: 'contain',

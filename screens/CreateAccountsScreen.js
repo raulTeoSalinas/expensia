@@ -2,7 +2,6 @@
 import { useState, useContext, useRef, useMemo, useCallback } from "react";
 import {
     View,
-    Text,
     StyleSheet,
     SafeAreaView,
     TextInput,
@@ -11,9 +10,10 @@ import {
     Image,
     ScrollView
 } from "react-native";
+import Text from '@components/Text';
 
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Components
 import GradientText from "../components/TextGradient";
@@ -158,14 +158,14 @@ const CreateAccountsScreen = ({ navigation, route }) => {
 
 
                 <View style={{ flexDirection: 'row', paddingHorizontal: 30 }}>
-                    <Text style={styles.txtWelcome}>{strings.createAccountsScreen.welcome}</Text>
+                    <Text weight="bold" color="primary" size="xl">{strings.createAccountsScreen.welcome}</Text>
                     <GradientText style={styles.txtWelcome}>{userName}</GradientText>
                 </View>
-                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-Light', fontSize: 18, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTxt}</Text>
-                <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 12, textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTDC}</Text>
+                <Text color="primary" size="l" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTxt}</Text>
+                <Text weight="bold" color="primary" size="s" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTDC}</Text>
                 {
                     accounts.length < 1 && (
-                        <Text style={{ color: "red", fontFamily: 'Poppins-SemiBold', fontSize: 16, textAlign: 'center', marginTop: 30, paddingHorizontal: 30 }}>{strings.createAccountsScreen.noAccounts}</Text>
+                        <Text weight="bold" color="error" style={{ fontSize: 16, textAlign: 'center', marginTop: 30, paddingHorizontal: 30 }}>{strings.createAccountsScreen.noAccounts}</Text>
                     )
                 }
                 {accounts.map((account, i) => (
@@ -174,10 +174,10 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                             <View style={styles.row}>
                                 <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
                                     <MaterialCommunityIcons name={account.icon} size={24} color={Colors.accent} />
-                                    <Text style={styles.txtAccount}>{account.name}</Text>
+                                    <Text color="white" style={styles.txtAccount}>{account.name}</Text>
                                 </View>
                                 <View>
-                                    <View style={{ flexDirection: 'row', backgroundColor: 'white', borderRadius: 10, justifyContent: 'center', alignItems: "center", padding: 4 }}>
+                                    <View style={{ flexDirection: 'row', backgroundColor: Colors.white, borderRadius: 10, justifyContent: 'center', alignItems: "center", padding: 4 }}>
                                         <MaterialIcons name="attach-money" size={20} color={Colors.primary} />
                                         <TextInput
                                             style={[styles.txtInput]}
@@ -194,21 +194,21 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                         </View>
 
                         <TouchableOpacity onPress={handleDeleteAccount.bind(null, account.id)}>
-                            <MaterialCommunityIcons name="trash-can-outline" size={28} color="red" style={{ marginLeft: 10 }} />
+                            <MaterialCommunityIcons name="trash-can-outline" size={28} color={Colors.error} style={{ marginLeft: 10 }} />
                         </TouchableOpacity>
                     </View>
                 ))}
                 <View style={{ alignItems: 'center' }}>
                     <TouchableOpacity style={styles.opacity} onPress={() => { handleOpenModal(); setTxtAccount("") }} >
                         <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
-                        <Text style={{ color: Colors.secondary, fontFamily: 'Poppins-Light' }}>{strings.createAccountsScreen.addAccountBtn}</Text>
+                        <Text color="secondary">{strings.createAccountsScreen.addAccountBtn}</Text>
                     </TouchableOpacity>
 
                 </View>
 
                 <View>
                     <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: '20%', marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
-                        <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light }}>{strings.createAccountsScreen.startBtn}</Text>
+                        <Text weight="bold" color="light">{strings.createAccountsScreen.startBtn}</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -219,21 +219,21 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                     ref={presentRef}
                     snapPoints={snapPoints}
                     enableDynamicSizing={false}
-                    handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
+                    handleIndicatorStyle={{ backgroundColor: Colors.sheetHandle }}
                     handleComponent={() => <View style={{ justifyContent: "center", alignItems: "center" }}>
-                        <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
+                        <View style={{ width: 40, height: 4, backgroundColor: Colors.sheetHandle, marginTop: 10, borderRadius: 2 }}>
                         </View>
                     </View>}
-                    backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+                    backgroundStyle={{ backgroundColor: Colors.sheetBackground, borderWidth: 1, borderColor: Colors.sheetBorder, borderRadius: 40 }}
                 >
                     <View style={{ alignItems: "flex-end", width: "95%" }}>
                         <TouchableOpacityMod onPress={() => closeModal()} >
-                            <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
+                            <MaterialCommunityIcons name="close" size={24} color={Colors.sheetHandle} />
                         </TouchableOpacityMod>
                     </View>
 
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>{strings.createAccountsScreen.modalAddAccountTitle}</Text>
+                        <Text weight="bold" color="primary" size="l" style={styles.modalTitle}>{strings.createAccountsScreen.modalAddAccountTitle}</Text>
                         <View style={styles.accountInputContainer}>
                             <MaterialCommunityIcons name={selectedIcon} size={24} color={Colors.accent} style={styles.icon} />
                             <BottomSheetTextInput
@@ -242,13 +242,13 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                                 value={txtAccount}
                                 returnKeyType='done'
                                 inputMode='text'
-                                placeholderTextColor="#bebebe"
+                                placeholderTextColor={Colors.placeholder}
                                 placeholder={strings.createAccountsScreen.accountName}
                                 blurOnSubmit
                                 maxLength={18}
                             />
                         </View>
-                        <Text style={styles.chooseIconText}>{strings.createAccountsScreen.chooseIconTxt}</Text>
+                        <Text weight="bold" style={styles.chooseIconText}>{strings.createAccountsScreen.chooseIconTxt}</Text>
                         <View style={styles.iconsContainer}>
                             <TouchableOpacityMod onPress={() => setSelectedIcon("bank")} style={[styles.iconButton, selectedIcon === "bank" && styles.selectedIconButton]}>
                                 <MaterialCommunityIcons name="bank" size={24} color={Colors.accent} />
@@ -268,7 +268,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                         </View>
                         <View style={styles.buttonsContainer}>
                             <TouchableOpacityMod onPress={handleAddAccount} style={styles.createButton}>
-                                <Text style={styles.createButtonText}>{strings.createAccountsScreen.createBtnTxt}</Text>
+                                <Text weight="bold" color="light" style={styles.createButtonText}>{strings.createAccountsScreen.createBtnTxt}</Text>
                             </TouchableOpacityMod>
                         </View>
                     </View>
@@ -292,8 +292,7 @@ const styles = StyleSheet.create({
     },
     txtWelcome: {
         fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary,
-        fontSize: 25
+        fontSize: 26
     },
     cardTotals: {
         flex: 1,
@@ -304,8 +303,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         backgroundColor: Colors.primary,
-        borderColor: 'white',
-        shadowColor: "#000",
+        borderColor: Colors.white,
+        shadowColor: Colors.shadow,
         shadowOffset: {
             width: 0,
             height: 4,
@@ -320,10 +319,8 @@ const styles = StyleSheet.create({
         justifyContent: "space-between"
     },
     txtAccount: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.light,
         includeFontPadding: false,
-        marginLeft: 10
+        marginLeft: 10,
     },
     txtInput: {
         width: 80,
@@ -339,7 +336,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     txtAccountInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         flex: 1,
         borderRadius: 10,
@@ -355,7 +352,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#06002e99',
+        backgroundColor: Colors.overlay,
     },
     modalContent: {
         width: '100%',
@@ -366,10 +363,7 @@ const styles = StyleSheet.create({
         paddingVertical: 25,
     },
     modalTitle: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary,
         textAlign: 'center',
-        fontSize: 18,
     },
     accountInputContainer: {
         flexDirection: 'row',
@@ -385,11 +379,10 @@ const styles = StyleSheet.create({
         marginRight: 20,
     },
     txtAccountInputError: {
-        borderColor: 'red',
+        borderColor: Colors.error,
         borderWidth: 2,
     },
     chooseIconText: {
-        fontFamily: 'Poppins-SemiBold',
         marginTop: 15,
     },
     iconsContainer: {
@@ -412,18 +405,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 20,
     },
-    cancelButton: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        borderRadius: 10,
-        width: "40%",
-
-    },
-    cancelButtonText: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.secondary,
-        textAlign: 'center',
-    },
     createButton: {
         backgroundColor: Colors.secondary,
         paddingHorizontal: 20,
@@ -433,8 +414,6 @@ const styles = StyleSheet.create({
         width: "95%",
     },
     createButtonText: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.light,
         textAlign: 'center',
     },
 

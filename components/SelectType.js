@@ -2,12 +2,12 @@
 import { useState, useContext } from "react";
 import {
     View,
-    Text,
     TouchableOpacity,
     StyleSheet
 } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
@@ -32,7 +32,7 @@ const SelectType = ({ getTypeSelected, resetFlat }) => {
 
                 <View style={[styles.container, typeSelected === 'all' && { backgroundColor: Colors.secondary }]}>
 
-                    <Text style={[styles.txt, typeSelected === 'all' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeAll}</Text>
+                    <Text weight="bold" color={typeSelected === 'all' ? 'light' : 'primary'} style={styles.txt}>{strings.transactionsScreen.selectTypeAll}</Text>
 
                 </View>
 
@@ -41,7 +41,7 @@ const SelectType = ({ getTypeSelected, resetFlat }) => {
 
                 <View style={[styles.container, typeSelected === 'income' && { backgroundColor: Colors.secondary }]}>
 
-                    <Text style={[styles.txt, typeSelected === 'income' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeIncome}</Text>
+                    <Text weight="bold" color={typeSelected === 'income' ? 'light' : 'primary'} style={styles.txt}>{strings.transactionsScreen.selectTypeIncome}</Text>
 
                 </View>
 
@@ -50,7 +50,7 @@ const SelectType = ({ getTypeSelected, resetFlat }) => {
 
                 <View style={[styles.container, typeSelected === 'expenses' && { backgroundColor: Colors.secondary }]}>
 
-                    <Text style={[styles.txt, typeSelected === 'expenses' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeExpenses}</Text>
+                    <Text weight="bold" color={typeSelected === 'expenses' ? 'light' : 'primary'} style={styles.txt}>{strings.transactionsScreen.selectTypeExpenses}</Text>
 
                 </View>
 
@@ -59,7 +59,7 @@ const SelectType = ({ getTypeSelected, resetFlat }) => {
 
                 <View style={[styles.container, typeSelected === 'loans' && { backgroundColor: Colors.secondary }]}>
 
-                    <Text style={[styles.txt, typeSelected === 'loans' && { color: Colors.light }]}>{strings.transactionsScreen.selectTypeLoans}</Text>
+                    <Text weight="bold" color={typeSelected === 'loans' ? 'light' : 'primary'} style={styles.txt}>{strings.transactionsScreen.selectTypeLoans}</Text>
 
                 </View>
 
@@ -81,8 +81,6 @@ const styles = StyleSheet.create({
 
     },
     txt: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary,
         includeFontPadding: false
     },
     rowContainer: {

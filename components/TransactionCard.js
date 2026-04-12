@@ -3,12 +3,12 @@ import { useContext } from "react";
 import {
     TouchableOpacity,
     View,
-    Text,
     StyleSheet,
     Dimensions
 } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import formatNumberWithCommas from "../utils/formatNumberWithCommas";
 import { es, en } from "../utils/languages";
 // Navigation
@@ -39,27 +39,27 @@ const TransactionCard = ({ id, type, amount, account, date, category, descriptio
             }
             ]}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: 'center', borderBottomWidth: 1, borderColor: Colors.light }}>
-                    <Text style={styles.txtAmount}>
+                    <Text weight="bold" color="light" size="l">
                         {type === 'i' ? strings.transactionCard.typeIncome
                             : type === 'e' ? strings.transactionCard.typeExpense
                                 : strings.transactionCard.typeLoan}
                     </Text>
 
-                    <Text style={styles.txtAmount}>${formatNumberWithCommas(amount)}</Text>
+                    <Text weight="bold" color="light" size="l">${formatNumberWithCommas(amount)}</Text>
                 </View>
 
                 <View style={{ flexDirection: 'row', justifyContent: "space-between", marginTop: 5 }}>
-                    <Text style={styles.txtBold}>{strings.transactionCard.account}<Text style={styles.txt}>{account.name}</Text></Text>
-                    <Text style={styles.txtBold}>{strings.transactionCard.date}<Text style={styles.txt}>{date}</Text></Text>
+                    <Text weight="bold" color="light">{strings.transactionCard.account}<Text color="light">{account.name}</Text></Text>
+                    <Text weight="bold" color="light">{strings.transactionCard.date}<Text color="light">{date}</Text></Text>
                 </View>
                 <View style={{ flexDirection: "row", justifyContent: 'flex-start' }}>
-                    <Text style={styles.txtBold}>{strings.transactionCard.category}
-                        <Text style={styles.txt}>{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
+                    <Text weight="bold" color="light">{strings.transactionCard.category}
+                        <Text color="light">{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
                     </Text>
                 </View>
                 <View style={{ flexDirection: "row", justifyContent: 'flex-start' }}>
-                    <Text style={styles.txtBold}>{strings.transactionCard.description}
-                        <Text style={styles.txt}> {description.length > 15 ? description.slice(0, 20) + '...' : description || strings.transactionCard.noDescription}</Text>
+                    <Text weight="bold" color="light">{strings.transactionCard.description}
+                        <Text color="light"> {description.length > 15 ? description.slice(0, 20) + '...' : description || strings.transactionCard.noDescription}</Text>
                     </Text>
                 </View>
             </View>
@@ -78,19 +78,6 @@ const styles = StyleSheet.create({
         borderWidth: 3,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        borderColor: '#ffffff'
+        borderColor: Colors.white
     },
-    txtBold: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.light,
-    },
-    txt: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.light,
-    },
-    txtAmount: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.light,
-        fontSize: 18
-    }
 })

@@ -2,7 +2,6 @@
 import { useState, useEffect, useContext, useRef, useMemo, useCallback } from "react";
 import {
     View,
-    Text,
     StyleSheet,
     TouchableOpacity,
     TextInput,
@@ -11,10 +10,11 @@ import {
     Alert,
     Platform
 } from "react-native";
+import Text from '@components/Text';
 //Icons
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
@@ -209,13 +209,13 @@ const WalletScreen = ({ navigation }) => {
 
             <Header darkText={strings.walletScreen.headerDarkTxt} gradientText={strings.walletScreen.headerGradientTxt} />
 
-            <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 18, textAlign: 'justify', paddingHorizontal: 30 }}>{strings.walletScreen.title1}</Text>
+            <Text weight="bold" color="primary" size="l" style={{ textAlign: 'justify', paddingHorizontal: 30 }}>{strings.walletScreen.title1}</Text>
             <View style={styles.cardTransfer}>
 
                 <View style={styles.row}>
-                    <Text style={styles.label}>{strings.walletScreen.amountTxt}</Text>
+                    <Text color="light">{strings.walletScreen.amountTxt}</Text>
                     <TextInput
-                        style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
+                        style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: Colors.error, borderWidth: 2 }]}
                         onChangeText={handleChangeTextAmount}
                         value={textAmount}
                         keyboardType="decimal-pad"
@@ -224,35 +224,35 @@ const WalletScreen = ({ navigation }) => {
                     />
                 </View>
                 <View style={styles.row}>
-                    <Text style={styles.label}>{strings.walletScreen.fromTxt}</Text>
+                    <Text color="light">{strings.walletScreen.fromTxt}</Text>
                     <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalFromVisible(!modalFromVisible)}>
-                        <Text style={styles.txtFakeInput}>{selectedFrom.name} </Text>
+                        <Text weight="bold" color="primary" style={styles.txtFakeInput}>{selectedFrom.name} </Text>
                         <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.row}>
-                    <Text style={styles.label}>{strings.walletScreen.toTxt}</Text>
+                    <Text color="light">{strings.walletScreen.toTxt}</Text>
                     <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalToVisible(!modalToVisible)}>
-                        <Text style={styles.txtFakeInput}>{selectedTo.name} </Text>
+                        <Text weight="bold" color="primary" style={styles.txtFakeInput}>{selectedTo.name} </Text>
                         <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
                     </TouchableOpacity>
                 </View>
 
                 <View style={{ flexDirection: 'row', justifyContent: 'center' }}>
                     <TouchableOpacity onPress={handleTransfer} style={styles.btnTransfer}>
-                        <Text style={styles.txtTitleWhite}>{isTranferring ? strings.walletScreen.btnTransfering : strings.walletScreen.btnTransfer}</Text>
+                        <Text weight="bold" color="light" style={styles.txtTitleWhite}>{isTranferring ? strings.walletScreen.btnTransfering : strings.walletScreen.btnTransfer}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <Text style={{ color: Colors.primary, fontFamily: 'Poppins-SemiBold', fontSize: 18, textAlign: 'justify', marginTop: 25, paddingHorizontal: 30 }}>{strings.walletScreen.title2}</Text>
+            <Text weight="bold" color="primary" size="l" style={{ textAlign: 'justify', marginTop: 25, paddingHorizontal: 30 }}>{strings.walletScreen.title2}</Text>
             {userAccounts.map((account, i) => (
 
                 <TouchableOpacity key={i} onPress={openEditAccount.bind(null, account)} style={styles.cardTotals}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
                             <MaterialCommunityIcons name={account.icon} size={24} color={Colors.accent} />
-                            <Text style={styles.txtAccount}>{account.name}</Text>
+                            <Text color="light" style={styles.txtAccount}>{account.name}</Text>
                         </View>
                         <MaterialCommunityIcons name="lead-pencil" size={28} color={Colors.light} />
                     </View>
@@ -263,7 +263,7 @@ const WalletScreen = ({ navigation }) => {
                 <TouchableOpacity style={styles.opacity} onPress={openAddAccount} >
 
                     <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
-                    <Text style={{ color: Colors.secondary, fontFamily: 'Poppins-Light' }}>{strings.walletScreen.addAccountBtn}</Text>
+                    <Text color="secondary">{strings.walletScreen.addAccountBtn}</Text>
                 </TouchableOpacity>
 
             </View>
@@ -289,28 +289,28 @@ const WalletScreen = ({ navigation }) => {
                 ref={presentRef}
                 snapPoints={snapPoints}
                 enableDynamicSizing={false}
-                handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
+                handleIndicatorStyle={{ backgroundColor: Colors.sheetHandle }}
                 handleComponent={() =>
                     <View style={{ justifyContent: "center", alignItems: "center" }}>
-                        <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
+                        <View style={{ width: 40, height: 4, backgroundColor: Colors.sheetHandle, marginTop: 10, borderRadius: 2 }}>
                         </View>
                     </View>}
-                backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+                backgroundStyle={{ backgroundColor: Colors.sheetBackground, borderWidth: 1, borderColor: Colors.sheetBorder, borderRadius: 40 }}
             >
                 <View style={{ justifyContent: isEdited ? "space-between" : "flex-end", width: "95%", flexDirection: "row" }}>
                     {isEdited &&
                         <TouchableOpacity style={{ marginLeft: 20 }} onPress={handleDeleteAccount}>
-                            <MaterialCommunityIcons name="trash-can" color='red' size={24} />
+                            <MaterialCommunityIcons name="trash-can" color={Colors.error} size={24} />
                         </TouchableOpacity>
                     }
                     <TouchableOpacityMod onPress={() => closeModal()} >
-                        <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
+                        <MaterialCommunityIcons name="close" size={24} color={Colors.sheetHandle} />
                     </TouchableOpacityMod>
                 </View>
                 <View style={{ width: '100%', borderRadius: 10, overflow: "hidden", borderTopRightRadius: 10, paddingHorizontal: 20, paddingBottom: 25 }}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
                         <View style={{ flex: 1, justifyContent: 'center' }}>
-                            <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.primary, textAlign: 'center', fontSize: 18 }}>
+                            <Text weight="bold" color="primary" size="l" style={{ textAlign: 'center' }}>
                                 {isEdited ? strings.walletScreen.modalEditAccountTitle : strings.walletScreen.modalAddAccountTitle}
                             </Text>
                         </View>
@@ -319,7 +319,7 @@ const WalletScreen = ({ navigation }) => {
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: Colors.primary, paddingVertical: 10, paddingHorizontal: 20, borderRadius: 20, marginTop: 10 }}>
                         <MaterialCommunityIcons name={selectedIcon} size={24} color={Colors.accent} style={{ marginRight: 20 }} />
                         <BottomSheetTextInput
-                            style={[styles.txtAccountInput, txtAccountEmptyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
+                            style={[styles.txtAccountInput, txtAccountEmptyLoad ? null : { borderColor: Colors.error, borderWidth: 2 }]}
                             onChangeText={handleChangeTxtAccount}
                             value={txtAccount}
                             returnKeyType='done'
@@ -331,12 +331,12 @@ const WalletScreen = ({ navigation }) => {
 
                     </View>
                     <View style={{ flexDirection: "row", marginTop: 16 }}>
-                        <Text style={{ fontFamily: 'Poppins-SemiBold', marginRight: 4 }}>{strings.walletScreen.isCC}</Text>
+                        <Text weight="bold" style={{ marginRight: 4 }}>{strings.walletScreen.isCC}</Text>
                         <Knob isActive={isCC} onPress={changeIsCC} />
 
                     </View>
 
-                    <Text style={{ fontFamily: 'Poppins-SemiBold', marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
+                    <Text weight="bold" style={{ marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
                         <TouchableOpacity onPress={() => setSelectedIcon("bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bank" && { backgroundColor: Colors.primary }]}>
                             <MaterialCommunityIcons name="bank" size={24} color={Colors.accent} />
@@ -357,7 +357,7 @@ const WalletScreen = ({ navigation }) => {
 
                     <View style={{ flexDirection: "row", justifyContent: 'space-around', alignItems: 'center', marginTop: 20 }}>
                         <TouchableOpacity onPress={handleAddAccount} style={{ backgroundColor: Colors.secondary, paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "95%" }}>
-                            <Text style={{ fontFamily: 'Poppins-SemiBold', color: Colors.light, textAlign: 'center' }}>{isEdited ? strings.walletScreen.saveBtnTxt : strings.walletScreen.createBtnTxt}</Text>
+                            <Text weight="bold" color="light" style={{ textAlign: 'center' }}>{isEdited ? strings.walletScreen.saveBtnTxt : strings.walletScreen.createBtnTxt}</Text>
                         </TouchableOpacity>
                     </View>
 
@@ -379,12 +379,6 @@ const styles = StyleSheet.create({
         marginRight: '2%',
         justifyContent: 'space-between'
     },
-    welcome: {
-        fontSize: 25,
-        marginTop: Platform.OS === 'ios' ? 20 : 40,
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary
-    },
     cardTransfer: {
         backgroundColor: Colors.primary,
         marginHorizontal: '6%',
@@ -393,8 +387,8 @@ const styles = StyleSheet.create({
         paddingVertical: '8%',
         borderWidth: 1,
         borderRadius: 20,
-        borderColor: 'white',
-        shadowColor: "#000",
+        borderColor: Colors.white,
+        shadowColor: Colors.shadow,
         shadowOffset: {
             width: 0,
             height: 4,
@@ -406,10 +400,7 @@ const styles = StyleSheet.create({
 
     },
     txtTitleWhite: {
-
-        color: Colors.light,
         textAlign: 'center',
-        fontFamily: 'Poppins-SemiBold',
         includeFontPadding: false
     },
     row: {
@@ -420,7 +411,7 @@ const styles = StyleSheet.create({
         marginHorizontal: '8%'
     },
     viewFakeInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         width: '70%',
         borderRadius: 10,
@@ -433,17 +424,10 @@ const styles = StyleSheet.create({
         includeFontPadding: false
     },
     txtFakeInput: {
-        fontFamily: 'Poppins-SemiBold',
         fontSize: 15,
-        color: Colors.primary
-
-    },
-    label: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.light,
     },
     txtInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         width: '70%',
         borderRadius: 10,
@@ -471,8 +455,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20
     },
     txtAccount: {
-        color: Colors.light,
-        fontFamily: 'Poppins-Light',
         includeFontPadding: false,
         marginLeft: 10
     },
@@ -496,7 +478,7 @@ const styles = StyleSheet.create({
         marginTop: Platform.OS === 'ios' ? 0 : 30,
     },
     txtAccountInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         flex: 1,
         borderRadius: 10,

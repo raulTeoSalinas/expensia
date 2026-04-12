@@ -3,13 +3,11 @@ import { useState, useContext, useRef, useMemo, useCallback, useEffect } from "r
 import {
     Modal,
     View,
-    Text,
     TouchableOpacity,
     StyleSheet
-}
-    from "react-native";
+} from "react-native";
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { calendarEN, calendarES, theme } from "../utils/calendarSettings";
 import { es, en } from "../utils/languages";
 // Third Party Libraries
@@ -63,16 +61,16 @@ const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDat
             enableDynamicSizing={false}
             enableDismissOnClose
             onDismiss={() => setModalVisible(false)}
-            handleIndicatorStyle={{ backgroundColor: "#d6d5dd" }}
+            handleIndicatorStyle={{ backgroundColor: Colors.sheetHandle }}
             handleComponent={() => <View style={{ justifyContent: "center", alignItems: "center" }}>
-                <View style={{ width: 40, height: 4, backgroundColor: "#d6d5dd", marginTop: 10, borderRadius: 2 }}>
+                <View style={{ width: 40, height: 4, backgroundColor: Colors.sheetHandle, marginTop: 10, borderRadius: 2 }}>
                 </View>
             </View>}
-            backgroundStyle={{ backgroundColor: "#fff", borderWidth: 1, borderColor: "#d6d5dd", borderRadius: 40 }}
+            backgroundStyle={{ backgroundColor: Colors.sheetBackground, borderWidth: 1, borderColor: Colors.sheetBorder, borderRadius: 40 }}
         >
             <View style={{ alignItems: "flex-end", width: "95%" }}>
                 <TouchableOpacityMod onPress={() => closeModal()} >
-                    <MaterialCommunityIcons name="close" size={24} color={"#d6d5dd"} />
+                    <MaterialCommunityIcons name="close" size={24} color={Colors.sheetHandle} />
                 </TouchableOpacityMod>
             </View>
 
@@ -100,25 +98,6 @@ const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDat
 export default ModalDate;
 
 const styles = StyleSheet.create({
-    btnContainer: {
-        backgroundColor: Colors.secondary,
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-
-    },
-    txtBtn: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.light,
-        textAlign: 'center'
-    },
-    background: {
-        backgroundColor: '#06002e99',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
     mainContainer: {
         width: '100%',
         borderTopLeftRadius: 10,

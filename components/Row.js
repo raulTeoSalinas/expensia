@@ -1,17 +1,18 @@
 // React / React-Native
-import { View, Text, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
+import Text from '@components/Text';
 // Icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 
 const Row = ({ description, value, icon }) => {
 
 	return (
 		<View style={styles.rows}>
-			<Text style={styles.text}>{description}</Text>
+			<Text color="light" size="m">{description}</Text>
 			<View style={styles.moneyIcon}>
-				<Text style={styles.textBold}>{value}</Text>
+				<Text weight="bold" color="light" style={styles.textBold}>{value}</Text>
 				<MaterialCommunityIcons name={icon} size={24} color={Colors.accent} />
 			</View>
 		</View>
@@ -27,14 +28,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		marginVertical: 4
 	},
-	text: {
-		fontFamily: 'Poppins-Light',
-		color: Colors.light,
-		fontSize: 14
-	},
 	textBold: {
-		fontFamily: 'Poppins-SemiBold',
-		color: Colors.light,
 		marginRight: 10
 	},
 	moneyIcon: {

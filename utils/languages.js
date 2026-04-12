@@ -1,7 +1,7 @@
 export const es = {
     appJS: {
         summary: "Resumen",
-        transactions: "Transac...",
+        transactions: "Transacciones",
         wallet: "Cartera",
         settings: "Ajustes"
     },
@@ -143,7 +143,7 @@ export const es = {
 export const en = {
     appJS: {
         summary: "Summary",
-        transactions: "Transac...",
+        transactions: "Transactions",
         wallet: "Wallet",
         settings: "Settings"
     },

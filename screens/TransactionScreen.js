@@ -5,13 +5,13 @@ import {
     Pressable,
     SafeAreaView,
     StyleSheet,
-    Text,
     TextInput,
     TouchableOpacity,
     View,
     ScrollView,
     Alert
 } from "react-native";
+import Text from '@components/Text';
 //Icons
 import { MaterialIcons } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
@@ -25,7 +25,7 @@ import HeaderTitle from "../components/HeaderTitle";
 //Utils
 import getCurrentDate from "../utils/getCurrentDay";
 import getNextId from "../utils/getNextId";
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 //Context
 import { ExpensiaContext } from "../context/expensiaContext";
@@ -180,13 +180,13 @@ const TransactionScreen = ({ navigation, route }) => {
             navigation.setOptions({
                 headerTitle: ({ children }) => (
                     <>
-                        <Text style={{ fontFamily: 'Poppins-SemiBold', fontSize: 20, color: Colors.primary }}>
+                        <Text weight="bold" color="primary" style={{ fontSize: 20 }}>
                             {strings.transactionScreen.headerEdit}
                         </Text>
                         <GradientText style={{ fontFamily: 'Poppins-SemiBold', fontSize: 20 }}>{children}</GradientText></>),
                 headerRight: () => (
                     <TouchableOpacity onPress={() => setModalDeleteTranVisible(!modalDeleteTranVisible)}>
-                        <Ionicons name="trash-outline" size={24} color="red" />
+                        <Ionicons name="trash-outline" size={24} color={Colors.error} />
                     </TouchableOpacity>
 
                 ),
@@ -279,7 +279,7 @@ const TransactionScreen = ({ navigation, route }) => {
                             <View style={{ flexDirection: "row", alignItems: 'center' }}>
                                 <MaterialIcons name="attach-money" size={24} color={Colors.primary} />
                                 <TextInput
-                                    style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: 'red', borderWidth: 2 }]}
+                                    style={[styles.txtInput, txtEmpyLoad ? null : { borderColor: Colors.error, borderWidth: 2 }]}
                                     onChangeText={handleChangeText}
                                     value={text}
                                     keyboardType="decimal-pad"
@@ -288,25 +288,25 @@ const TransactionScreen = ({ navigation, route }) => {
                             </View>
                         </View>
                         <View style={styles.row}>
-                            <Text style={styles.label}>{strings.transactionScreen.account}</Text>
+                            <Text weight="bold" color="primary" size="l">{strings.transactionScreen.account}</Text>
                             <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectVisible(!modalSelectVisible)}>
-                                <Text style={styles.txtFakeInput}>{selectedValue.name}</Text>
+                                <Text color="primary" style={styles.txtFakeInput}>{selectedValue.name}</Text>
                                 <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
                             </TouchableOpacity>
                         </View>
 
                         <View style={styles.row}>
-                            <Text style={styles.label}>{strings.transactionScreen.date}</Text>
+                            <Text weight="bold" color="primary" size="l">{strings.transactionScreen.date}</Text>
                             <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalDateVisible(!modalDateVisible)}>
-                                <Text style={styles.txtFakeInput}>{selectedDate}</Text>
+                                <Text color="primary" style={styles.txtFakeInput}>{selectedDate}</Text>
                                 <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
                             </TouchableOpacity>
                         </View>
 
                         <View style={styles.row}>
-                            <Text style={styles.label}>{strings.transactionScreen.category}</Text>
+                            <Text weight="bold" color="primary" size="l">{strings.transactionScreen.category}</Text>
                             <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectCategoryVisible(!modalSelectCategoryVisible)}>
-                                <Text style={styles.txtFakeInput}>
+                                <Text color="primary" style={styles.txtFakeInput}>
                                     {
                                         selectedCategory?.nameEN && user && user.language === "en"
                                             ? selectedCategory.nameEN.length > 10
@@ -322,7 +322,7 @@ const TransactionScreen = ({ navigation, route }) => {
                         </View>
 
                         <View style={{ marginTop: '8%', marginHorizontal: '9%' }}>
-                            <Text style={[styles.label, { marginBottom: 10 }]}>{strings.transactionScreen.description} <Text style={{ fontFamily: 'Poppins-Light' }}>{strings.transactionScreen.optional}</Text></Text>
+                            <Text weight="bold" color="primary" size="l" style={{ marginBottom: 10 }}>{strings.transactionScreen.description} <Text>{strings.transactionScreen.optional}</Text></Text>
                             <TextInput
                                 style={[styles.txtInput, styles.txtDescription]}
                                 onChangeText={handleChangeTxtDescription}
@@ -337,7 +337,7 @@ const TransactionScreen = ({ navigation, route }) => {
 
                         <TouchableOpacity style={styles.touchBtn} onPress={handleSaveAndGoBack}>
                             <View style={[styles.btnContainer, isSaving && { backgroundColor: Colors.accent }]}>
-                                <Text style={styles.txtBtn}>{isSaving ? strings.transactionScreen.savingTxt : strings.transactionScreen.saveBtn}</Text>
+                                <Text color="light" style={styles.txtBtn}>{isSaving ? strings.transactionScreen.savingTxt : strings.transactionScreen.saveBtn}</Text>
                             </View>
                         </TouchableOpacity>
 
@@ -378,8 +378,8 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 20,
         backgroundColor: Colors.primary,
-        borderColor: 'white',
-        shadowColor: "#000",
+        borderColor: Colors.white,
+        shadowColor: Colors.shadow,
         shadowOffset: {
             width: 0,
             height: 4,
@@ -389,13 +389,8 @@ const styles = StyleSheet.create({
 
         elevation: 12,
     },
-    label: {
-        fontFamily: 'Poppins-SemiBold',
-        fontSize: 18,
-        color: Colors.primary,
-    },
     txtInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         width: 150,
         borderRadius: 10,
@@ -414,7 +409,7 @@ const styles = StyleSheet.create({
         marginHorizontal: '9%'
     },
     viewFakeInput: {
-        backgroundColor: 'white',
+        backgroundColor: Colors.white,
         height: 40,
         width: 150,
         borderRadius: 10,
@@ -440,8 +435,6 @@ const styles = StyleSheet.create({
 
     },
     txtBtn: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.light,
         textAlign: 'center'
     },
     txtDescription: {

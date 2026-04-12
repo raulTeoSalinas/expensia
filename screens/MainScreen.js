@@ -2,16 +2,16 @@
 import { useState, useEffect, useContext } from "react";
 import {
 	Platform,
-	Text,
 	StyleSheet,
 	View,
 	TouchableOpacity
 } from "react-native";
+import Text from '@components/Text';
 // Third Party Libraries
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 // Utils
 import { calendarES, calendarEN, theme } from "../utils/calendarSettings";
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import formatNumberWithCommas from "../utils/formatNumberWithCommas";
 import getCurrentDate from "../utils/getCurrentDay";
 import { es, en } from "../utils/languages";
@@ -137,7 +137,7 @@ const MainScreen = ({ navigation }) => {
 
 
 	const series = [123, 321, 123, 789, 537]
-	const sliceColor = ['#fbd203', '#ffb300']
+	const sliceColor = Colors.miniChartSlices
 
 	return (
 		<ScreenContainer>
@@ -152,11 +152,11 @@ const MainScreen = ({ navigation }) => {
 			<View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
 				<TouchableOpacity onPress={handleTransfer} style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<MaterialCommunityIcons name="bank-transfer" size={28} color={Colors.secondary} />
-					<Text style={{ fontFamily: 'Poppins-SemiBold' }}>{strings.mainScreen.transferBtn}</Text>
+					<Text weight="bold">{strings.mainScreen.transferBtn}</Text>
 				</TouchableOpacity>
 				<TouchableOpacity onPress={handleHideTotals} style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<MaterialCommunityIcons name={userDisplay && !userDisplay.privacy ? "eye" : "eye-off"} size={24} color={Colors.secondary} />
-					<Text style={{ fontFamily: 'Poppins-SemiBold' }}>{strings.mainScreen.hideBtn}</Text>
+					<Text weight="bold">{strings.mainScreen.hideBtn}</Text>
 				</TouchableOpacity>
 			</View>
 
@@ -177,15 +177,15 @@ const MainScreen = ({ navigation }) => {
 			<View style={styles.markedContainer}>
 				<View style={styles.containerLabelMarked}>
 					<View style={[styles.squareMarked, { backgroundColor: Colors.secondary }]}></View>
-					<Text style={styles.txtMarked}>{strings.transactionsScreen.selectTypeIncome}</Text>
+					<Text color="primary">{strings.transactionsScreen.selectTypeIncome}</Text>
 				</View>
 				<View style={styles.containerLabelMarked}>
 					<View style={[styles.squareMarked, { backgroundColor: Colors.accent }]}></View>
-					<Text style={styles.txtMarked}>{strings.transactionsScreen.selectTypeExpenses}</Text>
+					<Text color="primary">{strings.transactionsScreen.selectTypeExpenses}</Text>
 				</View>
 				<View style={styles.containerLabelMarked}>
 					<View style={[styles.squareMarked, { backgroundColor: Colors.primary }]}></View>
-					<Text style={styles.txtMarked}>{strings.transactionsScreen.selectTypeLoans}</Text>
+					<Text color="primary">{strings.transactionsScreen.selectTypeLoans}</Text>
 				</View>
 			</View>
 			<View style={styles.pieChartContainer}>
@@ -212,8 +212,8 @@ const styles = StyleSheet.create({
 		borderWidth: 1,
 		borderRadius: 20,
 		backgroundColor: Colors.primary,
-		borderColor: 'white',
-		shadowColor: "#000",
+		borderColor: Colors.white,
+		shadowColor: Colors.shadow,
 		shadowOffset: {
 			width: 0,
 			height: 4,
@@ -222,12 +222,6 @@ const styles = StyleSheet.create({
 		shadowRadius: 7.49,
 
 		elevation: 12,
-	},
-	welcome: {
-		fontSize: 25,
-		marginTop: Platform.OS === 'ios' ? 0 : 40,
-		fontFamily: 'Poppins-SemiBold',
-		color: Colors.primary
 	},
 	buttonIcon: {
 		resizeMode: 'contain',
@@ -245,10 +239,6 @@ const styles = StyleSheet.create({
 		marginTop: "2%",
 		marginBottom: '5%',
 
-	},
-	txtMarked: {
-		fontFamily: 'Poppins-Light',
-		color: Colors.primary
 	},
 	containerLabelMarked: {
 		flexDirection: 'row',

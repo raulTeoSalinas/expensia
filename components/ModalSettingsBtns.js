@@ -2,13 +2,13 @@
 import { useContext } from "react";
 import {
     Modal,
-    Text,
     TouchableOpacity,
     StyleSheet,
     View
 } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
@@ -32,15 +32,15 @@ const ModalSettingsBtns = ({ setModalVisible, modalVisible, children, warning, t
 
             <View style={styles.background}>
                 <View style={styles.mainContainer}>
-                    <Text style={styles.title}>{title}</Text>
+                    <Text weight="bold" size="l" style={styles.title}>{title}</Text>
                     {children}
                     <View style={styles.actionRow}>
                         <TouchableOpacity style={styles.opacities} onPress={() => setModalVisible(!modalVisible)}>
                             <Text style={styles.txtCancel}>{strings.settingsScreen.cancelBtn}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={actionAccept} style={styles.opacities}>
-                            <View style={[styles.btnAccept, warning && { backgroundColor: 'red' }]}>
-                                <Text style={styles.txtAccept}>{warning ? strings.settingsScreen.deleteBtn : strings.settingsScreen.acceptBtn}</Text>
+                            <View style={[styles.btnAccept, warning && { backgroundColor: Colors.error }]}>
+                                <Text weight="bold" color="light" style={styles.txtAccept}>{warning ? strings.settingsScreen.deleteBtn : strings.settingsScreen.acceptBtn}</Text>
                             </View>
                         </TouchableOpacity>
                     </View>
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#06002e99'
+        backgroundColor: Colors.overlay
     },
     mainContainer: {
         width: '90%',
@@ -73,13 +73,9 @@ const styles = StyleSheet.create({
         marginTop: '8%'
     },
     txtCancel: {
-        fontFamily: 'Poppins-Light',
-        color: Colors.secondary,
         includeFontPadding: false
     },
     txtAccept: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.light,
         includeFontPadding: false
     },
     opacities: {
@@ -95,8 +91,6 @@ const styles = StyleSheet.create({
         paddingVertical: 5
     },
     title: {
-        fontFamily: 'Poppins-SemiBold',
-        fontSize: 18,
         textAlign: 'center',
         marginBottom: '8%'
     }

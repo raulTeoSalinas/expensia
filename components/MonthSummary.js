@@ -1,8 +1,9 @@
 // React / React-Native
 import { useContext } from "react";
-import { View, Text, StyleSheet, Platform } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
+import Text from '@components/Text';
 // Utils
-import Colors from "../utils/colors";
+import Colors from "../constants/colors";
 import formatNumberWithCommas from "../utils/formatNumberWithCommas";
 import { es, en } from "../utils/languages";
 // Context
@@ -27,7 +28,7 @@ const MonthSummary = ({ income, expenses }) => {
 
     return (
         <View style={styles.mainContainer}>
-            <Text style={styles.resumenTitle}>{strings.mainScreen.summaryTitle}</Text>
+            <Text weight="bold" color="primary" style={styles.resumenTitle}>{strings.mainScreen.summaryTitle}</Text>
             <View style={styles.barsContainer}>
                 <View style={[styles.incomeBar, { width: percentage + "%" }]}></View>
                 <View style={styles.expensesBar}></View>
@@ -35,11 +36,11 @@ const MonthSummary = ({ income, expenses }) => {
             <View style={styles.resumenDescription}>
                 <View style={styles.rowTitle}>
                     <View style={styles.dotIncome}></View>
-                    <Text style={styles.textIncomeExpenses}>{strings.mainScreen.income}<Text> {user && !user.privacy ? `$${formatNumberWithCommas(income)}` : '•••••'}</Text></Text>
+                    <Text weight="bold" color="primary">{strings.mainScreen.income}<Text weight="bold" color="primary"> {user && !user.privacy ? `$${formatNumberWithCommas(income)}` : '•••••'}</Text></Text>
                 </View>
                 <View style={styles.rowTitle}>
                     <View style={styles.dotExpenses}></View>
-                    <Text style={styles.textIncomeExpenses}>{strings.mainScreen.expenses}<Text> {user && !user.privacy ? `$${formatNumberWithCommas(expenses)}` : '•••••'}</Text></Text>
+                    <Text weight="bold" color="primary">{strings.mainScreen.expenses}<Text weight="bold" color="primary"> {user && !user.privacy ? `$${formatNumberWithCommas(expenses)}` : '•••••'}</Text></Text>
                 </View>
             </View>
         </View>
@@ -53,11 +54,8 @@ const styles = StyleSheet.create({
         marginTop: '5%'
     },
     resumenTitle: {
-        fontFamily: 'Poppins-SemiBold',
         fontSize: 15,
         textAlign: "center",
-        color: Colors.primary,
-
     },
     incomeBar: {
         backgroundColor: Colors.secondary,
@@ -78,10 +76,6 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         flexDirection: "row",
         height: 10
-    },
-    textIncomeExpenses: {
-        fontFamily: 'Poppins-SemiBold',
-        color: Colors.primary
     },
     resumenDescription: {
         flexDirection: "row",
