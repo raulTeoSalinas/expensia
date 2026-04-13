@@ -1,113 +1,141 @@
-// React / React-Native
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from 'react'
 import {
     TouchableOpacity,
     View,
     StyleSheet,
-    TextInput
-} from "react-native";
-import Text from '@components/Text';
-// AsyncStorage
-import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
-// Components
-import ScreenContainer from "../components/ScreenContainer";
-import Header from "../components/Header";
-import SettingsBtn from "../components/SettingsBtn";
-import ModalSettingsBtns from "../components/ModalSettingsBtns";
-// Utils
-import Colors from "../constants/colors";
-import { es, en } from "../utils/languages";
-// Context
-import { ExpensiaContext } from "../context/expensiaContext";
-// Icons
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+    TextInput,
+    Modal,
+    ActivityIndicator
+} from 'react-native'
+import Text from '@components/Text'
+import ScreenContainer from '../components/ScreenContainer'
+import Header from '../components/Header'
+import SettingsBtn from '../components/SettingsBtn'
+import ModalSettingsBtns from '../components/ModalSettingsBtns'
+import Colors from '../constants/colors'
+import { es, en } from '../utils/languages'
+import { ExpensiaContext } from '../context/expensiaContext'
+import { useAuth } from '../context/authContext'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+
+const TAPS_REQUIRED = 20
+const TAP_RESET_MS = 3000
 
 const SettingsScreen = ({ navigation }) => {
+    const { user, editUserLanguage, updateUserName, togglePrivacy, clearTransactions, deleteUser } = useContext(ExpensiaContext)
+    const { isLoggedIn, backendUser, login, logout } = useAuth()
+    const strings = user && user.language === 'en' ? en : es
 
-    const { clearTransactionsAsync, deleteUserAsync, editUserLanguageAsync, updateUserNameAsync, togglePrivacyAsyncStorage } = expensiaAsyncStorage;
-    const { user, editUserLanguage, updateUserName, togglePrivacy, clearTransactions, deleteUser } = useContext(ExpensiaContext);
-    const strings = user && user.language === "en" ? en : es;
+    const [modalVisibleLanguage, setModalVisibleLanguage] = useState(false)
+    const [modalVisibleEditName, setModalVisibleEditName] = useState(false)
+    const [modalVisibleDeleteTransactions, setModalVisibleDeleteTransactions] = useState(false)
+    const [modalVisibleDeleteAll, setModalVisibleDeleteAll] = useState(false)
+    const [showLoginModal, setShowLoginModal] = useState(false)
 
-    const [modalVisibleLanguage, setModalVisibleLanguage] = useState(false);
-    const [modalVisibleEditName, setModalVisibleEditName] = useState(false);
-    const [modalVisibleDeleteTransactions, setModalVisibleDeleteTransactions] = useState(false);
-    const [modalVisibleDeleteAll, setModalVisibleDeleteAll] = useState(false);
+    const [txtName, setTxtName] = useState('')
+    const [txtNameEmptyLoad, setTxtNameEmptyLoad] = useState(true)
 
-    const [txtName, setTxtName] = useState("");
-    const [txtNameEmptyLoad, setTxtNameEmptyLoad] = useState(true);
+    const [loginEmail, setLoginEmail] = useState('')
+    const [loginPassword, setLoginPassword] = useState('')
+    const [loginLoading, setLoginLoading] = useState(false)
+    const [loginError, setLoginError] = useState(null)
+
+    const tapCount = useRef(0)
+    const tapTimer = useRef(null)
 
     useEffect(() => {
-        setTxtName(user.name)
+        setTxtName(user?.name ?? '')
     }, [])
 
-    const handleChangeTxtName = (inputTxt) => {
-        setTxtName(inputTxt)
+    const handleTitlePress = () => {
+        clearTimeout(tapTimer.current)
+        tapCount.current += 1
+        if (tapCount.current >= TAPS_REQUIRED) {
+            tapCount.current = 0
+            setShowLoginModal(true)
+            return
+        }
+        tapTimer.current = setTimeout(() => { tapCount.current = 0 }, TAP_RESET_MS)
     }
 
     const handleChangeName = () => {
-        if (txtName === "") {
-            setTxtNameEmptyLoad(false);
+        if (txtName === '') {
+            setTxtNameEmptyLoad(false)
         } else {
-            updateUserName(txtName);
-            updateUserNameAsync(txtName);
-            setModalVisibleEditName(!modalVisibleEditName);
+            updateUserName(txtName)
+            setModalVisibleEditName(false)
         }
     }
 
     const handleChangeLanguage = (language) => {
-        editUserLanguage(language);
-        editUserLanguageAsync(language)
-        setModalVisibleLanguage(!modalVisibleLanguage)
+        editUserLanguage(language)
+        setModalVisibleLanguage(false)
     }
 
     const handleTogglePrivacy = () => {
-        togglePrivacyAsyncStorage();
-        togglePrivacy();
+        togglePrivacy()
     }
 
     const handleDeleteTransactions = () => {
-        clearTransactionsAsync();
-        clearTransactions();
-        setModalVisibleDeleteTransactions(!modalVisibleDeleteTransactions);
+        clearTransactions()
+        setModalVisibleDeleteTransactions(false)
     }
 
     const handleDeleteAll = async () => {
         try {
-            await clearTransactionsAsync();
-            clearTransactions();
-
-            await deleteUserAsync();
-            setModalVisibleDeleteAll(false);
-
-            deleteUser();
+            await deleteUser()
+            setModalVisibleDeleteAll(false)
         } catch (error) {
-            console.log("Error deleting user or clearing transactions:", error);
+            console.log('Error deleting user:', error)
         }
-    };
+    }
 
+    const handleLogin = async () => {
+        if (!loginEmail || !loginPassword) return
+        setLoginLoading(true)
+        setLoginError(null)
+        try {
+            await login(loginEmail, loginPassword)
+            setShowLoginModal(false)
+            setLoginEmail('')
+            setLoginPassword('')
+        } catch (e) {
+            setLoginError('Correo o contraseña incorrectos')
+        } finally {
+            setLoginLoading(false)
+        }
+    }
+
+    const handleLogout = () => {
+        logout()
+    }
 
     return (
         <ScreenContainer>
-            <Header darkText={strings.settingsScreen.headerDarkTxt} gradientText={strings.settingsScreen.headerGradientTxt} />
+            <Header
+                darkText={strings.settingsScreen.headerDarkTxt}
+                gradientText={strings.settingsScreen.headerGradientTxt}
+                onTitlePress={handleTitlePress}
+            />
             <View style={styles.btnsContainer}>
                 <SettingsBtn
                     title={strings.settingsScreen.changeLanguage}
-                    description={strings.settingsScreen.descriptionLanguage + (user && user.language === "en" ? "English" : "Español")}
+                    description={strings.settingsScreen.descriptionLanguage + (user && user.language === 'en' ? 'English' : 'Español')}
                     icon="language"
                     iconColor={Colors.secondary}
-                    onPress={() => setModalVisibleLanguage(!modalVisibleLanguage)}
+                    onPress={() => setModalVisibleLanguage(true)}
                 />
                 <SettingsBtn
                     title={strings.settingsScreen.editName}
                     description={strings.settingsScreen.descriptionName + (user && user.name)}
                     icon="lead-pencil"
                     iconColor={Colors.secondary}
-                    onPress={() => setModalVisibleEditName(!modalVisibleEditName)}
+                    onPress={() => setModalVisibleEditName(true)}
                 />
                 <SettingsBtn
                     title={strings.settingsScreen.changePrivacy}
                     description={strings.settingsScreen.descriptionPrivacy}
-                    icon={user && !user.privacy ? "eye" : "eye-off"}
+                    icon={user && !user.isPrivacyEnabled ? 'eye' : 'eye-off'}
                     iconColor={Colors.secondary}
                     onPress={handleTogglePrivacy}
                 />
@@ -116,37 +144,44 @@ const SettingsScreen = ({ navigation }) => {
                     description={strings.settingsScreen.descriptionTransactions}
                     icon="trash-can-outline"
                     iconColor={Colors.error}
-                    onPress={() => setModalVisibleDeleteTransactions(!modalVisibleDeleteTransactions)}
+                    onPress={() => setModalVisibleDeleteTransactions(true)}
                 />
                 <SettingsBtn
                     title={strings.settingsScreen.deleteAll}
                     description={strings.settingsScreen.descriptionAll}
                     icon="restart-alert"
                     iconColor={Colors.error}
-                    onPress={() => setModalVisibleDeleteAll(!modalVisibleDeleteAll)}
+                    onPress={() => setModalVisibleDeleteAll(true)}
                 />
+                {isLoggedIn && (
+                    <SettingsBtn
+                        title="Cerrar sesión"
+                        description={backendUser?.email ?? ''}
+                        icon="logout"
+                        iconColor={Colors.error}
+                        onPress={handleLogout}
+                    />
+                )}
             </View>
 
+            {/* Language modal */}
             <ModalSettingsBtns
                 modalVisible={modalVisibleLanguage}
                 setModalVisible={setModalVisibleLanguage}
                 title={strings.settingsScreen.changeLanguage}
-                actionAccept={() => setModalVisibleLanguage(!modalVisibleLanguage)}
+                actionAccept={() => setModalVisibleLanguage(false)}
             >
-                <TouchableOpacity onPress={handleChangeLanguage.bind(null, "en")} style={[styles.containerLanguageTxt, user && user.language === 'en' && styles.containerSelectedLanguageTxt]}>
+                <TouchableOpacity onPress={() => handleChangeLanguage('en')} style={[styles.containerLanguageTxt, user && user.language === 'en' && styles.containerSelectedLanguageTxt]}>
                     <Text color="primary" style={styles.languageTxt}>English</Text>
-                    {user && user.language === 'en' &&
-                        <MaterialCommunityIcons name="check" size={24} color={Colors.secondary} />
-                    }
+                    {user && user.language === 'en' && <MaterialCommunityIcons name="check" size={24} color={Colors.secondary} />}
                 </TouchableOpacity>
-                <TouchableOpacity onPress={handleChangeLanguage.bind(null, "es")} style={[styles.containerLanguageTxt, user && user.language === 'es' && styles.containerSelectedLanguageTxt]}>
+                <TouchableOpacity onPress={() => handleChangeLanguage('es')} style={[styles.containerLanguageTxt, user && user.language === 'es' && styles.containerSelectedLanguageTxt]}>
                     <Text color="primary" style={styles.languageTxt}>Español</Text>
-                    {user && user.language === 'es' &&
-                        <MaterialCommunityIcons name="check" size={24} color={Colors.secondary} />
-                    }
+                    {user && user.language === 'es' && <MaterialCommunityIcons name="check" size={24} color={Colors.secondary} />}
                 </TouchableOpacity>
             </ModalSettingsBtns>
 
+            {/* Edit name modal */}
             <ModalSettingsBtns
                 modalVisible={modalVisibleEditName}
                 setModalVisible={setModalVisibleEditName}
@@ -156,18 +191,18 @@ const SettingsScreen = ({ navigation }) => {
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={[styles.txtNameInput, txtNameEmptyLoad ? null : { borderColor: Colors.error, borderWidth: 2 }]}
-                        onChangeText={handleChangeTxtName}
+                        onChangeText={setTxtName}
                         value={txtName}
-                        returnKeyType='done'
-                        inputMode='text'
+                        returnKeyType="done"
+                        inputMode="text"
                         placeholder="Enter your first name"
                         blurOnSubmit
                         maxLength={18}
                     />
                 </View>
-
             </ModalSettingsBtns>
 
+            {/* Delete transactions modal */}
             <ModalSettingsBtns
                 modalVisible={modalVisibleDeleteTransactions}
                 setModalVisible={setModalVisibleDeleteTransactions}
@@ -178,9 +213,9 @@ const SettingsScreen = ({ navigation }) => {
                 <Text color="primary" style={styles.modalTxt}>
                     {strings.settingsScreen.deleteTransactionsModal}
                 </Text>
-
             </ModalSettingsBtns>
 
+            {/* Delete all modal */}
             <ModalSettingsBtns
                 modalVisible={modalVisibleDeleteAll}
                 setModalVisible={setModalVisibleDeleteAll}
@@ -193,13 +228,50 @@ const SettingsScreen = ({ navigation }) => {
                 </Text>
             </ModalSettingsBtns>
 
-
+            {/* Hidden login modal */}
+            <Modal visible={showLoginModal} transparent animationType="fade" onRequestClose={() => setShowLoginModal(false)}>
+                <View style={styles.loginOverlay}>
+                    <View style={styles.loginCard}>
+                        <Text weight="bold" color="primary" style={styles.loginTitle}>Iniciar sesión</Text>
+                        <TextInput
+                            style={styles.loginInput}
+                            placeholder="Correo"
+                            value={loginEmail}
+                            onChangeText={setLoginEmail}
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                            placeholderTextColor={Colors.secondary}
+                        />
+                        <TextInput
+                            style={styles.loginInput}
+                            placeholder="Contraseña"
+                            value={loginPassword}
+                            onChangeText={setLoginPassword}
+                            secureTextEntry
+                            placeholderTextColor={Colors.secondary}
+                        />
+                        {loginError && (
+                            <Text style={styles.loginError}>{loginError}</Text>
+                        )}
+                        <View style={styles.loginBtns}>
+                            <TouchableOpacity onPress={() => { setShowLoginModal(false); setLoginError(null) }} style={styles.loginBtnCancel}>
+                                <Text color="primary">Cancelar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handleLogin} style={styles.loginBtnAccept} disabled={loginLoading}>
+                                {loginLoading
+                                    ? <ActivityIndicator size="small" color={Colors.white} />
+                                    : <Text style={{ color: Colors.white }} weight="bold">Entrar</Text>
+                                }
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </ScreenContainer>
-    );
-};
+    )
+}
 
-
-export default SettingsScreen;
+export default SettingsScreen
 
 const styles = StyleSheet.create({
     btnsContainer: {
@@ -239,6 +311,61 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: Colors.secondary,
         color: Colors.primary,
+    },
+    loginOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    loginCard: {
+        backgroundColor: Colors.white,
+        borderRadius: 16,
+        padding: 24,
+        width: '80%',
+        gap: 12
+    },
+    loginTitle: {
+        fontSize: 18,
+        textAlign: 'center',
+        marginBottom: 4
+    },
+    loginInput: {
+        borderWidth: 0.5,
+        borderColor: Colors.secondary,
+        borderRadius: 10,
+        paddingHorizontal: 14,
+        height: 44,
+        fontFamily: 'Poppins-Light',
+        fontSize: 14,
+        color: Colors.primary
+    },
+    loginError: {
+        color: Colors.error,
+        fontSize: 12,
+        textAlign: 'center'
+    },
+    loginBtns: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        gap: 12,
+        marginTop: 4
+    },
+    loginBtnCancel: {
+        flex: 1,
+        height: 44,
+        borderRadius: 10,
+        borderWidth: 0.5,
+        borderColor: Colors.secondary,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    loginBtnAccept: {
+        flex: 1,
+        height: 44,
+        borderRadius: 10,
+        backgroundColor: Colors.secondary,
+        justifyContent: 'center',
+        alignItems: 'center'
     }
-
 })

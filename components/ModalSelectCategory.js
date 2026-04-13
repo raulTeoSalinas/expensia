@@ -5,8 +5,6 @@ import {
     TouchableOpacity,
     StyleSheet,
     ScrollView,
-    Image,
-
 } from "react-native";
 import Text from '@components/Text';
 // Utils
@@ -92,11 +90,7 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
                         onPress={handleSendSelected.bind(null, category)}
                     >
                         <View style={{ flexDirection: "row", alignItems: "center" }}>
-                            {category.src !== '' ?
-                                <Image style={styles.iconCategory} source={category.src} />
-                                : <View style={styles.iconCategory}></View>
-                            }
-
+                            <MaterialCommunityIcons name={category.icon} size={28} color={Colors.secondary} style={styles.iconCategory} />
                             <Text weight="bold" color="primary" size="l">{user && user.language === "en" ? category.nameEN : category.nameES}</Text>
                         </View>
                         {selectedValue.id === category.id && <MaterialIcons name="check" size={24} color={Colors.primary} />}
@@ -142,8 +136,6 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     iconCategory: {
-        width: 40,
-        height: 40,
         marginRight: '5%'
     }
 });

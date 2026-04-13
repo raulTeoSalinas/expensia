@@ -36,11 +36,11 @@ const MonthSummary = ({ income, expenses }) => {
             <View style={styles.resumenDescription}>
                 <View style={styles.rowTitle}>
                     <View style={styles.dotIncome}></View>
-                    <Text weight="bold" color="primary">{strings.mainScreen.income}<Text weight="bold" color="primary"> {user && !user.privacy ? `$${formatNumberWithCommas(income)}` : '•••••'}</Text></Text>
+                    <Text weight="bold" color="primary">{strings.mainScreen.income}<Text weight="bold" color="primary"> {user && !user.isPrivacyEnabled ? `$${formatNumberWithCommas(income)}` : '•••••'}</Text></Text>
                 </View>
                 <View style={styles.rowTitle}>
                     <View style={styles.dotExpenses}></View>
-                    <Text weight="bold" color="primary">{strings.mainScreen.expenses}<Text weight="bold" color="primary"> {user && !user.privacy ? `$${formatNumberWithCommas(expenses)}` : '•••••'}</Text></Text>
+                    <Text weight="bold" color="primary">{strings.mainScreen.expenses}<Text weight="bold" color="primary"> {user && !user.isPrivacyEnabled ? `$${formatNumberWithCommas(expenses)}` : '•••••'}</Text></Text>
                 </View>
             </View>
         </View>

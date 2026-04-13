@@ -1,63 +1,40 @@
-// React / React-Native
-import { useState, useEffect, useContext, useCallback } from "react";
-import {
-	Platform,
-	StyleSheet,
-	View,
-	TouchableOpacity
-} from "react-native";
-import Text from '@components/Text';
-// Third Party Libraries
-import { Calendar, LocaleConfig } from 'react-native-calendars';
-// Utils
-import { calendarES, calendarEN, theme } from "../utils/calendarSettings";
-import Colors from "../constants/colors";
-import formatNumberWithCommas from "../utils/formatNumberWithCommas";
-import getCurrentDate from "../utils/getCurrentDay";
-import { es, en } from "../utils/languages";
-// Components
-import Row from "../components/Row";
-import MonthSummary from "../components/MonthSummary";
-import ScreenContainer from "../components/ScreenContainer";
-import Header from "../components/Header";
-import PieChartCategory from "../components/PieChartCategory";
-import MonthYearPickerModal from "../components/MonthYearPickerModal";
-import CalendarTappableMonthTitle from "../components/CalendarTappableMonthTitle";
-// Context
-import { ExpensiaContext } from "../context/expensiaContext";
-// Icons
-import { MaterialCommunityIcons } from '@expo/vector-icons';
-// AsyncStorage
-import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
-import { useMonthYearPicker } from "@hooks/useMonthYearPicker";
-
-
+import { useState, useEffect, useContext, useCallback } from 'react'
+import { Platform, StyleSheet, View, TouchableOpacity } from 'react-native'
+import Text from '@components/Text'
+import { Calendar, LocaleConfig } from 'react-native-calendars'
+import { calendarES, calendarEN, theme } from '../utils/calendarSettings'
+import Colors from '../constants/colors'
+import formatNumberWithCommas from '../utils/formatNumberWithCommas'
+import getCurrentDate from '../utils/getCurrentDay'
+import { es, en } from '../utils/languages'
+import Row from '../components/Row'
+import MonthSummary from '../components/MonthSummary'
+import ScreenContainer from '../components/ScreenContainer'
+import Header from '../components/Header'
+import PieChartCategory from '../components/PieChartCategory'
+import MonthYearPickerModal from '../components/MonthYearPickerModal'
+import CalendarTappableMonthTitle from '../components/CalendarTappableMonthTitle'
+import { ExpensiaContext } from '../context/expensiaContext'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { useMonthYearPicker } from '@hooks/useMonthYearPicker'
 
 const MainScreen = ({ navigation }) => {
+	const { transactions, accounts, user, togglePrivacy } = useContext(ExpensiaContext)
+	const strings = user && user.language === 'en' ? en : es
+	const languageCalendar = user && user.language === 'en' ? calendarEN : calendarES
 
-	const { transactions, user, togglePrivacy } = useContext(ExpensiaContext);
-	const { togglePrivacyAsyncStorage } = expensiaAsyncStorage;
+	const income = { key: 'income', color: Colors.secondary }
+	const expense = { key: 'expense', color: Colors.accent }
 
-	const strings = user && user.language === "en" ? en : es;
-
-	const languageCalendar = user && user.language === "en" ? calendarEN : calendarES;
-
-	const income = { key: 'income', color: Colors.secondary };
-	const expense = { key: 'expense', color: Colors.accent };
-
-	const [groupedTransactions, setGroupedTransactions] = useState({});
-	const [monthOnDisplay, setMonthOnDisplay] = useState(getCurrentDate().slice(0, 7));
-	const [markedDates, setMarkedDates] = useState({});
-	const [pieChartData, setPieChartData] = useState({});
-
-	const [userDisplay, setUserDisplay] = useState(null)
-	//Boolean State, used as a Key for Calendar Component. It helps to re-render Calendar component every time user change language.
-	const [reRender, setReRender] = useState(false);
+	const [groupedTransactions, setGroupedTransactions] = useState({})
+	const [monthOnDisplay, setMonthOnDisplay] = useState(getCurrentDate().slice(0, 7))
+	const [markedDates, setMarkedDates] = useState({})
+	const [reRender, setReRender] = useState(false)
 
 	const handleMonthYearPicked = useCallback(({ year, month }) => {
-		const m = String(month).padStart(2, "0");
-		setMonthOnDisplay(`${year}-${m}`);
-	}, []);
+		const m = String(month).padStart(2, '0')
+		setMonthOnDisplay(`${year}-${m}`)
+	}, [])
 
 	const {
 		monthPickerVisible,
@@ -68,11 +45,11 @@ const MainScreen = ({ navigation }) => {
 		closeMonthPicker,
 	} = useMonthYearPicker({
 		getInitialAnchor: () => {
-			const d = getCurrentDate();
-			return { year: parseInt(d.slice(0, 4), 10), month: parseInt(d.slice(5, 7), 10) };
+			const d = getCurrentDate()
+			return { year: parseInt(d.slice(0, 4), 10), month: parseInt(d.slice(5, 7), 10) }
 		},
 		onConfirm: handleMonthYearPicked,
-	});
+	})
 
 	const calendarRenderHeader = useCallback(
 		(monthXDate) => (
@@ -83,125 +60,97 @@ const MainScreen = ({ navigation }) => {
 			/>
 		),
 		[openMonthYearPicker, strings.monthYearPicker.title]
-	);
+	)
 
 	useEffect(() => {
-		const groupedTransactionsReduce = transactions.reduce((result, transaction) => {
-			const { amount, type, date, category } = transaction;
-			const parsedAmount = parseFloat(amount);
-			const { id: categoryId } = category;
-
+		const grouped = transactions.reduce((result, transaction) => {
+			const { amount, type, date, globalCategoryId, customCategoryId } = transaction
+			const parsedAmount = parseFloat(amount)
+			const categoryId = globalCategoryId ?? customCategoryId ?? 'unknown'
 
 			if (date.startsWith(monthOnDisplay)) {
-				const formattedDate = date; // format 'YYYY-MM-DD'
+				const formattedDate = date
 
-				setMarkedDates((prevMarkedDates) => {
-					const updatedMarkedDates = { ...prevMarkedDates };
+				setMarkedDates(prev => {
+					const updated = { ...prev }
+					if (!updated[formattedDate]) updated[formattedDate] = { dots: [] }
+					const dots = updated[formattedDate].dots
 
-					if (!updatedMarkedDates.hasOwnProperty(formattedDate)) {
-						updatedMarkedDates[formattedDate] = { dots: [] };
+					if (type === 'i') {
+						result.monthIncome = (result.monthIncome ?? 0) + parsedAmount
+						result.typeI[categoryId] = (result.typeI[categoryId] ?? 0) + parsedAmount
+						if (!dots.some(d => d.key === 'income')) dots.push(income)
+					} else if (type === 'e') {
+						result.monthExpense = (result.monthExpense ?? 0) + parsedAmount
+						result.typeE[categoryId] = (result.typeE[categoryId] ?? 0) + parsedAmount
+						if (!dots.some(d => d.key === 'expense')) dots.push(expense)
 					}
-
-					const existingDots = updatedMarkedDates[formattedDate].dots;
-
-					switch (type) {
-						case "i":
-							result.monthIncome ? (result.monthIncome += parsedAmount) : (result.monthIncome = parsedAmount);
-							result.typeI[categoryId] = (result.typeI[categoryId] || 0) + parsedAmount;
-							if (!existingDots.some((dot) => dot.key === 'income')) {
-								updatedMarkedDates[formattedDate].dots.push(income);
-							}
-							break;
-						case "e":
-							result.monthExpense ? (result.monthExpense += parsedAmount) : (result.monthExpense = parsedAmount);
-							result.typeE[categoryId] = (result.typeE[categoryId] || 0) + parsedAmount;
-							if (!existingDots.some((dot) => dot.key === 'expense')) {
-								updatedMarkedDates[formattedDate].dots.push(expense);
-							}
-							break;
-						default:
-							break;
-					}
-
-					return updatedMarkedDates;
-				});
+					return updated
+				})
 			}
+			return result
+		}, { typeI: {}, typeE: {} })
 
-			return result;
-		}, { typeI: {}, typeE: {} });
-		if (transactions.length === 0) {
-			setMarkedDates({})
-		}
-		setGroupedTransactions(groupedTransactionsReduce);
-	}, [transactions, monthOnDisplay]);
+		if (transactions.length === 0) setMarkedDates({})
+		setGroupedTransactions(grouped)
+	}, [transactions, monthOnDisplay])
 
 	useEffect(() => {
-		setUserDisplay(user)
-		LocaleConfig.locales["default"] = languageCalendar;
-		LocaleConfig.defaultLocale = 'default';
-		setReRender(!reRender) //We change the boolean state to re-render Calendar component.
+		LocaleConfig.locales['default'] = languageCalendar
+		LocaleConfig.defaultLocale = 'default'
+		setReRender(r => !r)
 	}, [user])
 
-	const handleHideTotals = () => {
-		togglePrivacy();
-		togglePrivacyAsyncStorage();
-	}
-
-	const handleTransfer = () => {
-		navigation.navigate("Wallet")
-	}
-
-	const sortedAccounts = (userDisplay && userDisplay.accounts)
-		? userDisplay.accounts.sort((a, b) => {
-			// Ordena las cuentas con isCC: true al final
-			if (a.isCC && !b.isCC) return 1;
-			if (!a.isCC && b.isCC) return -1;
-			return 0; // Mantiene el orden original para las cuentas sin isCC
-		})
-		: [];
-
-
-	const series = [123, 321, 123, 789, 537]
-	const sliceColor = Colors.miniChartSlices
+	const sortedAccounts = [...accounts].sort((a, b) => {
+		if (a.isCC && !b.isCC) return 1
+		if (!a.isCC && b.isCC) return -1
+		return 0
+	})
 
 	return (
 		<ScreenContainer>
-
-			<Header darkText={strings.mainScreen.headerDarkTxt} gradientText={userDisplay && userDisplay.name} addBtn />
+			<Header darkText={strings.mainScreen.headerDarkTxt} gradientText={user?.name} addBtn />
 
 			<View style={styles.cardTotals}>
-				{userDisplay && sortedAccounts.map((account, i) => (
-					<Row key={i} description={`${account.name}`} value={!userDisplay.privacy ? `$${formatNumberWithCommas(account.amount)}` : "•••••"} icon={account.icon} />
+				{sortedAccounts.map(account => (
+					<Row
+						key={account.id}
+						description={account.name}
+						value={!user?.isPrivacyEnabled ? `$${formatNumberWithCommas(account.amount)}` : '•••••'}
+						icon={account.icon}
+						syncStatus={account.syncStatus}
+					/>
 				))}
 			</View>
+
 			<View style={{ flexDirection: 'row', justifyContent: 'space-between', marginHorizontal: 30 }}>
-				<TouchableOpacity onPress={handleTransfer} style={{ flexDirection: 'row', alignItems: 'center' }}>
+				<TouchableOpacity onPress={() => navigation.navigate('Wallet')} style={{ flexDirection: 'row', alignItems: 'center' }}>
 					<MaterialCommunityIcons name="bank-transfer" size={28} color={Colors.secondary} />
 					<Text weight="bold">{strings.mainScreen.transferBtn}</Text>
 				</TouchableOpacity>
-				<TouchableOpacity onPress={handleHideTotals} style={{ flexDirection: 'row', alignItems: 'center' }}>
-					<MaterialCommunityIcons name={userDisplay && !userDisplay.privacy ? "eye" : "eye-off"} size={24} color={Colors.secondary} />
+				<TouchableOpacity onPress={togglePrivacy} style={{ flexDirection: 'row', alignItems: 'center' }}>
+					<MaterialCommunityIcons name={!user?.isPrivacyEnabled ? 'eye' : 'eye-off'} size={24} color={Colors.secondary} />
 					<Text weight="bold">{strings.mainScreen.hideBtn}</Text>
 				</TouchableOpacity>
 			</View>
 
-			<MonthSummary income={groupedTransactions.monthIncome ? groupedTransactions.monthIncome : 0} expenses={groupedTransactions.monthExpense ? groupedTransactions.monthExpense : 0} />
+			<MonthSummary
+				income={groupedTransactions.monthIncome ?? 0}
+				expenses={groupedTransactions.monthExpense ?? 0}
+			/>
 
 			<Calendar
 				key={`${reRender}-${calendarRemountKey}`}
 				current={`${monthOnDisplay}-01`}
 				monthFormat="MMMM yyyy"
 				renderHeader={calendarRenderHeader}
-				onDayPress={(day) => {
-					navigation.navigate("DayTransaction", { dateString: day.dateString });
-				}}
-				markingType={'multi-dot'}
+				onDayPress={day => navigation.navigate('DayTransaction', { dateString: day.dateString })}
+				markingType="multi-dot"
 				markedDates={markedDates}
-				onMonthChange={date => {
-					setMonthOnDisplay(date.dateString.slice(0, 7)), date;
-				}}
+				onMonthChange={date => setMonthOnDisplay(date.dateString.slice(0, 7))}
 				theme={theme}
 			/>
+
 			<MonthYearPickerModal
 				visible={monthPickerVisible}
 				onRequestClose={closeMonthPicker}
@@ -210,16 +159,18 @@ const MainScreen = ({ navigation }) => {
 				initialYear={pickerAnchor.year}
 				initialMonth={pickerAnchor.month}
 			/>
+
 			<View style={styles.markedContainer}>
 				<View style={styles.containerLabelMarked}>
-					<View style={[styles.squareMarked, { backgroundColor: Colors.secondary }]}></View>
+					<View style={[styles.squareMarked, { backgroundColor: Colors.secondary }]} />
 					<Text color="primary">{strings.transactionsScreen.selectTypeIncome}</Text>
 				</View>
 				<View style={styles.containerLabelMarked}>
-					<View style={[styles.squareMarked, { backgroundColor: Colors.accent }]}></View>
+					<View style={[styles.squareMarked, { backgroundColor: Colors.accent }]} />
 					<Text color="primary">{strings.transactionsScreen.selectTypeExpenses}</Text>
 				</View>
 			</View>
+
 			<View style={styles.pieChartContainer}>
 				{groupedTransactions.typeE && Object.values(groupedTransactions.typeE).length > 0 &&
 					<PieChartCategory type="e" data={groupedTransactions.typeE} />
@@ -229,15 +180,13 @@ const MainScreen = ({ navigation }) => {
 				}
 			</View>
 		</ScreenContainer>
-	);
+	)
 }
 
-export default MainScreen;
+export default MainScreen
 
 const styles = StyleSheet.create({
-
 	cardTotals: {
-
 		marginHorizontal: 20,
 		paddingVertical: 15,
 		paddingHorizontal: 20,
@@ -246,31 +195,16 @@ const styles = StyleSheet.create({
 		backgroundColor: Colors.primary,
 		borderColor: Colors.white,
 		shadowColor: Colors.shadow,
-		shadowOffset: {
-			width: 0,
-			height: 4,
-		},
+		shadowOffset: { width: 0, height: 4 },
 		shadowOpacity: 0.2,
 		shadowRadius: 7.49,
-
 		elevation: 12,
-	},
-	buttonIcon: {
-		resizeMode: 'contain',
-		width: 50,
-		height: 50,
-	},
-	opacity: {
-		width: 60,
-		height: 60,
-		marginTop: Platform.OS === 'ios' ? 0 : 30,
 	},
 	markedContainer: {
 		flexDirection: 'row',
 		justifyContent: 'space-around',
-		marginTop: "2%",
+		marginTop: '2%',
 		marginBottom: '5%',
-
 	},
 	containerLabelMarked: {
 		flexDirection: 'row',
@@ -280,10 +214,9 @@ const styles = StyleSheet.create({
 		width: 6,
 		height: 6,
 		borderRadius: 2,
-		marginRight: "5%"
+		marginRight: '5%'
 	},
 	pieChartContainer: {
-		marginBottom: "5%"
-	},
-
+		marginBottom: '5%'
+	}
 })

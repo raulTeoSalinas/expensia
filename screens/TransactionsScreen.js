@@ -1,5 +1,4 @@
-// React / React-Native
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from 'react'
 import {
     StyleSheet,
     SafeAreaView,
@@ -7,145 +6,97 @@ import {
     TextInput,
     Dimensions,
     FlatList,
-    Platform
-} from "react-native";
-import Text from '@components/Text';
-// Utils
-import Colors from "../constants/colors";
-import sortTransactionsByDate from "../utils/sortTransactionsByDate";
-import filterTransactionsByType from "../utils/filterTransactionsByType";
-import { es, en } from "../utils/languages";
-// Components
-import SelectType from "../components/SelectType";
-import TransactionCard from "../components/TransactionCard";
-import Header from "../components/Header";
-// Icons
-import { Ionicons } from '@expo/vector-icons';
-// Context
-import { ExpensiaContext } from "../context/expensiaContext";
+    ActivityIndicator
+} from 'react-native'
+import Text from '@components/Text'
+import Colors from '../constants/colors'
+import filterTransactionsByType from '../utils/filterTransactionsByType'
+import { es, en } from '../utils/languages'
+import SelectType from '../components/SelectType'
+import TransactionCard from '../components/TransactionCard'
+import Header from '../components/Header'
+import { Ionicons } from '@expo/vector-icons'
+import { ExpensiaContext } from '../context/expensiaContext'
 
 const { width } = Dimensions.get('window')
 
-const TransactionsScreen = ({ navigation }) => {
-
-
-
-
-    const { transactions, user } = useContext(ExpensiaContext);
-    const [transactionsDisplay, setTransactionsDisplay] = useState([]);
+const TransactionsScreen = () => {
+    const { transactions, hasMoreTx, loadMoreTransactions, user } = useContext(ExpensiaContext)
     const [selectedType, setSelectedType] = useState('all')
-    const [txtSearch, setTxtSearch] = useState('');
-    const strings = user && user.language === "en" ? en : es;
+    const [txtSearch, setTxtSearch] = useState('')
+    const strings = user && user.language === 'en' ? en : es
 
-    useEffect(() => {
-        let sortedTransactions = filterTransactionsByType(sortTransactionsByDate(transactions), selectedType);
-
-        if (txtSearch !== '') {
-            sortedTransactions = sortedTransactions.filter((transaction) =>
-                transaction.description.toLowerCase().includes(txtSearch.toLowerCase())
-            );
-        }
-        setTransactionsDisplay(sortedTransactions)
-
-    }, [transactions, selectedType, txtSearch]);
-
-    const getTypeSelected = (type) => {
-        setSelectedType(type)
-    };
-
-    const handleChangeTxtSearch = (inputText) => {
-        setTxtSearch(inputText);
-    }
-
-    const handleFloatBtnNavigate = () => {
-        navigation.navigate("TypeTransaction")
-    }
+    const transactionsDisplay = filterTransactionsByType(transactions, selectedType).filter(t =>
+        txtSearch === '' || (t.description ?? '').toLowerCase().includes(txtSearch.toLowerCase())
+    )
 
     return (
         <SafeAreaView style={styles.mainContainer}>
-
             <Header darkText={strings.transactionsScreen.headerDarkTxt} gradientText={strings.transactionsScreen.headerGradientTxt} addBtn />
 
             <View style={{ alignItems: 'center' }}>
                 <View style={styles.txtSearchContainer}>
                     <TextInput
                         style={styles.txtSearch}
-                        onChangeText={handleChangeTxtSearch}
+                        onChangeText={setTxtSearch}
                         value={txtSearch}
-                        inputMode='text'
-                        returnKeyType='done'
+                        inputMode="text"
+                        returnKeyType="done"
                         placeholder={strings.transactionsScreen.searchPlaceHolder}
                         blurOnSubmit
-
                     />
                     <Ionicons name="search" size={24} color="black" style={{ marginRight: 15 }} />
                 </View>
             </View>
 
-
-            <SelectType getTypeSelected={getTypeSelected} />
+            <SelectType getTypeSelected={setSelectedType} />
 
             <FlatList
                 data={transactionsDisplay}
-                key={(item) => item.id}
+                keyExtractor={item => item.id}
                 contentContainerStyle={{ alignItems: 'center', paddingTop: 10 }}
-                renderItem={({ item }) =>
+                renderItem={({ item }) => (
                     <TransactionCard
                         id={item.id}
                         type={item.type}
                         amount={item.amount}
-                        account={item.account}
                         date={item.date}
-                        category={item.category}
                         description={item.description}
-                    />}
-                numColumns={1}
+                        accountId={item.accountId}
+                        globalCategoryId={item.globalCategoryId}
+                        customCategoryId={item.customCategoryId}
+                        customCategoryName={item.customCategoryName}
+                        syncStatus={item.syncStatus}
+                    />
+                )}
+                onEndReached={loadMoreTransactions}
+                onEndReachedThreshold={0.3}
                 ListEmptyComponent={() => (
                     <View>
                         <Text>{strings.transactionsScreen.emptyListTxt}</Text>
                     </View>
                 )}
+                ListFooterComponent={() =>
+                    hasMoreTx ? <ActivityIndicator size="small" color={Colors.secondary} style={{ marginVertical: 16 }} /> : null
+                }
             />
-
-
         </SafeAreaView>
-    );
+    )
 }
 
-export default TransactionsScreen;
+export default TransactionsScreen
 
 const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
         backgroundColor: Colors.light,
     },
-    welcomeContainer: {
-        flexDirection: "row",
-
-        alignItems: "center",
-        marginLeft: '8%',
-        marginRight: '2%',
-        justifyContent: 'space-between'
-    },
-    buttonIcon: {
-        resizeMode: 'contain',
-        width: 50,
-        height: 50,
-    },
-    opacity: {
-        width: 60,
-        height: 60,
-        marginTop: Platform.OS === 'ios' ? 0 : 30,
-    },
     txtSearch: {
-
         height: 40,
-
         paddingHorizontal: 15,
         fontFamily: 'Poppins-Light',
         fontSize: 15,
         width: '90%',
-
         color: Colors.primary
     },
     txtSearchContainer: {
@@ -158,6 +109,4 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         justifyContent: 'space-between'
     }
-
-
-});
+})

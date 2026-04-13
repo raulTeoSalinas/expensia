@@ -15,7 +15,7 @@ import GradientText from './TextGradient';
 import Colors from '../constants/colors';
 
 
-const Header = ({ darkText, gradientText, addBtn }) => {
+const Header = ({ darkText, gradientText, addBtn, onTitlePress }) => {
 
     const navigation = useNavigation();
 
@@ -25,10 +25,10 @@ const Header = ({ darkText, gradientText, addBtn }) => {
 
     return (
         <View style={styles.welcomeContainer}>
-            <View style={styles.rowContainer}>
+            <TouchableOpacity activeOpacity={1} onPress={onTitlePress} disabled={!onTitlePress} style={styles.rowContainer}>
                 <Text weight="bold" color="primary" style={styles.welcome}>{darkText}</Text>
                 <GradientText weight="bold" style={styles.welcome}>{gradientText}</GradientText>
-            </View>
+            </TouchableOpacity>
             {addBtn &&
                 <TouchableOpacity style={styles.opacity} onPress={handleFloatBtnNavigate} >
                     <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />

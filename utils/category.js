@@ -1,119 +1,20 @@
-
-
+// IDs match the backend seed (prisma/seed.js in mobile-portfolio)
 const Category = [
-    {
-        id: 1,
-        nameEN: "Food",
-        nameES: "Alimentos",
-        type: "e",
-        src: require('../assets/images/icon-e-food.png')
-    },
-    {
-        id: 2,
-        nameEN: "Transport",
-        nameES: "Transporte",
-        type: "e",
-        src: require('../assets/images/icon-e-transport.png')
-    },
-    {
-        id: 3,
-        nameEN: "Home",
-        nameES: "Hogar",
-        type: "e",
-        src: require('../assets/images/icon-e-home.png')
-    },
-    {
-        id: 4,
-        nameEN: "Entertainment",
-        nameES: "Entretenimiento",
-        type: "e",
-        src: require('../assets/images/icon-e-entertainment.png')
-    },
-    {
-        id: 5,
-        nameEN: "Groceries",
-        nameES: "Supermercado",
-        type: "e",
-        src: require('../assets/images/icon-e-groceries.png')
-    },
-    {
-        id: 6,
-        nameEN: "Bills",
-        nameES: "Recibos",
-        type: "e",
-        src: require('../assets/images/icon-e-bills.png')
-    },
-    {
-        id: 7,
-        nameEN: "Clothes",
-        nameES: "Ropa",
-        type: "e",
-        src: require('../assets/images/icon-e-clothes.png')
-    },
-    {
-        id: 8,
-        nameEN: "Debt",
-        nameES: "Deudas",
-        type: "e",
-        src: require('../assets/images/icon-e-debt.png')
-    },
-    {
-        id: 9,
-        nameEN: "Health",
-        nameES: "Salud",
-        type: "e",
-        src: require('../assets/images/icon-e-health.png')
-    },
-    {
-        id: 10,
-        nameEN: "Pet",
-        nameES: "Mascota",
-        type: "e",
-        src: require('../assets/images/icon-e-pet.png')
-    },
-    {
-        id: 11,
-        nameEN: "Salary",
-        nameES: "Salario",
-        type: "i",
-        src: require('../assets/images/icon-i-salary.png')
-    },
-    {
-        id: 12,
-        nameEN: "Business",
-        nameES: "Negocio",
-        type: "i",
-        src: require('../assets/images/icon-i-business.png')
-    },
-    {
-        id: 13,
-        nameEN: "Freelance",
-        nameES: "Freelance",
-        type: "i",
-        src: require('../assets/images/icon-i-freelance.png')
-    },
-    {
-        id: 14,
-        nameEN: "Dividends",
-        nameES: "Dividendos",
-        type: "i",
-        src: require('../assets/images/icon-i-dividends.png')
-    },
-    {
-        id: 15,
-        nameEN: "Interest",
-        nameES: "Intereses",
-        type: "i",
-        src: require('../assets/images/icon-i-interest.png')
-    },
-    {
-        id: 18,
-        nameEN: "Other",
-        nameES: "Otro",
-        type: "o",
-        src: ""
-    }
-];
+  { id: 'food',          nameEN: 'Food',          nameES: 'Alimentos',       type: 'e', icon: 'food-fork-drink' },
+  { id: 'transport',     nameEN: 'Transport',     nameES: 'Transporte',      type: 'e', icon: 'bus' },
+  { id: 'home',          nameEN: 'Home',          nameES: 'Hogar',           type: 'e', icon: 'home' },
+  { id: 'entertainment', nameEN: 'Entertainment', nameES: 'Entretenimiento', type: 'e', icon: 'television-play' },
+  { id: 'groceries',     nameEN: 'Groceries',     nameES: 'Supermercado',    type: 'e', icon: 'cart' },
+  { id: 'bills',         nameEN: 'Bills',         nameES: 'Recibos',         type: 'e', icon: 'file-document' },
+  { id: 'clothes',       nameEN: 'Clothes',       nameES: 'Ropa',            type: 'e', icon: 'tshirt-crew' },
+  { id: 'debt',          nameEN: 'Debt',          nameES: 'Deudas',          type: 'e', icon: 'bank-transfer' },
+  { id: 'health',        nameEN: 'Health',        nameES: 'Salud',           type: 'e', icon: 'heart-pulse' },
+  { id: 'pet',           nameEN: 'Pet',           nameES: 'Mascota',         type: 'e', icon: 'paw' },
+  { id: 'salary',        nameEN: 'Salary',        nameES: 'Salario',         type: 'i', icon: 'briefcase' },
+  { id: 'business',      nameEN: 'Business',      nameES: 'Negocio',         type: 'i', icon: 'store' },
+  { id: 'freelance',     nameEN: 'Freelance',     nameES: 'Freelance',       type: 'i', icon: 'laptop' },
+  { id: 'dividends',     nameEN: 'Dividends',     nameES: 'Dividendos',      type: 'i', icon: 'chart-line' },
+  { id: 'interest',      nameEN: 'Interest',      nameES: 'Intereses',       type: 'i', icon: 'percent' },
+]
 
-export default Category;
-
+export default Category

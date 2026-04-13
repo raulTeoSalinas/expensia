@@ -25,7 +25,9 @@
         }
       ],
       "expo-font",
-      "expo-asset"
+      "expo-asset",
+      "expo-sqlite",
+      "expo-secure-store"
     ],
     "android": {
       "adaptiveIcon": {

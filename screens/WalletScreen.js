@@ -23,35 +23,28 @@ import Knob from "../components/Knob";
 import ModalSelect from "../components/ModalSelect";
 import ScreenContainer from "../components/ScreenContainer";
 import Header from "../components/Header";
-// AsyncStorage
-import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
 import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet';
 
 
 const WalletScreen = ({ navigation }) => {
 
 
-    const { user, addOrRestAmount, editAccount, addAccount, deleteAccount } = useContext(ExpensiaContext);
+    const { accounts, addOrRestAmount, editAccount, addAccount, deleteAccount, user } = useContext(ExpensiaContext);
     const strings = user && user.language === "en" ? en : es;
 
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true);
-    const [userAccounts, setUserAccounts] = useState([]);
-    const [selectedFrom, setSelectedFrom] = useState("");
-    const [selectedTo, setSelectedTo] = useState("");
+    const [selectedFrom, setSelectedFrom] = useState(accounts[0] ?? "");
+    const [selectedTo, setSelectedTo] = useState(accounts[1] ?? "");
     const [selectedAccount, setSelectedAccount] = useState();
     const [modalFromVisible, setModalFromVisible] = useState(false);
     const [modalToVisible, setModalToVisible] = useState(false);
-    const { addOrRestAmountAsync, editAccountAsync, addAccountAsync, deleteAccountAsync } = expensiaAsyncStorage;
 
     useEffect(() => {
-        setUserAccounts(user.accounts);
-
-        if (user.accounts.length > 1) {
-            setSelectedFrom(user.accounts[0]);
-            setSelectedTo(user.accounts[1]);
+        if (accounts.length > 1) {
+            setSelectedFrom(accounts[0]);
+            setSelectedTo(accounts[1]);
         }
-
-    }, [user])
+    }, [accounts])
 
     const [textAmount, setTextAmount] = useState('');
 
@@ -112,11 +105,9 @@ const WalletScreen = ({ navigation }) => {
 
             if (!isEdited) {
                 addAccount(name, icon, isCC);
-                addAccountAsync(name, icon, isCC);
             } else {
                 const id = selectedAccount.id;
                 editAccount(id, name, icon);
-                editAccountAsync(id, name, icon);
             }
 
             closeModal()
@@ -157,10 +148,8 @@ const WalletScreen = ({ navigation }) => {
                 const from = selectedFrom;
                 const to = selectedTo;
 
-                addOrRestAmount(amount, typeExpense, from);
-                addOrRestAmount(amount, typeIncome, to);
-                await addOrRestAmountAsync(amount, typeExpense, from);
-                await addOrRestAmountAsync(amount, typeIncome, to);
+                addOrRestAmount(amount, typeExpense, from.id);
+                addOrRestAmount(amount, typeIncome, to.id);
                 setTimeout(() => {
                     setIsTransferring(false); // Establecer el texto del botón en "Transferir" después de medio segundo
                 }, 1500);
@@ -177,7 +166,6 @@ const WalletScreen = ({ navigation }) => {
         } else {
             const id = selectedAccount.id;
             deleteAccount(id);
-            deleteAccountAsync(id);
         }
         closeModal()
     }
@@ -246,7 +234,7 @@ const WalletScreen = ({ navigation }) => {
             </View>
 
             <Text weight="bold" color="primary" size="l" style={{ textAlign: 'justify', marginTop: 25, paddingHorizontal: 30 }}>{strings.walletScreen.title2}</Text>
-            {userAccounts.map((account, i) => (
+            {accounts.map((account, i) => (
 
                 <TouchableOpacity key={i} onPress={openEditAccount.bind(null, account)} style={styles.cardTotals}>
                     <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -272,14 +260,14 @@ const WalletScreen = ({ navigation }) => {
             <ModalSelect
                 modalVisible={modalFromVisible}
                 setModalVisible={setModalFromVisible}
-                data={userAccounts.filter(account => !account?.isCC)}
+                data={accounts.filter(account => !account?.isCC)}
                 selectedValue={selectedFrom}
                 handleSelectedModal={handleSelectedFrom}
             />
             <ModalSelect
                 modalVisible={modalToVisible}
                 setModalVisible={setModalToVisible}
-                data={userAccounts}
+                data={accounts}
                 selectedValue={selectedTo}
                 handleSelectedModal={handleSelectedTo}
             />

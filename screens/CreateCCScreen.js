@@ -19,8 +19,6 @@ import GradientText from "../components/TextGradient";
 // Icons
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
-// AsyncStorage
-import expensiaAsyncStorage from "../context/expensiaAsyncStorage";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
 import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -36,8 +34,7 @@ const CreateCCScreen = ({ navigation, route }) => {
 
     const strings = language === "en" ? en : es;
 
-    const { createUser } = useContext(ExpensiaContext);
-    const { createUserAsync } = expensiaAsyncStorage;
+    const { createUser, addAccount } = useContext(ExpensiaContext);
 
     const initialAccounts = [
         { id: liquidAccounts[liquidAccounts.length - 1].id + 1, name: strings.createCCScreen.bank, icon: 'credit-card-outline', amount: '', isCC: true },
@@ -122,57 +119,25 @@ const CreateCCScreen = ({ navigation, route }) => {
         }
     }
 
-    const handleCreateUser = () => {
-        // Filter and modify accounts.
-        const accountsRightAmount = accounts.map((account) => {
-            let amount = account.amount;
-
-            // Remove commas from the quantity.
-            amount = amount.replace(/,/g, '');
-
-            // Convert to zero if it is an empty string or a dot.
-            if (amount === '' || amount === '.') {
-                amount = '0';
-            } else {
-
-                amount = `-${amount}`
-            }
-
-
-            // Return the modified account.
-            return { ...account, amount };
-        });
-        const allAccounts = [...liquidAccounts, ...accountsRightAmount];
-
-        createUserAsync(userName, allAccounts, language);
-        createUser(userName, allAccounts, language)
-
+    const handleCreateUser = async () => {
+        await createUser(userName, language)
+        for (const acc of liquidAccounts) {
+            const amount = parseFloat(acc.amount.replace(/,/g, '')) || 0
+            await addAccount(acc.name, acc.icon, !!acc.isCC, amount)
+        }
+        for (const account of accounts) {
+            let amount = account.amount.replace(/,/g, '')
+            amount = amount === '' || amount === '.' ? 0 : -parseFloat(amount)
+            await addAccount(account.name, account.icon, true, amount)
+        }
     }
-    const handleCreateUserNoCC = () => {
-        // Filter and modify accounts.
-        const accountsRightAmount = accounts.map((account) => {
-            let amount = account.amount;
 
-            // Remove commas from the quantity.
-            amount = amount.replace(/,/g, '');
-
-            // Convert to zero if it is an empty string or a dot.
-            if (amount === '' || amount === '.') {
-                amount = '0';
-            } else {
-
-                amount = `-${amount}`
-            }
-
-
-            // Return the modified account.
-            return { ...account, amount };
-        });
-
-
-        createUserAsync(userName, liquidAccounts, language);
-        createUser(userName, liquidAccounts, language)
-
+    const handleCreateUserNoCC = async () => {
+        await createUser(userName, language)
+        for (const acc of liquidAccounts) {
+            const amount = parseFloat(acc.amount.replace(/,/g, '')) || 0
+            await addAccount(acc.name, acc.icon, !!acc.isCC, amount)
+        }
     }
 
     // Ref for Modal
