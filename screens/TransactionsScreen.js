@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext } from 'react'
 import {
     StyleSheet,
     SafeAreaView,
@@ -10,29 +10,63 @@ import {
 } from 'react-native'
 import Text from '@components/Text'
 import Colors from '../constants/colors'
-import filterTransactionsByType from '../utils/filterTransactionsByType'
 import { es, en } from '../utils/languages'
 import SelectType from '../components/SelectType'
 import TransactionCard from '../components/TransactionCard'
 import Header from '../components/Header'
 import { Ionicons } from '@expo/vector-icons'
 import { ExpensiaContext } from '../context/expensiaContext'
+import { useTransactions, useTransactionSearch } from '../hooks/queries'
 
 const { width } = Dimensions.get('window')
 
 const TransactionsScreen = () => {
-    const { transactions, hasMoreTx, loadMoreTransactions, user } = useContext(ExpensiaContext)
+    const { user } = useContext(ExpensiaContext)
+    const strings = user?.language === 'en' ? en : es
+
     const [selectedType, setSelectedType] = useState('all')
     const [txtSearch, setTxtSearch] = useState('')
-    const strings = user && user.language === 'en' ? en : es
 
-    const transactionsDisplay = filterTransactionsByType(transactions, selectedType).filter(t =>
-        txtSearch === '' || (t.description ?? '').toLowerCase().includes(txtSearch.toLowerCase())
+    const isSearching = txtSearch.length > 0
+
+    // Infinite scroll — sin búsqueda
+    const {
+        data: pages,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useTransactions({ type: selectedType })
+
+    // Búsqueda directa a SQLite
+    const { data: searchResults = [] } = useTransactionSearch(txtSearch, selectedType)
+
+    const transactions = isSearching
+        ? searchResults
+        : (pages?.pages.flat() ?? [])
+
+    const renderItem = ({ item }) => (
+        <TransactionCard
+            id={item.id}
+            type={item.type}
+            amount={item.amount}
+            date={item.date}
+            description={item.description}
+            accountId={item.accountId}
+            accountName={item.accountName}
+            globalCategoryId={item.globalCategoryId}
+            customCategoryId={item.customCategoryId}
+            customCategoryName={item.customCategoryName}
+            syncStatus={item.syncStatus}
+        />
     )
 
     return (
         <SafeAreaView style={styles.mainContainer}>
-            <Header darkText={strings.transactionsScreen.headerDarkTxt} gradientText={strings.transactionsScreen.headerGradientTxt} addBtn />
+            <Header
+                darkText={strings.transactionsScreen.headerDarkTxt}
+                gradientText={strings.transactionsScreen.headerGradientTxt}
+                addBtn
+            />
 
             <View style={{ alignItems: 'center' }}>
                 <View style={styles.txtSearchContainer}>
@@ -52,24 +86,11 @@ const TransactionsScreen = () => {
             <SelectType getTypeSelected={setSelectedType} />
 
             <FlatList
-                data={transactionsDisplay}
+                data={transactions}
                 keyExtractor={item => item.id}
                 contentContainerStyle={{ alignItems: 'center', paddingTop: 10 }}
-                renderItem={({ item }) => (
-                    <TransactionCard
-                        id={item.id}
-                        type={item.type}
-                        amount={item.amount}
-                        date={item.date}
-                        description={item.description}
-                        accountId={item.accountId}
-                        globalCategoryId={item.globalCategoryId}
-                        customCategoryId={item.customCategoryId}
-                        customCategoryName={item.customCategoryName}
-                        syncStatus={item.syncStatus}
-                    />
-                )}
-                onEndReached={loadMoreTransactions}
+                renderItem={renderItem}
+                onEndReached={() => { if (!isSearching && hasNextPage) fetchNextPage() }}
                 onEndReachedThreshold={0.3}
                 ListEmptyComponent={() => (
                     <View>
@@ -77,7 +98,9 @@ const TransactionsScreen = () => {
                     </View>
                 )}
                 ListFooterComponent={() =>
-                    hasMoreTx ? <ActivityIndicator size="small" color={Colors.secondary} style={{ marginVertical: 16 }} /> : null
+                    isFetchingNextPage
+                        ? <ActivityIndicator size="small" color={Colors.secondary} style={{ marginVertical: 16 }} />
+                        : null
                 }
             />
         </SafeAreaView>

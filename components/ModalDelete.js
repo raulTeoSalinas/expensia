@@ -9,9 +9,12 @@ import Text from '@components/Text';
 // Utils
 import Colors from "../constants/colors";
 // Navigation
-import { useNavigation } from "@react-navigation/native";
+import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from '@hooks/useTranslation';
 
-const ModalDeleteTran = ({ modalVisible, setModalVisible, onPressDelete }) => {
+const ModalDelete = ({ modalVisible, setModalVisible, onPressDelete, title = "Delete", description = "Are you sure you want to delete this item?" }) => {
+
+    const strings = useTranslation();
 
     const handleCancelButton = () => {
         setModalVisible(!modalVisible)
@@ -19,25 +22,30 @@ const ModalDeleteTran = ({ modalVisible, setModalVisible, onPressDelete }) => {
 
     return (
         <Modal
-            animationType="slide"
+            animationType="fade"
             transparent={true}
             visible={modalVisible}
             statusBarTranslucent={true}
             onRequestClose={() => {
-
                 setModalVisible(!modalVisible);
             }}>
 
 
             <View style={styles.container}>
+                    {/* <View style={styles.blueRow} /> */}
                 <View style={styles.modalContent}>
-                    <Text weight="bold" color="primary" style={styles.headerText}>¿Estás seguro de borrar la transacción?</Text>
+                    {/* Icon warning   */}
+                    <View style={styles.iconContainer}>
+                        <Ionicons name="warning-outline" size={48} color={Colors.error} />
+                    </View>
+                    <Text size="l" weight="bold" color="primary" style={styles.headerText}>{title}</Text>
+                    <Text color="primary" style={styles.descriptionText}>{description}</Text>
                     <View style={styles.buttonsContainer}>
                         <TouchableOpacity onPress={handleCancelButton} style={styles.cancelButton}>
-                            <Text color="accent" style={styles.cancelButtonText}>Cancelar</Text>
+                            <Text color="primary" style={styles.cancelButtonText}>{strings.modalDelete.cancelBtn}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={onPressDelete} style={styles.deleteButton}>
-                            <Text weight="bold" color="light" style={styles.deleteButtonText}>Borrar</Text>
+                            <Text weight="bold" color="light" style={styles.deleteButtonText}>{strings.modalDelete.deleteBtn}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -45,7 +53,7 @@ const ModalDeleteTran = ({ modalVisible, setModalVisible, onPressDelete }) => {
         </Modal>
     );
 }
-export default ModalDeleteTran;
+export default ModalDelete;
 
 const styles = StyleSheet.create({
     container: {
@@ -61,34 +69,49 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         backgroundColor: Colors.light,
         paddingHorizontal: 10,
-        paddingVertical: 25
+        paddingVertical: 25,
+        borderBottomWidth: 20,
+        borderColor: Colors.error,
     },
     headerText: {
-        textAlign: 'center'
+        textAlign: 'center',
+    },
+    descriptionText: {
+        textAlign: 'center',
+        marginTop: 20,
     },
     buttonsContainer: {
         flexDirection: "row",
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 20
+        marginTop: 20,
+        gap: 20,
+        paddingHorizontal: 10
     },
     cancelButton: {
+        borderWidth: 1,
+        borderColor: Colors.sheetBorder,
         paddingHorizontal: 20,
         paddingVertical: 8,
         borderRadius: 10,
-        width: 110
+        flex: 1
     },
     cancelButtonText: {
         textAlign: 'center'
     },
     deleteButton: {
-        backgroundColor: Colors.accent,
+        backgroundColor: Colors.error,
         paddingHorizontal: 20,
         paddingVertical: 8,
         borderRadius: 10,
-        width: 110,
+        flex: 1
     },
     deleteButtonText: {
         textAlign: 'center'
-    }
+    },
+    iconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+    },
 });

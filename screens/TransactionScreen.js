@@ -16,21 +16,22 @@ import { Ionicons } from '@expo/vector-icons'
 import ModalSelect from '../components/ModalSelect'
 import ModalSelectCategory from '../components/ModalSelectCategory'
 import ModalDate from '../components/ModalDate'
-import ModalDeleteTran from '../components/ModalDeleteTran'
+import ModalDelete from '@components/ModalDelete'
 import GradientText from '../components/TextGradient'
-import HeaderTitle from '../components/HeaderTitle'
 import getCurrentDate from '../utils/getCurrentDay'
 import Colors from '../constants/colors'
 import { es, en } from '../utils/languages'
 import { ExpensiaContext } from '../context/expensiaContext'
+import { useAccounts, useTransaction } from '../hooks/queries'
 import Category from '../utils/category'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 const TransactionScreen = ({ navigation, route }) => {
-    const { addTransaction, editTransaction, removeTransaction, transactions, accounts, user } = useContext(ExpensiaContext)
-    const strings = user && user.language === 'en' ? en : es
-
+    const { addTransaction, editTransaction, removeTransaction, user } = useContext(ExpensiaContext)
+    const { data: accounts = [] } = useAccounts()
     const idTransactionClicked = route.params?.id ?? null
+    const { data: existingTx } = useTransaction(idTransactionClicked)
+    const strings = user?.language === 'en' ? en : es
 
     const [modalDeleteTranVisible, setModalDeleteTranVisible] = useState(false)
     const [modalSelectVisible, setModalSelectVisible] = useState(false)
@@ -38,7 +39,7 @@ const TransactionScreen = ({ navigation, route }) => {
 
     const [selectedValue, setSelectedValue] = useState(accounts[0] ?? null)
     const [selectedCategory, setSelectedCategory] = useState(null)
-    const [typeTrans, setTypeTrans] = useState(null)
+    const [typeTrans, setTypeTrans] = useState(idTransactionClicked ? null : (route.params?.typeTrans ?? null))
 
     const [modalDateVisible, setModalDateVisible] = useState(false)
     const [selectedDate, setSelectedDate] = useState(getCurrentDate())
@@ -46,71 +47,42 @@ const TransactionScreen = ({ navigation, route }) => {
     const [text, setText] = useState('')
     const [isSaving, setIsSaving] = useState(false)
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true)
+    const [prefilled, setPrefilled] = useState(false)
 
-    // Determine type from route params or existing transaction
+    // Set initial category when type is known (new transaction)
     useEffect(() => {
-        if (idTransactionClicked) {
-            const tx = transactions.find(t => t.id === idTransactionClicked)
-            if (tx) setTypeTrans(tx.type)
-        } else {
-            setTypeTrans(route.params?.typeTrans ?? null)
-        }
-    }, [idTransactionClicked, transactions, route.params])
-
-    // Set initial category when type is known
-    useEffect(() => {
-        if (!typeTrans) return
-        const label = typeTrans === 'i' ? strings.transactionScreen.headerIncome : strings.transactionScreen.headerExpense
-        navigation.setOptions({ title: label })
-        navigation.setOptions({
-            headerTitle: ({ children }) => <HeaderTitle title={strings.transactionScreen.headerRegister} children={children} />
-        })
-        if (!idTransactionClicked) {
-            const cats = Category.filter(c => c.type === typeTrans)
-            setSelectedCategory(cats[0] ?? null)
-        }
+        if (!typeTrans || idTransactionClicked) return
+        const cats = Category.filter(c => c.type === typeTrans)
+        setSelectedCategory(cats[0] ?? null)
     }, [typeTrans])
 
-    // Pre-fill for edit mode
+    // Pre-fill for edit mode — runs when existingTx loads from DB
     useEffect(() => {
-        if (!idTransactionClicked) return
-        const tx = transactions.find(t => t.id === idTransactionClicked)
-        if (!tx) return
+        if (!existingTx || prefilled) return
+        setPrefilled(true)
 
-        setText(String(tx.amount))
-        setSelectedDate(tx.date)
-        setTxtDescription(tx.description ?? '')
+        setTypeTrans(existingTx.type)
+        setText(String(existingTx.amount))
+        setSelectedDate(existingTx.date)
+        setTxtDescription(existingTx.description ?? '')
 
-        const account = accounts.find(a => a.id === tx.accountId)
+        const account = accounts.find(a => a.id === existingTx.accountId)
         if (account) setSelectedValue(account)
 
-        if (tx.globalCategoryId) {
-            const cat = Category.find(c => c.id === tx.globalCategoryId)
+        if (existingTx.globalCategoryId) {
+            const cat = Category.find(c => c.id === existingTx.globalCategoryId)
             setSelectedCategory(cat ?? null)
-        } else if (tx.customCategoryId) {
+        } else if (existingTx.customCategoryId) {
             setSelectedCategory({
-                id: tx.customCategoryId,
-                nameEN: tx.customCategoryName ?? tx.customCategoryId,
-                nameES: tx.customCategoryName ?? tx.customCategoryId,
-                type: tx.customCategoryType ?? typeTrans,
-                icon: tx.customCategoryIcon ?? 'shape'
+                id: existingTx.customCategoryId,
+                nameEN: existingTx.customCategoryName ?? existingTx.customCategoryId,
+                nameES: existingTx.customCategoryName ?? existingTx.customCategoryId,
+                type: existingTx.customCategoryType ?? existingTx.type,
+                icon: existingTx.customCategoryIcon ?? 'shape'
             })
         }
 
-        navigation.setOptions({
-            headerTitle: ({ children }) => (
-                <>
-                    <Text weight="bold" color="primary" style={{ fontSize: 20 }}>{strings.transactionScreen.headerEdit}</Text>
-                    <GradientText style={{ fontFamily: 'Poppins-SemiBold', fontSize: 20 }}>{children}</GradientText>
-                </>
-            ),
-            headerRight: () => (
-                <TouchableOpacity onPress={() => setModalDeleteTranVisible(true)}>
-                    <Ionicons name="trash-outline" size={24} color={Colors.error} />
-                </TouchableOpacity>
-            ),
-        })
-    }, [])
+    }, [existingTx, accounts])
 
     const handleChangeText = (inputText) => {
         if (inputText === '') { setText(''); return }
@@ -177,13 +149,42 @@ const TransactionScreen = ({ navigation, route }) => {
             : (selectedCategory.nameES?.length > 10 ? selectedCategory.nameES.slice(0, 10) + '...' : selectedCategory.nameES))
         : ''
 
+    const typeLabel = typeTrans === 'i'
+        ? strings.transactionScreen.headerIncome
+        : typeTrans === 'e' ? strings.transactionScreen.headerExpense : ''
+
     return (
         <BottomSheetModalProvider>
             <SafeAreaView style={styles.mainContainer}>
+                {/* Custom header — bypasses iOS 26 UIKit glass on nav bar buttons */}
+                <View style={styles.customHeader}>
+                    <TouchableOpacity onPress={navigation.goBack} hitSlop={12}>
+                        <Ionicons name="caret-back" size={24} color={Colors.primary} />
+                    </TouchableOpacity>
+                    <View style={styles.headerTitleRow}>
+                        {typeTrans ? (
+                            <>
+                                <Text weight="bold" color="primary" style={styles.headerTxt}>
+                                    {idTransactionClicked
+                                        ? strings.transactionScreen.headerEdit
+                                        : strings.transactionScreen.headerRegister}
+                                </Text>
+                                <GradientText style={styles.headerGradientTxt}>{typeLabel}</GradientText>
+                            </>
+                        ) : null}
+                    </View>
+                    {idTransactionClicked ? (
+                        <TouchableOpacity onPress={() => setModalDeleteTranVisible(true)} hitSlop={12}>
+                            <Ionicons name="trash-outline" size={24} color={Colors.error} />
+                        </TouchableOpacity>
+                    ) : (
+                        <View style={{ width: 24 }} />
+                    )}
+                </View>
                 <ScrollView>
                     <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
                         <View style={styles.row}>
-                            <Text style={styles.label}>{strings.transactionScreen.amount}</Text>
+                            <Text weight="bold" color="primary">{strings.transactionScreen.amount}</Text>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 <MaterialIcons name="attach-money" size={24} color={Colors.primary} />
                                 <TextInput
@@ -196,28 +197,28 @@ const TransactionScreen = ({ navigation, route }) => {
                             </View>
                         </View>
                         <View style={styles.row}>
-                            <Text weight="bold" color="primary" size="l">{strings.transactionScreen.account}</Text>
+                            <Text weight="bold" color="primary">{strings.transactionScreen.account}</Text>
                             <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectVisible(true)}>
                                 <Text color="primary" style={styles.txtFakeInput}>{selectedValue?.name ?? ''}</Text>
                                 <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
                             </TouchableOpacity>
                         </View>
                         <View style={styles.row}>
-                            <Text weight="bold" color="primary" size="l">{strings.transactionScreen.date}</Text>
+                            <Text weight="bold" color="primary">{strings.transactionScreen.date}</Text>
                             <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalDateVisible(true)}>
                                 <Text color="primary" style={styles.txtFakeInput}>{selectedDate}</Text>
                                 <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
                             </TouchableOpacity>
                         </View>
                         <View style={styles.row}>
-                            <Text weight="bold" color="primary" size="l">{strings.transactionScreen.category}</Text>
+                            <Text weight="bold" color="primary">{strings.transactionScreen.category}</Text>
                             <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectCategoryVisible(true)}>
                                 <Text color="primary" style={styles.txtFakeInput}>{categoryLabel}</Text>
                                 <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
                             </TouchableOpacity>
                         </View>
                         <View style={{ marginTop: '8%', marginHorizontal: '9%' }}>
-                            <Text weight="bold" color="primary" size="l" style={{ marginBottom: 10 }}>
+                            <Text weight="bold" color="primary" style={{ marginBottom: 10 }}>
                                 {strings.transactionScreen.description} <Text>{strings.transactionScreen.optional}</Text>
                             </Text>
                             <TextInput
@@ -258,7 +259,9 @@ const TransactionScreen = ({ navigation, route }) => {
                         selectedDate={selectedDate}
                         setSelectedDate={setSelectedDate}
                     />
-                    <ModalDeleteTran
+                    <ModalDelete
+                        title={strings.modalDelete.titleDeleteTran}
+                        description={strings.modalDelete.descriptionDeleteTran}
                         modalVisible={modalDeleteTranVisible}
                         setModalVisible={setModalDeleteTranVisible}
                         onPressDelete={onPressDelete}
@@ -275,6 +278,28 @@ const styles = StyleSheet.create({
     mainContainer: {
         flex: 1,
         backgroundColor: Colors.light,
+    },
+    customHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingVertical: 20,
+        borderBottomWidth: 1,
+        borderColor: Colors.sheetBorder,
+    },
+    headerTitleRow: {
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerTxt: {
+        fontSize: 20,
+    },
+    headerGradientTxt: {
+        fontFamily: 'Poppins-SemiBold',
+        fontSize: 20,
     },
     txtInput: {
         backgroundColor: Colors.white,
@@ -315,7 +340,7 @@ const styles = StyleSheet.create({
     btnContainer: {
         backgroundColor: Colors.secondary,
         paddingVertical: 10,
-        width: 120,
+        width: '82%',
         borderRadius: 10
     },
     txtBtn: {
@@ -331,6 +356,6 @@ const styles = StyleSheet.create({
     touchBtn: {
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: '10%'
+        marginTop: '10%',
     }
 })

@@ -18,6 +18,7 @@ import Colors from "../constants/colors";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
+import { useAccounts } from '../hooks/queries';
 // Components
 import Knob from "../components/Knob";
 import ModalSelect from "../components/ModalSelect";
@@ -29,7 +30,8 @@ import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal, BottomSheetT
 const WalletScreen = ({ navigation }) => {
 
 
-    const { accounts, addOrRestAmount, editAccount, addAccount, deleteAccount, user } = useContext(ExpensiaContext);
+    const { addOrRestAmount, editAccount, addAccount, deleteAccount, user } = useContext(ExpensiaContext);
+    const { data: accounts = [] } = useAccounts();
     const strings = user && user.language === "en" ? en : es;
 
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true);

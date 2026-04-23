@@ -138,6 +138,12 @@ export const es = {
         title: "Mes y año",
         confirm: "Aceptar",
         cancel: "Cancelar",
+    },
+    modalDelete: {
+        titleDeleteTran: "¿Estás seguro de borrar la transacción?",
+        descriptionDeleteTran: "Tu transacción se borrará para siempre y se ajustarán los totales de tus cuentas.",
+        cancelBtn: "Cancelar",
+        deleteBtn: "Borrar",
     }
 }
 
@@ -282,5 +288,11 @@ export const en = {
         title: "Month & year",
         confirm: "OK",
         cancel: "Cancel",
+    },
+    modalDelete: {
+        titleDeleteTran: "Are you sure you want to delete this transaction?",
+        descriptionDeleteTran: "Your transaction will be permanently deleted and your account totals will be updated.",
+        cancelBtn: "Cancel",
+        deleteBtn: "Delete",
     }
 }

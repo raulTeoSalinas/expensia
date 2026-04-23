@@ -12,6 +12,7 @@ import ScreenContainer from '../components/ScreenContainer'
 import Header from '../components/Header'
 import SettingsBtn from '../components/SettingsBtn'
 import ModalSettingsBtns from '../components/ModalSettingsBtns'
+import ModalDelete from '../components/ModalDelete'
 import Colors from '../constants/colors'
 import { es, en } from '../utils/languages'
 import { ExpensiaContext } from '../context/expensiaContext'
@@ -202,31 +203,21 @@ const SettingsScreen = ({ navigation }) => {
                 </View>
             </ModalSettingsBtns>
 
-            {/* Delete transactions modal */}
-            <ModalSettingsBtns
+            <ModalDelete
                 modalVisible={modalVisibleDeleteTransactions}
                 setModalVisible={setModalVisibleDeleteTransactions}
                 title={strings.settingsScreen.deleteTransactions}
-                warning
-                actionAccept={handleDeleteTransactions}
-            >
-                <Text color="primary" style={styles.modalTxt}>
-                    {strings.settingsScreen.deleteTransactionsModal}
-                </Text>
-            </ModalSettingsBtns>
+                description={strings.settingsScreen.deleteTransactionsModal}
+                onPressDelete={handleDeleteTransactions}
+            />
 
-            {/* Delete all modal */}
-            <ModalSettingsBtns
+            <ModalDelete
                 modalVisible={modalVisibleDeleteAll}
                 setModalVisible={setModalVisibleDeleteAll}
                 title={strings.settingsScreen.deleteAll}
-                warning
-                actionAccept={handleDeleteAll}
-            >
-                <Text style={styles.modalTxt}>
-                    {strings.settingsScreen.deleteAllModal}
-                </Text>
-            </ModalSettingsBtns>
+                description={strings.settingsScreen.deleteAllModal}
+                onPressDelete={handleDeleteAll}
+            />
 
             {/* Hidden login modal */}
             <Modal visible={showLoginModal} transparent animationType="fade" onRequestClose={() => setShowLoginModal(false)}>
@@ -292,10 +283,6 @@ const styles = StyleSheet.create({
     },
     languageTxt: {
         includeFontPadding: false,
-    },
-    modalTxt: {
-        includeFontPadding: false,
-        textAlign: 'center'
     },
     inputContainer: {
         height: 40

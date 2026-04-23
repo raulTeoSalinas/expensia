@@ -1,14 +1,14 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { initDB, runSQL, querySQL, queryOneSQL } from '../services/db'
 import { syncOne } from '../services/syncService'
 import { ErrorType } from '../services/apiService'
 import { getIsOnline } from '../hooks/useNetworkStatus'
 import { useAuth } from './authContext'
+import { QK } from '../hooks/queries'
 import Toast from 'react-native-toast-message'
 
 export const ExpensiaContext = createContext(null)
-
-const PAGE_SIZE = 20
 
 function generateId() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
@@ -19,7 +19,6 @@ function generateId() {
 
 function showToast(errorType, isLoggedIn, logoutFn) {
   if (!isLoggedIn) {
-    // Normal user — just confirm save
     if (errorType === null) Toast.show({ type: 'success', text1: 'Guardado' })
     else Toast.show({ type: 'error', text1: 'No se pudo guardar' })
     return
@@ -38,78 +37,39 @@ function showToast(errorType, isLoggedIn, logoutFn) {
 
 const ExpensiaContextProvider = ({ children }) => {
   const { isLoggedIn, logout } = useAuth()
+  const qc = useQueryClient()
   const [user, setUser] = useState(null)
-  const [accounts, setAccounts] = useState([])
-  const [transactions, setTransactions] = useState([])
-  const [txPage, setTxPage] = useState(0)
-  const [hasMoreTx, setHasMoreTx] = useState(false)
-  const [txFilter, setTxFilter] = useState({ month: null, accountId: null })
+  const [dbReady, setDbReady] = useState(false)
 
-  // ─── Bootstrap ──────────────────────────────────────────────────────────────
+  // ─── Invalidation ─────────────────────────────────────────────────────────
 
-  async function loadUser() {
-    const row = await queryOneSQL('SELECT * FROM users LIMIT 1')
-    setUser(row ?? null)
-    return row
+  function invalidateTransactionQueries() {
+    qc.invalidateQueries({ queryKey: ['transactions'] })
+    qc.invalidateQueries({ queryKey: ['transactionSearch'] })
+    qc.invalidateQueries({ queryKey: ['monthSummary'] })
+    qc.invalidateQueries({ queryKey: ['calendarDots'] })
+    qc.invalidateQueries({ queryKey: ['monthCategoryBreakdown'] })
+    qc.invalidateQueries({ queryKey: ['dayTransactions'] })
+    qc.invalidateQueries({ queryKey: ['transaction'] })
   }
 
-  async function loadAccounts() {
-    const rows = await querySQL('SELECT * FROM accounts')
-    setAccounts(rows)
-    return rows
+  function invalidateAccountQueries() {
+    qc.invalidateQueries({ queryKey: QK.accounts })
   }
 
-  async function loadTransactions({ month = null, accountId = null, reset = false } = {}) {
-    const page = reset ? 0 : txPage
-    const conditions = ['1=1']
-    const params = []
-
-    if (month) {
-      conditions.push("date >= ? AND date < ?")
-      const [year, monthNum] = month.split('-').map(Number)
-      const next = monthNum === 12 ? `${year + 1}-01` : `${year}-${String(monthNum + 1).padStart(2, '0')}`
-      params.push(`${month}-01`, `${next}-01`)
-    }
-
-    if (accountId) {
-      conditions.push('accountId = ?')
-      params.push(accountId)
-    }
-
-    params.push(PAGE_SIZE, page * PAGE_SIZE)
-
-    const rows = await querySQL(
-      `SELECT t.*,
-        c.name AS customCategoryName, c.icon AS customCategoryIcon, c.type AS customCategoryType
-       FROM transactions t
-       LEFT JOIN custom_categories c ON t.customCategoryId = c.id
-       WHERE ${conditions.join(' AND ')}
-       ORDER BY date DESC, rowid DESC
-       LIMIT ? OFFSET ?`,
-      params
-    )
-
-    setTransactions(prev => reset ? rows : [...prev, ...rows])
-    setHasMoreTx(rows.length === PAGE_SIZE)
-    if (reset) setTxPage(1); else setTxPage(p => p + 1)
-    if (reset) setTxFilter({ month, accountId })
-  }
-
-  function loadMoreTransactions() {
-    if (hasMoreTx) loadTransactions(txFilter)
-  }
+  // ─── Bootstrap ────────────────────────────────────────────────────────────
 
   useEffect(() => {
     async function bootstrap() {
       await initDB()
-      await loadUser()
-      await loadAccounts()
-      await loadTransactions({ reset: true })
+      const row = await queryOneSQL('SELECT * FROM users LIMIT 1')
+      setUser(row ?? null)
+      setDbReady(true)
     }
     bootstrap()
   }, [])
 
-  // ─── User ────────────────────────────────────────────────────────────────────
+  // ─── User ─────────────────────────────────────────────────────────────────
 
   async function createUser(name, language) {
     const id = generateId()
@@ -119,23 +79,30 @@ const ExpensiaContextProvider = ({ children }) => {
     )
     const newUser = { id, name, language, isPrivacyEnabled: 0 }
     setUser(newUser)
+    qc.setQueryData(QK.user, newUser)
     return newUser
   }
 
   async function updateUserName(newName) {
     await runSQL('UPDATE users SET name = ? WHERE id = ?', [newName, user.id])
-    setUser(prev => ({ ...prev, name: newName }))
+    const updated = { ...user, name: newName }
+    setUser(updated)
+    qc.setQueryData(QK.user, updated)
   }
 
   async function editUserLanguage(language) {
     await runSQL('UPDATE users SET language = ? WHERE id = ?', [language, user.id])
-    setUser(prev => ({ ...prev, language }))
+    const updated = { ...user, language }
+    setUser(updated)
+    qc.setQueryData(QK.user, updated)
   }
 
   async function togglePrivacy() {
     const next = user.isPrivacyEnabled ? 0 : 1
     await runSQL('UPDATE users SET isPrivacyEnabled = ? WHERE id = ?', [next, user.id])
-    setUser(prev => ({ ...prev, isPrivacyEnabled: next }))
+    const updated = { ...user, isPrivacyEnabled: next }
+    setUser(updated)
+    qc.setQueryData(QK.user, updated)
   }
 
   async function deleteUser() {
@@ -145,18 +112,15 @@ const ExpensiaContextProvider = ({ children }) => {
     await runSQL('DELETE FROM custom_categories')
     await runSQL('DELETE FROM sync_queue')
     setUser(null)
-    setAccounts([])
-    setTransactions([])
+    qc.clear()
   }
 
   async function clearTransactions() {
     await runSQL('DELETE FROM transactions')
-    setTransactions([])
-    setTxPage(0)
-    setHasMoreTx(true)
+    invalidateTransactionQueries()
   }
 
-  // ─── Accounts ────────────────────────────────────────────────────────────────
+  // ─── Accounts ─────────────────────────────────────────────────────────────
 
   async function addAccount(name, icon, isCC, initialAmount = 0) {
     const id = generateId()
@@ -165,18 +129,17 @@ const ExpensiaContextProvider = ({ children }) => {
         'INSERT INTO accounts (id, name, icon, isCC, amount, syncStatus) VALUES (?, ?, ?, ?, ?, ?)',
         [id, name, icon, isCC ? 1 : 0, initialAmount, isLoggedIn ? 'pending' : 'local']
       )
-      const account = { id, name, icon, isCC: isCC ? 1 : 0, amount: initialAmount, syncStatus: isLoggedIn ? 'pending' : 'local', backendId: null }
-      setAccounts(prev => [...prev, account])
+      invalidateAccountQueries()
 
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('account', 'CREATE', id, { name, icon, isCC: !!isCC, amount: initialAmount }, online)
-        refreshAccount(id)
+        invalidateAccountQueries()
         showToast(errorType, isLoggedIn, logout)
       } else {
         showToast(null, false)
       }
-      return account
+      return id
     } catch {
       showToast('LOCAL_ERROR', isLoggedIn, logout)
       throw new Error('Failed to save account')
@@ -186,7 +149,7 @@ const ExpensiaContextProvider = ({ children }) => {
   async function editAccount(id, name, icon) {
     try {
       await runSQL('UPDATE accounts SET name = ?, icon = ? WHERE id = ?', [name, icon, id])
-      setAccounts(prev => prev.map(a => a.id === id ? { ...a, name, icon } : a))
+      invalidateAccountQueries()
 
       if (isLoggedIn) {
         const online = await getIsOnline()
@@ -210,10 +173,9 @@ const ExpensiaContextProvider = ({ children }) => {
       } else {
         showToast(null, false)
       }
-      // Delete locally after (or regardless of sync result, since cascade will clean transactions)
       await runSQL('DELETE FROM accounts WHERE id = ?', [id])
-      setAccounts(prev => prev.filter(a => a.id !== id))
-      setTransactions(prev => prev.filter(t => t.accountId !== id))
+      invalidateAccountQueries()
+      invalidateTransactionQueries()
     } catch {
       showToast('LOCAL_ERROR', isLoggedIn, logout)
       throw new Error('Failed to delete account')
@@ -223,15 +185,10 @@ const ExpensiaContextProvider = ({ children }) => {
   async function addOrRestAmount(amount, type, accountId) {
     const delta = type === 'i' ? parseFloat(amount) : -parseFloat(amount)
     await runSQL('UPDATE accounts SET amount = amount + ? WHERE id = ?', [delta, accountId])
-    setAccounts(prev => prev.map(a => a.id === accountId ? { ...a, amount: a.amount + delta } : a))
+    invalidateAccountQueries()
   }
 
-  async function refreshAccount(id) {
-    const row = await queryOneSQL('SELECT * FROM accounts WHERE id = ?', [id])
-    if (row) setAccounts(prev => prev.map(a => a.id === id ? row : a))
-  }
-
-  // ─── Transactions ─────────────────────────────────────────────────────────────
+  // ─── Transactions ──────────────────────────────────────────────────────────
 
   async function addTransaction({ type, amount, accountId, date, globalCategoryId, customCategoryId, description }) {
     const id = generateId()
@@ -239,13 +196,14 @@ const ExpensiaContextProvider = ({ children }) => {
       await runSQL(
         `INSERT INTO transactions (id, type, amount, date, description, accountId, globalCategoryId, customCategoryId, syncStatus)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [id, type, parseFloat(amount), date, description ?? null, accountId, globalCategoryId ?? null, customCategoryId ?? null, isLoggedIn ? 'pending' : 'local']
+        [id, type, parseFloat(amount), date, description ?? null, accountId,
+         globalCategoryId ?? null, customCategoryId ?? null, isLoggedIn ? 'pending' : 'local']
       )
-      // Update account balance locally
-      await addOrRestAmount(amount, type, accountId)
+      const delta = type === 'i' ? parseFloat(amount) : -parseFloat(amount)
+      await runSQL('UPDATE accounts SET amount = amount + ? WHERE id = ?', [delta, accountId])
 
-      const newTx = { id, type, amount: parseFloat(amount), date, description, accountId, globalCategoryId, customCategoryId, syncStatus: isLoggedIn ? 'pending' : 'local', backendId: null }
-      setTransactions(prev => [newTx, ...prev])
+      invalidateTransactionQueries()
+      invalidateAccountQueries()
 
       if (isLoggedIn) {
         const accountRow = await queryOneSQL('SELECT backendId FROM accounts WHERE id = ?', [accountId])
@@ -257,13 +215,13 @@ const ExpensiaContextProvider = ({ children }) => {
           idCustomCategory: catRow?.backendId ?? null,
           idGlobalCategory: globalCategoryId ?? null,
         }, online)
-        refreshTransaction(id)
+        invalidateTransactionQueries()
         showToast(errorType, isLoggedIn, logout)
       } else {
         showToast(null, false)
       }
       return id
-    } catch {
+    } catch (e) {
       showToast('LOCAL_ERROR', isLoggedIn, logout)
       throw new Error('Failed to save transaction')
     }
@@ -273,7 +231,6 @@ const ExpensiaContextProvider = ({ children }) => {
     try {
       const old = await queryOneSQL('SELECT * FROM transactions WHERE id = ?', [id])
 
-      // Reverse old balance effect, apply new
       const reverseDelta = old.type === 'i' ? -parseFloat(old.amount) : parseFloat(old.amount)
       await runSQL('UPDATE accounts SET amount = amount + ? WHERE id = ?', [reverseDelta, old.accountId])
 
@@ -282,12 +239,12 @@ const ExpensiaContextProvider = ({ children }) => {
 
       await runSQL(
         `UPDATE transactions SET type=?, amount=?, date=?, description=?, accountId=?, globalCategoryId=?, customCategoryId=? WHERE id=?`,
-        [type, parseFloat(amount), date, description ?? null, accountId, globalCategoryId ?? null, customCategoryId ?? null, id]
+        [type, parseFloat(amount), date, description ?? null, accountId,
+         globalCategoryId ?? null, customCategoryId ?? null, id]
       )
 
-      setTransactions(prev => prev.map(t => t.id === id ? { ...t, type, amount: parseFloat(amount), date, description, accountId, globalCategoryId, customCategoryId } : t))
-      await refreshAccount(old.accountId)
-      if (accountId !== old.accountId) await refreshAccount(accountId)
+      invalidateTransactionQueries()
+      invalidateAccountQueries()
 
       if (isLoggedIn) {
         const accountRow = await queryOneSQL('SELECT backendId FROM accounts WHERE id = ?', [accountId])
@@ -318,8 +275,8 @@ const ExpensiaContextProvider = ({ children }) => {
       await runSQL('UPDATE accounts SET amount = amount + ? WHERE id = ?', [reverseDelta, tx.accountId])
       await runSQL('DELETE FROM transactions WHERE id = ?', [id])
 
-      setTransactions(prev => prev.filter(t => t.id !== id))
-      await refreshAccount(tx.accountId)
+      invalidateTransactionQueries()
+      invalidateAccountQueries()
 
       if (isLoggedIn) {
         const online = await getIsOnline()
@@ -334,12 +291,7 @@ const ExpensiaContextProvider = ({ children }) => {
     }
   }
 
-  async function refreshTransaction(id) {
-    const row = await queryOneSQL('SELECT * FROM transactions WHERE id = ?', [id])
-    if (row) setTransactions(prev => prev.map(t => t.id === id ? row : t))
-  }
-
-  // ─── Custom Categories ────────────────────────────────────────────────────────
+  // ─── Custom Categories ─────────────────────────────────────────────────────
 
   async function addCustomCategory(name, type, icon) {
     const id = generateId()
@@ -348,6 +300,7 @@ const ExpensiaContextProvider = ({ children }) => {
         'INSERT INTO custom_categories (id, name, type, icon, syncStatus) VALUES (?, ?, ?, ?, ?)',
         [id, name, type, icon, isLoggedIn ? 'pending' : 'local']
       )
+      qc.invalidateQueries({ queryKey: QK.customCategories })
 
       if (isLoggedIn) {
         const online = await getIsOnline()
@@ -366,6 +319,7 @@ const ExpensiaContextProvider = ({ children }) => {
   async function editCustomCategory(id, name, icon) {
     try {
       await runSQL('UPDATE custom_categories SET name = ?, icon = ? WHERE id = ?', [name, icon, id])
+      qc.invalidateQueries({ queryKey: QK.customCategories })
 
       if (isLoggedIn) {
         const online = await getIsOnline()
@@ -390,20 +344,18 @@ const ExpensiaContextProvider = ({ children }) => {
         showToast(null, false)
       }
       await runSQL('DELETE FROM custom_categories WHERE id = ?', [id])
+      qc.invalidateQueries({ queryKey: QK.customCategories })
     } catch {
       showToast('LOCAL_ERROR', isLoggedIn, logout)
       throw new Error('Failed to delete category')
     }
   }
 
-  // ─── Context value ────────────────────────────────────────────────────────────
+  // ─── Context value ─────────────────────────────────────────────────────────
 
   const value = {
-    // State
     user,
-    accounts,
-    transactions,
-    hasMoreTx,
+    dbReady,
     // User
     createUser,
     deleteUser,
@@ -420,15 +372,10 @@ const ExpensiaContextProvider = ({ children }) => {
     addTransaction,
     editTransaction,
     removeTransaction,
-    loadTransactions,
-    loadMoreTransactions,
     // Custom Categories
     addCustomCategory,
     editCustomCategory,
     deleteCustomCategory,
-    // Reload helpers
-    loadUser,
-    loadAccounts,
   }
 
   return (

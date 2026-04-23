@@ -31,7 +31,7 @@ const Colors = {
     sheetHandle: '#d6d5dd',
     sheetBackground: '#ffffff',
     sheetBorder: '#d6d5dd',
-    error: '#ff0000',
+    error: '#ff0000b0',
     placeholder: '#bebebe',
     tabBarInactive: '#8f8f8f97',
     splashBackground: '#06002e',

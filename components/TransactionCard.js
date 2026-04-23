@@ -13,15 +13,12 @@ const { width } = Dimensions.get('window')
 
 const TransactionCard = ({
   id, type, amount, date, description, syncStatus,
-  accountId, globalCategoryId, customCategoryId,
-  customCategoryName
+  accountId, accountName,
+  globalCategoryId, customCategoryId, customCategoryName
 }) => {
   const navigation = useNavigation()
-  const { user, accounts } = useContext(ExpensiaContext)
-  const strings = user && user.language === 'en' ? en : es
-
-  const account = accounts.find(a => a.id === accountId)
-  const accountName = account?.name ?? ''
+  const { user } = useContext(ExpensiaContext)
+  const strings = user?.language === 'en' ? en : es
 
   let categoryName = ''
   if (globalCategoryId) {
@@ -45,7 +42,7 @@ const TransactionCard = ({
         </View>
 
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 5 }}>
-          <Text weight="bold" color="light">{strings.transactionCard.account}<Text color="light">{accountName}</Text></Text>
+          <Text weight="bold" color="light">{strings.transactionCard.account}<Text color="light">{accountName ?? ''}</Text></Text>
           <Text weight="bold" color="light">{strings.transactionCard.date}<Text color="light">{date}</Text></Text>
         </View>
         <View style={{ flexDirection: 'row', justifyContent: 'flex-start' }}>

@@ -1,6 +1,7 @@
-import { LogBox } from 'react-native'
+import { LogBox, View, ActivityIndicator } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { useContext, useCallback } from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useFonts } from 'expo-font'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
@@ -21,7 +22,6 @@ import CreateAccountsScreen from './screens/CreateAccountsScreen'
 import DayTransactionScreen from './screens/DayTransactionScreen'
 import CreateCCScreen from './screens/CreateCCScreen'
 // Components
-import GoBackBtn from './components/GoBackBtn'
 // Context
 import ExpensiaContextProvider, { ExpensiaContext } from './context/expensiaContext'
 import { AuthContextProvider, useAuth } from './context/authContext'
@@ -34,6 +34,8 @@ import Colors from './constants/colors'
 import { es, en } from './utils/languages'
 
 LogBox.ignoreLogs(['Sending `onAnimatedValueUpdate` with no listeners registered.'])
+
+const queryClient = new QueryClient()
 
 const Stack = createNativeStackNavigator()
 const Tab = createMaterialTopTabNavigator()
@@ -70,7 +72,7 @@ const TabNavigation = () => {
 }
 
 const StackNavigation = () => {
-  const { user } = useContext(ExpensiaContext)
+  const { user, dbReady } = useContext(ExpensiaContext)
   const { isLoggedIn } = useAuth()
 
   const handleReconnect = useCallback(() => {
@@ -78,6 +80,14 @@ const StackNavigation = () => {
   }, [isLoggedIn])
 
   useNetworkStatus(handleReconnect)
+
+  if (!dbReady) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: Colors.light }}>
+        <ActivityIndicator size="large" color={Colors.secondary} />
+      </View>
+    )
+  }
 
   return (
     <Stack.Navigator>
@@ -88,29 +98,10 @@ const StackNavigation = () => {
             options={{ animation: 'slide_from_bottom', headerShown: false, presentation: 'transparentModal' }}
           />
           <Stack.Screen name="Transaction" component={TransactionScreen}
-            options={{
-              animation: 'slide_from_bottom',
-              headerBackTitleVisible: false,
-              headerBackVisible: false,
-              headerTitleAlign: 'center',
-              headerLeft: GoBackBtn,
-              headerTitleStyle: { fontFamily: 'Poppins-SemiBold' },
-              headerStyle: { backgroundColor: Colors.light },
-              headerTintColor: Colors.primary,
-              presentation: 'modal',
-            }}
+            options={{ animation: 'slide_from_bottom', presentation: 'modal', headerShown: false }}
           />
           <Stack.Screen name="DayTransaction" component={DayTransactionScreen}
-            options={{
-              animation: 'slide_from_bottom',
-              headerBackTitleVisible: false,
-              headerBackVisible: false,
-              headerTitleAlign: 'center',
-              headerLeft: GoBackBtn,
-              headerTitleStyle: { fontFamily: 'Poppins-SemiBold' },
-              headerStyle: { backgroundColor: Colors.light },
-              headerTintColor: Colors.primary,
-            }}
+            options={{ animation: 'slide_from_bottom', headerShown: false }}
           />
         </>
       ) : (
@@ -133,6 +124,7 @@ const App = () => {
   if (!fontsLoaded) return null
 
   return (
+    <QueryClientProvider client={queryClient}>
     <AuthContextProvider>
       <ExpensiaContextProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -146,6 +138,7 @@ const App = () => {
         </GestureHandlerRootView>
       </ExpensiaContextProvider>
     </AuthContextProvider>
+    </QueryClientProvider>
   )
 }
 

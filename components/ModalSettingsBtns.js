@@ -65,11 +65,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: Colors.light,
         paddingHorizontal: '5%',
-        paddingVertical: '5%'
+        paddingVertical: '5%',
+        borderBottomWidth: 20,
+        borderColor: Colors.secondary
     },
     actionRow: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
+        gap: 20,
         marginTop: '8%'
     },
     txtCancel: {
@@ -80,7 +83,8 @@ const styles = StyleSheet.create({
     },
     opacities: {
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        flex: 1,
     },
     btnAccept: {
         backgroundColor: Colors.secondary,
@@ -88,7 +92,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 12,
         paddingHorizontal: 20,
-        paddingVertical: 5
+        paddingVertical: 8,
+        width: '100%',
     },
     title: {
         textAlign: 'center',
