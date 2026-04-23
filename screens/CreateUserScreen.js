@@ -137,11 +137,12 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
     },
     btnContainer: {
+        justifyContent: 'center',
+        alignItems: 'center',
         backgroundColor: Colors.primary,
-        paddingHorizontal: 20,
-        paddingVertical: 5,
+        paddingVertical: 8,
         marginTop: "15%",
         borderRadius: 10,
-
+        width: 270,
     }
 });

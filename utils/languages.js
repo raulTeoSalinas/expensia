@@ -9,7 +9,7 @@ export const es = {
         welcomeTxt: "Bienvenido a ",
         chooseLanguage: "Selecciona tu idioma",
         enterFName: "Introduce tu primer nombre",
-        acceptBtn: "Aceptar"
+        acceptBtn: "Comenzar"
     },
     createAccountsScreen: {
         welcome: "Hola, ",
@@ -31,11 +31,11 @@ export const es = {
         header1: "Añade tus ",
         header2: "Tarjetas de Crédito",
         registerTxt: "Ahora, añade tus tarjetas de crédito para completar la configuración de las cuentas.", registerTDC: "Podrás añadir tus tarjetas de crédito en la siguiente pantalla.",
-        onlyAdd: "Por favor, añade únicamente el monto total que debes.",
+        onlyAdd: "Por favor, añade únicamente el monto total que debes a cada tarjeta.",
         registerTDC: "Puedes saltar esta pantalla si no tienes tarjetas de crédito.",
         bank: "Crédito Banco",
-        startBtn: "Agregar tarjetas de crédito",
-        noCC: "No tengo tarjetas de crédito.",
+        startBtn: "Comenzar",
+        noCC: "No tengo tarjetas de crédito. (Saltar)",
         addAccountBtn: "Añadir Cuenta",
         modalAddAccountTitle: "Añade Una Nueva Cuenta",
         chooseIconTxt: "Escoge Un Icono",
@@ -158,7 +158,7 @@ export const en = {
         welcomeTxt: "Welcome to ",
         chooseLanguage: "Choose your language",
         enterFName: "Enter your first name",
-        acceptBtn: "Accept"
+        acceptBtn: "Continue"
     },
     createAccountsScreen: {
         welcome: "Hello, ",
@@ -180,12 +180,12 @@ export const en = {
         header1: "Add your ",
         header2: "Credit Cards",
         registerTxt: "Now, let's add your credit cards to complete the account setup.",
-        onlyAdd: "Please only enter the total amount you owe.",
+        onlyAdd: "Please only enter the total amount you owe to each card.",
         registerTDC: "You can skip this screen if you don't have credit cards.",
         noAccounts: "Please add at least one liquid account.",
         bank: "Bank Credit",
-        startBtn: "Add credit cards",
-        noCC: "I don't have credit cards.",
+        startBtn: "Continue",
+        noCC: "I don't have credit cards. (Skip)",
         addAccountBtn: "Add Account",
         modalAddAccountTitle: "Add a New Account",
         chooseIconTxt: "Choose an Icon",

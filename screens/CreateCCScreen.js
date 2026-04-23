@@ -165,10 +165,10 @@ const CreateCCScreen = ({ navigation, route }) => {
                     <GradientText style={styles.txtWelcome}>{strings.createCCScreen.header2}</GradientText>
                 </View>
                 <Text color="primary" size="l" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.registerTxt}</Text>
-                <Text weight="bold" color="primary" size="l" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.onlyAdd}</Text>
-                <Text weight="bold" color="primary" size="s" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.registerTDC}</Text>
+                <Text color="primary" size="l" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.onlyAdd}</Text>
+                {/* <Text weight="bold" color="primary" size="s" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.registerTDC}</Text> */}
                 {accounts.map((account, i) => (
-                    <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: "6%" }}>
                         <View style={styles.cardTotals}>
                             <View style={styles.row}>
                                 <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
@@ -193,7 +193,7 @@ const CreateCCScreen = ({ navigation, route }) => {
                         </View>
 
                         <TouchableOpacity onPress={handleDeleteAccount.bind(null, account.id)}>
-                            <MaterialCommunityIcons name="trash-can-outline" size={28} color={Colors.error} style={{ marginLeft: 10 }} />
+                            <MaterialCommunityIcons name="trash-can-outline" size={28} color={Colors.error} style={{ marginLeft: 2 }} />
                         </TouchableOpacity>
                     </View>
                 ))}
@@ -206,12 +206,12 @@ const CreateCCScreen = ({ navigation, route }) => {
                 </View>
 
                 <View>
-                    <TouchableOpacity onPress={handleCreateUserNoCC} style={{ alignItems: "center", marginTop: '20%', backgroundColor: Colors.accent, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
+                    <TouchableOpacity onPress={handleCreateUserNoCC} style={{ alignItems: "center", marginTop: '20%', backgroundColor: Colors.accent, borderRadius: 10, marginHorizontal: "6%", paddingVertical: 8 }}>
                         <Text weight="bold" color="light">{strings.createCCScreen.noCC}</Text>
                     </TouchableOpacity>
                 </View>
                 <View>
-                    <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: 32, marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
+                    <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: 32, marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: "6%", paddingVertical: 8 }}>
                         <Text weight="bold" color="light">{strings.createCCScreen.startBtn}</Text>
                     </TouchableOpacity>
                 </View>
@@ -270,7 +270,7 @@ const CreateCCScreen = ({ navigation, route }) => {
                         </View>
                         <View style={styles.buttonsContainer}>
                             <TouchableOpacityMod onPress={handleAddAccount} style={styles.createButton}>
-                                <Text style={styles.createButtonText}>{strings.createAccountsScreen.createBtnTxt}</Text>
+                                <Text weight="bold" color="light" style={styles.createButtonText}>{strings.createAccountsScreen.createBtnTxt}</Text>
                             </TouchableOpacityMod>
                         </View>
                     </View>
@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
         marginLeft: 10
     },
     txtInput: {
-        width: 80,
+        width: 100,
         fontFamily: 'Poppins-Light',
         includeFontPadding: false,
     },
@@ -417,7 +417,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         paddingVertical: 8,
         borderRadius: 10,
-        width: "95%",
+        width: "98%",
     },
     createButtonText: {
         textAlign: 'center',

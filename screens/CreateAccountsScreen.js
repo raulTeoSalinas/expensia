@@ -163,14 +163,14 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                     <GradientText style={styles.txtWelcome}>{userName}</GradientText>
                 </View>
                 <Text color="primary" size="l" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTxt}</Text>
-                <Text weight="bold" color="primary" size="s" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTDC}</Text>
+                {/* <Text weight="bold" color="primary" size="s" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createAccountsScreen.registerTDC}</Text> */}
                 {
                     accounts.length < 1 && (
-                        <Text weight="bold" color="error" style={{ fontSize: 16, textAlign: 'center', marginTop: 30, paddingHorizontal: 30 }}>{strings.createAccountsScreen.noAccounts}</Text>
+                        <Text weight="bold" color="error" style={{ fontSize: 16, textAlign: 'center', marginVertical: 30, paddingHorizontal: 30 }}>{strings.createAccountsScreen.noAccounts}</Text>
                     )
                 }
                 {accounts.map((account, i) => (
-                    <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: "6%" }}>
                         <View style={styles.cardTotals}>
                             <View style={styles.row}>
                                 <View style={{ justifyContent: 'center', alignItems: 'center', flexDirection: 'row' }}>
@@ -195,7 +195,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                         </View>
 
                         <TouchableOpacity onPress={handleDeleteAccount.bind(null, account.id)}>
-                            <MaterialCommunityIcons name="trash-can-outline" size={28} color={Colors.error} style={{ marginLeft: 10 }} />
+                            <MaterialCommunityIcons name="trash-can-outline" size={28} color={Colors.error} style={{ marginLeft: 2 }} />
                         </TouchableOpacity>
                     </View>
                 ))}
@@ -208,7 +208,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                 </View>
 
                 <View>
-                    <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: '20%', marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: 50, paddingVertical: 8 }}>
+                    <TouchableOpacity onPress={handleCreateUser} style={{ alignItems: "center", marginTop: '20%', marginBottom: '30%', backgroundColor: Colors.secondary, borderRadius: 10, marginHorizontal: "6%", paddingVertical: 8 }}>
                         <Text weight="bold" color="light">{strings.createAccountsScreen.startBtn}</Text>
                     </TouchableOpacity>
                 </View>
@@ -322,7 +322,7 @@ const styles = StyleSheet.create({
         marginLeft: 10,
     },
     txtInput: {
-        width: 80,
+        width: 100,
         fontFamily: 'Poppins-Light',
         includeFontPadding: false,
     },
@@ -416,7 +416,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         marginTop: 30,
         borderRadius: 10,
-        width: "95%",
+        width: "98%",
     },
     createButtonText: {
         textAlign: 'center',
