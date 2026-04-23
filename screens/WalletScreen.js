@@ -15,6 +15,7 @@ import Text from '@components/Text';
 import { MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 // Utils
 import Colors from "../constants/colors";
+import { getAccountIconRows } from "../constants/accountIcons";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
@@ -177,7 +178,7 @@ const WalletScreen = ({ navigation }) => {
     const presentRef = useRef(null);
 
     // Memoized snap points for Present modal
-    const snapPoints = useMemo(() => ["40%"], []);
+    const snapPoints = useMemo(() => ["50%"], []);
 
     // Function to close the Present modal.
     const closeModal = () => presentRef.current?.close();
@@ -329,26 +330,24 @@ const WalletScreen = ({ navigation }) => {
                 )}
 
                 <Text weight="bold" style={{ marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
-                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20 }}>
-                    <TouchableOpacity onPress={() => setSelectedIcon("bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bank" && { backgroundColor: Colors.primary }]}>
-                        <MaterialCommunityIcons name="bank" size={24} color={Colors.accent} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSelectedIcon("cash")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "cash" && { backgroundColor: Colors.primary }]}>
-                        <MaterialCommunityIcons name="cash" size={24} color={Colors.accent} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSelectedIcon("piggy-bank")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "piggy-bank" && { backgroundColor: Colors.primary }]}>
-                        <MaterialCommunityIcons name="piggy-bank" size={24} color={Colors.accent} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSelectedIcon("bitcoin")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon == "bitcoin" && { backgroundColor: Colors.primary }]}>
-                        <MaterialCommunityIcons name="bitcoin" size={24} color={Colors.accent} />
-                    </TouchableOpacity>
-                    <TouchableOpacityMod onPress={() => setSelectedIcon("credit-card-outline")} style={[{ paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10 }, selectedIcon === "credit-card-outline" && { backgroundColor: Colors.primary }]}>
-                        <MaterialCommunityIcons name="credit-card-outline" size={24} color={Colors.accent} />
-                    </TouchableOpacityMod>
+                <View style={styles.iconPickerGrid}>
+                    {getAccountIconRows().map((row, rowIndex) => (
+                        <View key={rowIndex} style={styles.iconPickerRow}>
+                            {row.map((iconName) => (
+                                <TouchableOpacityMod
+                                    key={iconName}
+                                    onPress={() => setSelectedIcon(iconName)}
+                                    style={[styles.iconPickerButton, selectedIcon === iconName && styles.iconPickerButtonSelected]}
+                                >
+                                    <MaterialCommunityIcons name={iconName} size={24} color={Colors.accent} />
+                                </TouchableOpacityMod>
+                            ))}
+                        </View>
+                    ))}
                 </View>
 
                 <View style={{ flexDirection: "row", justifyContent: 'space-around', alignItems: 'center', marginTop: 20 }}>
-                    <TouchableOpacity onPress={handleAddAccount} style={{ backgroundColor: Colors.secondary, paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "95%" }}>
+                    <TouchableOpacity onPress={handleAddAccount} style={{ backgroundColor: Colors.secondary, paddingHorizontal: 20, paddingVertical: 8, borderRadius: 10, width: "98%" }}>
                         <Text weight="bold" color="light" style={{ textAlign: 'center' }}>{isEdited ? strings.walletScreen.saveBtnTxt : strings.walletScreen.createBtnTxt}</Text>
                     </TouchableOpacity>
                 </View>
@@ -479,5 +478,25 @@ const styles = StyleSheet.create({
         borderColor: Colors.secondary,
         color: Colors.primary,
 
+    },
+    iconPickerGrid: {
+        marginTop: 20,
+        gap: 10,
+    },
+    iconPickerRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    iconPickerButton: {
+        flex: 1,
+        alignItems: 'center',
+        paddingVertical: 5,
+        paddingHorizontal: 4,
+        borderRadius: 10,
+    },
+    iconPickerButtonSelected: {
+        backgroundColor: Colors.primary,
     },
 });

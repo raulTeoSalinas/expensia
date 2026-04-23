@@ -13,6 +13,7 @@ import Text from '@components/Text';
 
 // Utils
 import Colors from "../constants/colors";
+import { getAccountIconRows } from "../constants/accountIcons";
 import { es, en } from "../utils/languages";
 // Components
 import GradientText from "../components/TextGradient";
@@ -144,7 +145,7 @@ const CreateCCScreen = ({ navigation, route }) => {
     const presentRef = useRef(null);
 
     // Memoized snap points for Present modal
-    const snapPoints = useMemo(() => ["40%"], []);
+    const snapPoints = useMemo(() => ["50%"], []);
 
     // Function to close the Present modal.
     const closeModal = () => presentRef.current?.close();
@@ -253,21 +254,19 @@ const CreateCCScreen = ({ navigation, route }) => {
                         </View>
                         <Text style={styles.chooseIconText}>{strings.createAccountsScreen.chooseIconTxt}</Text>
                         <View style={styles.iconsContainer}>
-                            <TouchableOpacityMod onPress={() => setSelectedIcon("bank")} style={[styles.iconButton, selectedIcon === "bank" && styles.selectedIconButton]}>
-                                <MaterialCommunityIcons name="bank" size={24} color={Colors.accent} />
-                            </TouchableOpacityMod>
-                            <TouchableOpacityMod onPress={() => setSelectedIcon("cash")} style={[styles.iconButton, selectedIcon === "cash" && styles.selectedIconButton]}>
-                                <MaterialCommunityIcons name="cash" size={24} color={Colors.accent} />
-                            </TouchableOpacityMod>
-                            <TouchableOpacityMod onPress={() => setSelectedIcon("piggy-bank")} style={[styles.iconButton, selectedIcon === "piggy-bank" && styles.selectedIconButton]}>
-                                <MaterialCommunityIcons name="piggy-bank" size={24} color={Colors.accent} />
-                            </TouchableOpacityMod>
-                            <TouchableOpacityMod onPress={() => setSelectedIcon("bitcoin")} style={[styles.iconButton, selectedIcon === "bitcoin" && styles.selectedIconButton]}>
-                                <MaterialCommunityIcons name="bitcoin" size={24} color={Colors.accent} />
-                            </TouchableOpacityMod>
-                            <TouchableOpacityMod onPress={() => setSelectedIcon("credit-card-outline")} style={[styles.iconButton, selectedIcon === "credit-card-outline" && styles.selectedIconButton]}>
-                                <MaterialCommunityIcons name="credit-card-outline" size={24} color={Colors.accent} />
-                            </TouchableOpacityMod>
+                            {getAccountIconRows().map((row, rowIndex) => (
+                                <View key={rowIndex} style={styles.iconsRow}>
+                                    {row.map((iconName) => (
+                                        <TouchableOpacityMod
+                                            key={iconName}
+                                            onPress={() => setSelectedIcon(iconName)}
+                                            style={[styles.iconButton, selectedIcon === iconName && styles.selectedIconButton]}
+                                        >
+                                            <MaterialCommunityIcons name={iconName} size={24} color={Colors.accent} />
+                                        </TouchableOpacityMod>
+                                    ))}
+                                </View>
+                            ))}
                         </View>
                         <View style={styles.buttonsContainer}>
                             <TouchableOpacityMod onPress={handleAddAccount} style={styles.createButton}>
@@ -388,13 +387,19 @@ const styles = StyleSheet.create({
         marginTop: 15,
     },
     iconsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
         marginTop: 20,
+        gap: 10,
+    },
+    iconsRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
     },
     iconButton: {
-        paddingHorizontal: 5,
+        flex: 1,
+        alignItems: 'center',
+        paddingHorizontal: 4,
         paddingVertical: 5,
         borderRadius: 10,
     },
