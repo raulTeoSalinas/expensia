@@ -42,7 +42,7 @@ const TransactionScreen = ({ navigation, route }) => {
     const [typeTrans, setTypeTrans] = useState(idTransactionClicked ? null : (route.params?.typeTrans ?? null))
 
     const [modalDateVisible, setModalDateVisible] = useState(false)
-    const [selectedDate, setSelectedDate] = useState(getCurrentDate())
+    const [selectedDate, setSelectedDate] = useState(route.params?.date ?? getCurrentDate())
     const [txtDescription, setTxtDescription] = useState('')
     const [text, setText] = useState('')
     const [isSaving, setIsSaving] = useState(false)

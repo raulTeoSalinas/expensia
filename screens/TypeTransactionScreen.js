@@ -13,13 +13,14 @@ import Colors from "../constants/colors";
 
 
 
-const TypeTransactionScreen = () => {
+const TypeTransactionScreen = ({ route }) => {
 
     const navigation = useNavigation();
+    const prefillDate = route?.params?.date ?? null
 
     const handleTransactionNavigate = (type) => {
         navigation.goBack();
-        navigation.navigate("Transaction", { typeTrans: type });
+        navigation.navigate("Transaction", { typeTrans: type, ...(prefillDate ? { date: prefillDate } : {}) });
     }
 
     const { user } = useContext(ExpensiaContext);

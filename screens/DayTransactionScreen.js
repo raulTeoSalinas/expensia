@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity } from 'react-native'
+import { SafeAreaView, StyleSheet, FlatList, View, TouchableOpacity, Image } from 'react-native'
 import Text from '@components/Text'
 import { Ionicons } from '@expo/vector-icons'
 import Colors from '../constants/colors'
@@ -29,7 +29,12 @@ const DayTransactionScreen = ({ route, navigation }) => {
                     </Text>
                     <GradientText style={styles.headerGradientTxt}>{` ${dayClicked}`}</GradientText>
                 </View>
-                <View style={{ width: 24 }} />
+                <TouchableOpacity
+                    style={styles.addBtn}
+                    onPress={() => navigation.navigate('TypeTransaction', { date: dayClicked })}
+                >
+                    <Image style={styles.addBtnIcon} source={require('../assets/images/icon-plus.png')} />
+                </TouchableOpacity>
             </View>
             <FlatList
                 data={transactions}
@@ -88,5 +93,16 @@ const styles = StyleSheet.create({
     headerGradientTxt: {
         fontFamily: 'Poppins-SemiBold',
         fontSize: 20,
+    },
+    addBtn: {
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    addBtnIcon: {
+        resizeMode: 'contain',
+        width: 38,
+        height: 38,
     },
 })
