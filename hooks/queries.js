@@ -1,5 +1,6 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { querySQL, queryOneSQL } from '../services/db'
+import Colors from '../constants/colors'
 
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 
@@ -149,8 +150,8 @@ export function useCalendarDots(month) {
         if (!existing.some(d => d.key === key)) {
           existing.push(
             row.type === 'i'
-              ? { key: 'income', color: '#2706f9' }
-              : { key: 'expense', color: '#f97316' }
+              ? { key: 'income', color: Colors.secondary }
+              : { key: 'expense', color: Colors.accent }
           )
         }
       }

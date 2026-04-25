@@ -82,6 +82,7 @@ export default function CreateCategorySheet({
       <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
         {/* Header */}
         <View style={styles.sheetHeader}>
+          <View style={{ width: 24 }} />
           <Text weight="bold" color="primary" style={styles.sheetTitle}>
             {isEditing ? t.editTitle : t.createTitle}
           </Text>
@@ -180,6 +181,8 @@ const styles = StyleSheet.create({
   },
   sheetTitle: {
     fontSize: 18,
+    flex: 1,
+    textAlign: 'center',
   },
   label: {
     marginBottom: 8,

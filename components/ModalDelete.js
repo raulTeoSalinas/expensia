@@ -12,9 +12,10 @@ import Colors from "../constants/colors";
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from '@hooks/useTranslation';
 
-const ModalDelete = ({ modalVisible, setModalVisible, onPressDelete, title = "Delete", description = "Are you sure you want to delete this item?" }) => {
+const ModalDelete = ({ modalVisible, setModalVisible, onPressDelete, title = "Delete", description = "Are you sure you want to delete this item?", confirmButtonLabel }) => {
 
     const strings = useTranslation();
+    const confirmLabel = confirmButtonLabel ?? strings.modalDelete.deleteBtn;
 
     const handleCancelButton = () => {
         setModalVisible(!modalVisible)
@@ -45,7 +46,7 @@ const ModalDelete = ({ modalVisible, setModalVisible, onPressDelete, title = "De
                             <Text color="primary" style={styles.cancelButtonText}>{strings.modalDelete.cancelBtn}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={onPressDelete} style={styles.deleteButton}>
-                            <Text weight="bold" color="light" style={styles.deleteButtonText}>{strings.modalDelete.deleteBtn}</Text>
+                            <Text weight="bold" color="light" style={styles.deleteButtonText}>{confirmLabel}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

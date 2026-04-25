@@ -87,6 +87,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
     };
 
     const [txtAccount, setTxtAccount] = useState('');
+    const [newAccountAmount, setNewAccountAmount] = useState('');
 
     const [txtAccountEmptyLoad, setTxtAccountEmptyLoad] = useState(true);
 
@@ -95,20 +96,31 @@ const CreateAccountsScreen = ({ navigation, route }) => {
         setTxtAccountEmptyLoad(true)
     }
 
+    const handleChangeNewAccountAmount = (inputText) => {
+        if (inputText === '') { setNewAccountAmount(''); return }
+        const numericValue = inputText.replace(/[^0-9.]/g, '')
+        const parts = numericValue.split('.')
+        if (parts.length > 2) return
+        if (parts.length === 2 && parts[1].length > 2) return
+        setNewAccountAmount(numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',').toLocaleString('en-US'))
+    }
+
     const [selectedIcon, setSelectedIcon] = useState('bank');
 
     const handleAddAccount = () => {
         if (txtAccount == "") {
             setTxtAccountEmptyLoad(false)
         } else {
+            const rawAmount = newAccountAmount.replace(/,/g, '')
             const newAccount = {
-                id: accounts.length - 1 == -1 ? 1 : accounts[accounts.length - 1].id + 1, //This its to get the nextId
+                id: accounts.length - 1 == -1 ? 1 : accounts[accounts.length - 1].id + 1,
                 name: txtAccount,
                 icon: selectedIcon,
-                amount: "",
+                amount: rawAmount === '' || rawAmount === '.' ? '0' : rawAmount,
                 isCC: false
             }
             setAccounts(prevAccounts => [...prevAccounts, newAccount]);
+            setNewAccountAmount('')
             closeModal()
         }
     }
@@ -200,7 +212,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                     </View>
                 ))}
                 <View style={{ alignItems: 'center' }}>
-                    <TouchableOpacity style={styles.opacity} onPress={() => { handleOpenModal(); setTxtAccount("") }} >
+                    <TouchableOpacity style={styles.opacity} onPress={() => { handleOpenModal(); setTxtAccount(""); setNewAccountAmount("") }} >
                         <Image style={styles.buttonIcon} source={require('../assets/images/icon-plus.png')} />
                         <Text color="secondary">{strings.createAccountsScreen.addAccountBtn}</Text>
                     </TouchableOpacity>
@@ -247,6 +259,18 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                                 placeholder={strings.createAccountsScreen.accountName}
                                 blurOnSubmit
                                 maxLength={18}
+                            />
+                        </View>
+                        <View style={[styles.accountInputContainer, { marginTop: 10 }]}>
+                            <MaterialIcons name="attach-money" size={20} color={Colors.accent} style={styles.icon} />
+                            <BottomSheetTextInput
+                                style={styles.txtAccountInput}
+                                onChangeText={handleChangeNewAccountAmount}
+                                value={newAccountAmount}
+                                keyboardType="decimal-pad"
+                                returnKeyType="done"
+                                placeholder="0.00"
+                                blurOnSubmit
                             />
                         </View>
                         <Text weight="bold" style={styles.chooseIconText}>{strings.createAccountsScreen.chooseIconTxt}</Text>

@@ -23,6 +23,7 @@ import { useAccounts } from '../hooks/queries';
 // Components
 import Knob from "../components/Knob";
 import ModalSelect from "../components/ModalSelect";
+import ModalDelete from "../components/ModalDelete";
 import ScreenContainer from "../components/ScreenContainer";
 import Header from "../components/Header";
 import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal, BottomSheetTextInput } from '@gorhom/bottom-sheet';
@@ -54,6 +55,7 @@ const WalletScreen = ({ navigation }) => {
     const [selectedIcon, setSelectedIcon] = useState('bank');
 
     const [txtAccount, setTxtAccount] = useState('');
+    const [initialBalance, setInitialBalance] = useState('');
 
     const [isEdited, setIsEdited] = useState(false);
 
@@ -99,6 +101,15 @@ const WalletScreen = ({ navigation }) => {
         setSelectedTo(item)
     }
 
+    const handleChangeInitialBalance = (inputText) => {
+        if (inputText === '') { setInitialBalance(''); return }
+        const numericValue = inputText.replace(/[^0-9.]/g, '')
+        const parts = numericValue.split('.')
+        if (parts.length > 2) return
+        if (parts.length === 2 && parts[1].length > 2) return
+        setInitialBalance(numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ',').toLocaleString('en-US'))
+    }
+
     const handleAddAccount = () => {
         if (txtAccount === '' || txtAccount === '.') {
             setTxtAccountEmptyLoad(false)
@@ -107,7 +118,8 @@ const WalletScreen = ({ navigation }) => {
             const icon = selectedIcon;
 
             if (!isEdited) {
-                addAccount(name, icon, isCC);
+                const amount = parseFloat(initialBalance.replace(/,/g, '')) || 0
+                addAccount(name, icon, isCC, amount);
             } else {
                 const id = selectedAccount.id;
                 editAccount(id, name, icon);
@@ -120,6 +132,7 @@ const WalletScreen = ({ navigation }) => {
     const openAddAccount = () => {
         handleOpenModal()
         setTxtAccount("");
+        setInitialBalance("");
         setIsEdited(false);
         setSelectedIcon("bank");
         setTxtAccountEmptyLoad(true)
@@ -139,6 +152,10 @@ const WalletScreen = ({ navigation }) => {
         if (textAmount === '' || textAmount === '.') {
             setTxtEmptyLoad(false)
         } else {
+            if (selectedFrom.id === selectedTo.id) {
+                Alert.alert(strings.walletScreen.alertSameAccountTitle, strings.walletScreen.alertSameAccountDesc)
+                return
+            }
             if (selectedFrom.amount < parseFloat(textAmount.replace(/,/g, ''))) {
                 Alert.alert(strings.walletScreen.alertFailedTransferTitle, strings.walletScreen.alertFailedTransferDesc)
             } else {
@@ -164,13 +181,10 @@ const WalletScreen = ({ navigation }) => {
     }
 
     const handleDeleteAccount = () => {
-        if (parseFloat(selectedAccount.amount) > 0) {
-            Alert.alert(strings.walletScreen.alertFailedDeleAccTitle, strings.walletScreen.alertFailedDeleAccDesc)
-        } else {
-            const id = selectedAccount.id;
-            deleteAccount(id);
-        }
-        closeModal()
+        const id = selectedAccount.id;
+        deleteAccount(id);
+        setDeleteModalVisible(false);
+        closeModal();
     }
 
 
@@ -178,7 +192,7 @@ const WalletScreen = ({ navigation }) => {
     const presentRef = useRef(null);
 
     // Memoized snap points for Present modal
-    const snapPoints = useMemo(() => ["50%"], []);
+    const snapPoints = useMemo(() => ["60%"], []);
 
     // Function to close the Present modal.
     const closeModal = () => presentRef.current?.close();
@@ -189,6 +203,7 @@ const WalletScreen = ({ navigation }) => {
     }, []);
 
     const [isCC, setIsCC] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
 
     const changeIsCC = () => {
         setIsCC(!isCC)
@@ -291,7 +306,7 @@ const WalletScreen = ({ navigation }) => {
         >
             <View style={{ justifyContent: isEdited ? "space-between" : "flex-end", width: "95%", flexDirection: "row" }}>
                 {isEdited &&
-                    <TouchableOpacity style={{ marginLeft: 20 }} onPress={handleDeleteAccount}>
+                    <TouchableOpacity style={{ marginLeft: 20 }} onPress={() => setDeleteModalVisible(true)}>
                         <MaterialCommunityIcons name="trash-can" color={Colors.error} size={24} />
                     </TouchableOpacity>
                 }
@@ -323,10 +338,24 @@ const WalletScreen = ({ navigation }) => {
 
                 </View>
                 {!isEdited && (
-                    <View style={{ flexDirection: "row", marginTop: 16 }}>
-                        <Text weight="bold" style={{ marginRight: 4 }}>{strings.walletScreen.isCC}</Text>
-                        <Knob isActive={isCC} onPress={changeIsCC} />
-                    </View>
+                    <>
+                        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 16 }}>
+                            <Text weight="bold" style={{ marginRight: 4 }}>{strings.walletScreen.isCC}</Text>
+                            <Knob isActive={isCC} onPress={changeIsCC} />
+                        </View>
+                        <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}>
+                            <MaterialIcons name="attach-money" size={20} color={Colors.primary} />
+                            <BottomSheetTextInput
+                                style={styles.txtAccountInput}
+                                onChangeText={handleChangeInitialBalance}
+                                value={initialBalance}
+                                keyboardType="decimal-pad"
+                                returnKeyType="done"
+                                placeholder="0.00"
+                                blurOnSubmit
+                            />
+                        </View>
+                    </>
                 )}
 
                 <Text weight="bold" style={{ marginTop: 15 }}>{strings.walletScreen.chooseIconTxt}</Text>
@@ -354,6 +383,13 @@ const WalletScreen = ({ navigation }) => {
 
             </View>
         </BottomSheetModal>
+        <ModalDelete
+            modalVisible={deleteModalVisible}
+            setModalVisible={setDeleteModalVisible}
+            onPressDelete={handleDeleteAccount}
+            title={strings.walletScreen.deleteAccountTitle}
+            description={strings.walletScreen.deleteAccountDesc}
+        />
     </>
     );
 }

@@ -31,6 +31,7 @@ const SettingsScreen = ({ navigation }) => {
     const [modalVisibleEditName, setModalVisibleEditName] = useState(false)
     const [modalVisibleDeleteTransactions, setModalVisibleDeleteTransactions] = useState(false)
     const [modalVisibleDeleteAll, setModalVisibleDeleteAll] = useState(false)
+    const [modalVisibleLogout, setModalVisibleLogout] = useState(false)
     const [showLoginModal, setShowLoginModal] = useState(false)
 
     const [txtName, setTxtName] = useState('')
@@ -108,6 +109,7 @@ const SettingsScreen = ({ navigation }) => {
     }
 
     const handleLogout = () => {
+        setModalVisibleLogout(false)
         logout()
     }
 
@@ -163,11 +165,11 @@ const SettingsScreen = ({ navigation }) => {
                 />
                 {isLoggedIn && (
                     <SettingsBtn
-                        title="Cerrar sesión"
-                        description={backendUser?.email ?? ''}
+                        title={strings.settingsScreen.logout}
+                        description={`${strings.settingsScreen.logoutSession} ${backendUser?.email ?? ''}`}
                         icon="logout"
                         iconColor={Colors.error}
-                        onPress={handleLogout}
+                        onPress={() => setModalVisibleLogout(true)}
                     />
                 )}
             </View>
@@ -224,6 +226,15 @@ const SettingsScreen = ({ navigation }) => {
                 title={strings.settingsScreen.deleteAll}
                 description={strings.settingsScreen.deleteAllModal}
                 onPressDelete={handleDeleteAll}
+            />
+
+            <ModalDelete
+                modalVisible={modalVisibleLogout}
+                setModalVisible={setModalVisibleLogout}
+                title={strings.settingsScreen.logoutModalTitle}
+                description={strings.settingsScreen.logoutModalDesc}
+                onPressDelete={handleLogout}
+                confirmButtonLabel={strings.settingsScreen.logout}
             />
 
             {/* Hidden login modal */}

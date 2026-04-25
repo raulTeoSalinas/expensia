@@ -6,12 +6,18 @@ import Text from '@components/Text';
 import PieChart from 'react-native-pie-chart';
 //Utils
 import Category from "../utils/category";
-import Colors from "../constants/colors";
 import formatNumberWithCommas from "../utils/formatNumberWithCommas";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
 import { useCustomCategories } from "../hooks/queries";
+
+// Generates n visually distinct colors within a hue range using HSL
+const generateColors = (n, hueStart, hueEnd) =>
+    Array.from({ length: n }, (_, i) => {
+        const hue = n === 1 ? hueStart : hueStart + (i / (n - 1)) * (hueEnd - hueStart);
+        return `hsl(${Math.round(hue)}, 75%, 55%)`;
+    });
 
 const PieChartCategory = ({ data, type }) => {
 
@@ -31,16 +37,18 @@ const PieChartCategory = ({ data, type }) => {
         chartWidth = windowDimensions.width * 0.30;
     }
 
+    const n = Object.keys(data).length;
+    // Income: blue/teal range (200–240), Expenses: pink/magenta range (290–360)
+    const sliceColors = type === "e"
+        ? generateColors(n, 290, 360)
+        : generateColors(n, 190, 240);
+
     const typeConfig = {};
 
     if (type == "e") {
         typeConfig.textCircle = strings.transactionsScreen.selectTypeExpenses;
-        typeConfig.colorPie = "pieExpenses";
-
     } else {
         typeConfig.textCircle = strings.transactionsScreen.selectTypeIncome;
-        typeConfig.colorPie = "pieIncome";
-
     }
 
     return (
@@ -50,7 +58,7 @@ const PieChartCategory = ({ data, type }) => {
                     widthAndHeight={chartWidth}
                     coverRadius={0.6}
                     series={Object.values(data)}
-                    sliceColor={Colors[typeConfig.colorPie].slice(0, Object.values(data).length)}
+                    sliceColor={sliceColors}
                 />
                 <Text weight="bold" style={styles.pieChartText}>
                     {typeConfig.textCircle}
@@ -66,7 +74,7 @@ const PieChartCategory = ({ data, type }) => {
 
                     return (
                         <View key={tran} style={styles.categoryRow}>
-                            <View style={[styles.colorIndicator, { backgroundColor: Colors[typeConfig.colorPie][i] }]}></View>
+                            <View style={[styles.colorIndicator, { backgroundColor: sliceColors[i] }]}></View>
                             <View style={styles.categoryTextContainer}>
                                 <Text weight="bold" style={styles.categoryName}>
                                     {categoryName}:

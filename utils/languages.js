@@ -81,8 +81,12 @@ export const es = {
         saveBtnTxt: "Guardar",
         alertFailedTransferTitle: "Transacción Fallida",
         alertFailedTransferDesc: "No tienes suficientes fondos en la cuenta seleccionada.",
+        alertSameAccountTitle: "Cuenta inválida",
+        alertSameAccountDesc: "No puedes transferir a la misma cuenta.",
         alertFailedDeleAccTitle: "Error al borrar",
-        alertFailedDeleAccDesc: "No se puede eliminar una cuenta con fondos existentes. Transfiere antes tus ingresos a otra cuenta."
+        alertFailedDeleAccDesc: "No se puede eliminar una cuenta con fondos existentes. Transfiere antes tus ingresos a otra cuenta.",
+        deleteAccountTitle: "¿Borrar cuenta?",
+        deleteAccountDesc: "Esta cuenta se eliminará para siempre, así como sus transacciones. Esta acción no se puede deshacer.",
     },
     typeTransactionScreen: {
         addIncomeTxt: "Añade un Ingreso",
@@ -122,7 +126,11 @@ export const es = {
         deleteBtn: "Borrar",
         deleteTransactionsModal: "¿Estás seguro de borrar todas tus transacciones? Tus transacciones se eliminarán para siempre.",
         deleteAllModal: "¿Estás seguro de borrar todos tus datos? La aplicación borrará todos tus datos y se eliminarán para siempre.",
-        enterFName: "Introduce tu primer nombre"
+        enterFName: "Introduce tu primer nombre",
+        logout: "Cerrar sesión",
+        logoutSession: "Sesión:",
+        logoutModalTitle: "¿Cerrar sesión?",
+        logoutModalDesc: "Tu sesión en la nube se cerrará en este dispositivo. Tus datos locales no se eliminan.",
     },
     customCategoriesScreen: {
         headerDark: "Mis ",
@@ -270,8 +278,12 @@ export const en = {
         saveBtnTxt: "Save",
         alertFailedTransferTitle: "Transaction Failed",
         alertFailedTransferDesc: "You do not have sufficient funds in the selected account.",
+        alertSameAccountTitle: "Invalid Account",
+        alertSameAccountDesc: "You cannot transfer to the same account.",
         alertFailedDeleAccTitle: "Error Deleting",
         alertFailedDeleAccDesc: "You cannot delete an account with existing funds. Please transfer your balance to another account first.",
+        deleteAccountTitle: "Delete account?",
+        deleteAccountDesc: "This account will be permanently deleted, along with its transactions. This action cannot be undone.",
     },
     typeTransactionScreen: {
         addIncomeTxt: "Add an Income",
@@ -311,7 +323,11 @@ export const en = {
         deleteBtn: "Delete",
         deleteTransactionsModal: "Are you sure you want to delete all your transactions? Your transactions will be permanently deleted.",
         deleteAllModal: "Are you sure you want to delete all your data? The app will delete all your data and it will be permanently removed.",
-        enterFName: "Enter your first name"
+        enterFName: "Enter your first name",
+        logout: "Log out",
+        logoutSession: "Session:",
+        logoutModalTitle: "Log out?",
+        logoutModalDesc: "Your cloud session will end on this device. Your local data will not be deleted.",
     },
     customCategoriesScreen: {
         headerDark: "My ",
