@@ -31,7 +31,13 @@
       "expo-font",
       "expo-asset",
       "expo-sqlite",
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Expensia needs access to your microphone to record your voice transactions."
+        }
+      ]
     ],
     "android": {
       "adaptiveIcon": {
