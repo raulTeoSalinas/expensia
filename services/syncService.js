@@ -126,7 +126,9 @@ export async function pullFromBackend() {
   // 1. Pull accounts
   const { data: accData, errorType: accErr } = await callAPI('/api/accounts', { method: 'GET' })
   if (accErr === ErrorType.NETWORK) return false
+  const remoteAccountIds = []
   for (const acc of accData?.accounts ?? []) {
+    remoteAccountIds.push(String(acc.id))
     const existing = await queryOneSQL('SELECT id FROM accounts WHERE backendId = ?', [acc.id])
     if (existing) {
       await runSQL(
@@ -140,11 +142,23 @@ export async function pullFromBackend() {
       )
     }
   }
+  // Remove accounts deleted on another device
+  if (remoteAccountIds.length > 0) {
+    const placeholders = remoteAccountIds.map(() => '?').join(', ')
+    await runSQL(
+      `DELETE FROM accounts WHERE syncStatus = 'synced' AND backendId NOT IN (${placeholders})`,
+      remoteAccountIds
+    )
+  } else {
+    await runSQL(`DELETE FROM accounts WHERE syncStatus = 'synced'`)
+  }
 
   // 2. Pull custom categories
   const { data: catData, errorType: catErr } = await callAPI('/api/categories/custom', { method: 'GET' })
   if (catErr === ErrorType.NETWORK) return false
+  const remoteCategoryIds = []
   for (const cat of catData?.categories ?? []) {
+    remoteCategoryIds.push(String(cat.id))
     const existing = await queryOneSQL('SELECT id FROM custom_categories WHERE backendId = ?', [cat.id])
     if (existing) {
       await runSQL(
@@ -158,6 +172,16 @@ export async function pullFromBackend() {
       )
     }
   }
+  // Remove categories deleted on another device
+  if (remoteCategoryIds.length > 0) {
+    const placeholders = remoteCategoryIds.map(() => '?').join(', ')
+    await runSQL(
+      `DELETE FROM custom_categories WHERE syncStatus = 'synced' AND backendId NOT IN (${placeholders})`,
+      remoteCategoryIds
+    )
+  } else {
+    await runSQL(`DELETE FROM custom_categories WHERE syncStatus = 'synced'`)
+  }
 
   // 3. Pull transactions per account — avoids depending on idAccount in the response
   //    (deployed backend strips idAccount via formatter; ?accountId filter works in all versions)
@@ -165,6 +189,7 @@ export async function pullFromBackend() {
     const accRow = await queryOneSQL('SELECT id FROM accounts WHERE backendId = ?', [acc.id])
     if (!accRow) continue
 
+    const remoteTxIds = []
     let page = 0
     const TX_LIMIT = 100
     while (true) {
@@ -176,6 +201,8 @@ export async function pullFromBackend() {
       const txList = txData?.transactions ?? []
 
       for (const tx of txList) {
+        remoteTxIds.push(String(tx.id))
+
         // Resolve local custom category id
         // Use relation object as fallback since deployed backend may strip idCustomCategory
         let localCatId = null
@@ -215,6 +242,20 @@ export async function pullFromBackend() {
 
       if (txList.length < TX_LIMIT) break
       page++
+    }
+
+    // Remove transactions deleted on another device (only for this account)
+    if (remoteTxIds.length > 0) {
+      const placeholders = remoteTxIds.map(() => '?').join(', ')
+      await runSQL(
+        `DELETE FROM transactions WHERE syncStatus = 'synced' AND accountId = ? AND backendId NOT IN (${placeholders})`,
+        [accRow.id, ...remoteTxIds]
+      )
+    } else {
+      await runSQL(
+        `DELETE FROM transactions WHERE syncStatus = 'synced' AND accountId = ?`,
+        [accRow.id]
+      )
     }
   }
 

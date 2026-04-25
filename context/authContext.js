@@ -59,7 +59,7 @@ export function AuthContextProvider({ children }) {
     if (synced) {
       Toast.show({ type: 'success', text1: t.loginSuccessTitle, text2: t.loginSyncedSub })
     } else {
-      Toast.show({ type: 'warning', text1: t.loginSuccessTitle, text2: t.loginOfflineSub })
+      Toast.show({ type: 'info', text1: t.loginSuccessTitle, text2: t.loginOfflineSub })
     }
   }
 

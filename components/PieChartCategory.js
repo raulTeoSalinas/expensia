@@ -11,11 +11,13 @@ import formatNumberWithCommas from "../utils/formatNumberWithCommas";
 import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
+import { useCustomCategories } from "../hooks/queries";
 
 const PieChartCategory = ({ data, type }) => {
 
     const { user } = useContext(ExpensiaContext);
     const strings = user && user.language === "en" ? en : es;
+    const { data: customCats = [] } = useCustomCategories();
 
     const windowDimensions = useWindowDimensions();
 
@@ -56,14 +58,18 @@ const PieChartCategory = ({ data, type }) => {
             </View>
             <View style={styles.categoryContainer}>
                 {Object.keys(data).map((tran, i) => {
-                    const category = Category.find((cat) => cat.id.toString() === tran);
+                    const builtIn = Category.find((cat) => cat.id === tran);
+                    const custom = !builtIn ? customCats.find((c) => c.id === tran) : null;
+                    const categoryName = builtIn
+                        ? (user?.language === 'en' ? builtIn.nameEN : builtIn.nameES)
+                        : (custom?.name ?? tran);
 
                     return (
                         <View key={tran} style={styles.categoryRow}>
                             <View style={[styles.colorIndicator, { backgroundColor: Colors[typeConfig.colorPie][i] }]}></View>
                             <View style={styles.categoryTextContainer}>
                                 <Text weight="bold" style={styles.categoryName}>
-                                    {user && user.language === "en" ? category.nameEN : category.nameES}:
+                                    {categoryName}:
                                 </Text>
                                 <Text>
                                     ${formatNumberWithCommas(Object.values(data)[i])}

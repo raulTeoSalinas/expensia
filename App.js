@@ -22,6 +22,7 @@ import CreateUserScreen from './screens/CreateUserScreen'
 import CreateAccountsScreen from './screens/CreateAccountsScreen'
 import DayTransactionScreen from './screens/DayTransactionScreen'
 import CreateCCScreen from './screens/CreateCCScreen'
+import CustomCategoriesScreen from './screens/CustomCategoriesScreen'
 // Components
 // Context
 import ExpensiaContextProvider, { ExpensiaContext } from './context/expensiaContext'
@@ -103,6 +104,9 @@ const StackNavigation = () => {
           />
           <Stack.Screen name="DayTransaction" component={DayTransactionScreen}
             options={{ animation: 'slide_from_bottom', headerShown: false }}
+          />
+          <Stack.Screen name="CustomCategories" component={CustomCategoriesScreen}
+            options={{ headerShown: false, animation: 'slide_from_right' }}
           />
         </>
       ) : (

@@ -245,6 +245,7 @@ const TransactionScreen = ({ navigation, route }) => {
                         setModalVisible={setModalSelectCategoryVisible}
                         selectedValue={selectedCategory}
                         handleSelectedModal={setSelectedCategory}
+                        type={typeTrans}
                     />
                     <ModalSelect
                         modalVisible={modalSelectVisible}

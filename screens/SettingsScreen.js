@@ -141,6 +141,13 @@ const SettingsScreen = ({ navigation }) => {
                     onPress={handleTogglePrivacy}
                 />
                 <SettingsBtn
+                    title={strings.settingsScreen.customCategories}
+                    description={strings.settingsScreen.descriptionCategories}
+                    icon="shape-outline"
+                    iconColor={Colors.secondary}
+                    onPress={() => navigation.navigate('CustomCategories')}
+                />
+                <SettingsBtn
                     title={strings.settingsScreen.deleteTransactions}
                     description={strings.settingsScreen.descriptionTransactions}
                     icon="trash-can-outline"

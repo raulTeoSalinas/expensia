@@ -27,7 +27,8 @@ function showToast(errorType, isLoggedIn, logoutFn, t) {
   if (errorType === null) {
     Toast.show({ type: 'success', text1: t.savedSynced })
   } else if (errorType === ErrorType.NETWORK || errorType === ErrorType.SERVER) {
-    Toast.show({ type: 'warning', text1: t.savedOfflineTitle, text2: t.savedOfflineSub })
+    console.log('error type', errorType)
+    Toast.show({ type: 'info', text1: t.savedOfflineTitle, text2: t.savedOfflineSub })
   } else if (errorType === ErrorType.CLIENT) {
     Toast.show({ type: 'error', text1: t.serverErrorTitle, text2: t.serverErrorSub })
   } else if (errorType === ErrorType.SESSION_EXPIRED) {
@@ -332,16 +333,26 @@ const ExpensiaContextProvider = ({ children }) => {
 
       const reverseDelta = tx.type === 'i' ? -parseFloat(tx.amount) : parseFloat(tx.amount)
       await runSQL('UPDATE accounts SET amount = amount + ? WHERE id = ?', [reverseDelta, tx.accountId])
-      await runSQL('DELETE FROM transactions WHERE id = ?', [id])
-
-      invalidateTransactionQueries()
-      invalidateAccountQueries()
 
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('transaction', 'DELETE', id, {}, online)
+
+        // Only delete locally after a successful sync or when queued for later
+        if (errorType === null || errorType === ErrorType.NETWORK || errorType === ErrorType.SERVER) {
+          await runSQL('DELETE FROM transactions WHERE id = ?', [id])
+        } else {
+          // CLIENT error: revert the account balance change
+          await runSQL('UPDATE accounts SET amount = amount - ? WHERE id = ?', [reverseDelta, tx.accountId])
+        }
+
+        invalidateTransactionQueries()
+        invalidateAccountQueries()
         showToast(errorType, isLoggedIn, logout, toastT)
       } else {
+        await runSQL('DELETE FROM transactions WHERE id = ?', [id])
+        invalidateTransactionQueries()
+        invalidateAccountQueries()
         showToast(null, false, logout, toastT)
       }
     } catch {
