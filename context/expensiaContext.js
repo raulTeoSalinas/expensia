@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { initDB, runSQL, querySQL, queryOneSQL } from '../services/db'
 import { syncOne } from '../services/syncService'
@@ -7,6 +7,7 @@ import { getIsOnline } from '../hooks/useNetworkStatus'
 import { useAuth } from './authContext'
 import { QK } from '../hooks/queries'
 import Toast from 'react-native-toast-message'
+import { es, en } from '../utils/languages'
 
 export const ExpensiaContext = createContext(null)
 
@@ -17,20 +18,20 @@ function generateId() {
   })
 }
 
-function showToast(errorType, isLoggedIn, logoutFn) {
+function showToast(errorType, isLoggedIn, logoutFn, t) {
   if (!isLoggedIn) {
-    if (errorType === null) Toast.show({ type: 'success', text1: 'Guardado' })
-    else Toast.show({ type: 'error', text1: 'No se pudo guardar' })
+    if (errorType === null) Toast.show({ type: 'success', text1: t.savedLocal })
+    else Toast.show({ type: 'error', text1: t.saveFailed })
     return
   }
   if (errorType === null) {
-    Toast.show({ type: 'success', text1: 'Guardado y sincronizado' })
+    Toast.show({ type: 'success', text1: t.savedSynced })
   } else if (errorType === ErrorType.NETWORK || errorType === ErrorType.SERVER) {
-    Toast.show({ type: 'warning', text1: 'Guardado sin conexión', text2: 'Se sincronizará al recuperar internet' })
+    Toast.show({ type: 'warning', text1: t.savedOfflineTitle, text2: t.savedOfflineSub })
   } else if (errorType === ErrorType.CLIENT) {
-    Toast.show({ type: 'error', text1: 'Error del servidor', text2: 'El cambio se guardó localmente' })
+    Toast.show({ type: 'error', text1: t.serverErrorTitle, text2: t.serverErrorSub })
   } else if (errorType === ErrorType.SESSION_EXPIRED) {
-    Toast.show({ type: 'error', text1: 'Sesión expirada', text2: 'Inicia sesión nuevamente' })
+    Toast.show({ type: 'error', text1: t.sessionExpiredTitle, text2: t.sessionExpiredSub })
     logoutFn?.()
   }
 }
@@ -40,6 +41,8 @@ const ExpensiaContextProvider = ({ children }) => {
   const qc = useQueryClient()
   const [user, setUser] = useState(null)
   const [dbReady, setDbReady] = useState(false)
+
+  const toastT = useMemo(() => (user?.language === 'en' ? en : es).toast, [user?.language])
 
   // ─── Invalidation ─────────────────────────────────────────────────────────
 
@@ -191,13 +194,13 @@ const ExpensiaContextProvider = ({ children }) => {
         const online = await getIsOnline()
         const errorType = await syncOne('account', 'CREATE', id, { name, icon, isCC: !!isCC, amount: initialAmount }, online)
         invalidateAccountQueries()
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
       return id
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to save account')
     }
   }
@@ -210,12 +213,12 @@ const ExpensiaContextProvider = ({ children }) => {
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('account', 'UPDATE', id, { name, icon }, online)
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to update account')
     }
   }
@@ -225,15 +228,15 @@ const ExpensiaContextProvider = ({ children }) => {
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('account', 'DELETE', id, {}, online)
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
       await runSQL('DELETE FROM accounts WHERE id = ?', [id])
       invalidateAccountQueries()
       invalidateTransactionQueries()
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to delete account')
     }
   }
@@ -272,13 +275,13 @@ const ExpensiaContextProvider = ({ children }) => {
           idGlobalCategory: globalCategoryId ?? null,
         }, online)
         invalidateTransactionQueries()
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
       return id
     } catch (e) {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to save transaction')
     }
   }
@@ -312,12 +315,12 @@ const ExpensiaContextProvider = ({ children }) => {
           idCustomCategory: catRow?.backendId ?? null,
           idGlobalCategory: globalCategoryId ?? null,
         }, online)
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to update transaction')
     }
   }
@@ -337,12 +340,12 @@ const ExpensiaContextProvider = ({ children }) => {
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('transaction', 'DELETE', id, {}, online)
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to delete transaction')
     }
   }
@@ -361,13 +364,13 @@ const ExpensiaContextProvider = ({ children }) => {
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('customCategory', 'CREATE', id, { name, type, icon }, online)
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
       return { id, name, type, icon }
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to save category')
     }
   }
@@ -380,12 +383,12 @@ const ExpensiaContextProvider = ({ children }) => {
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('customCategory', 'UPDATE', id, { name, icon }, online)
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to update category')
     }
   }
@@ -395,14 +398,14 @@ const ExpensiaContextProvider = ({ children }) => {
       if (isLoggedIn) {
         const online = await getIsOnline()
         const errorType = await syncOne('customCategory', 'DELETE', id, {}, online)
-        showToast(errorType, isLoggedIn, logout)
+        showToast(errorType, isLoggedIn, logout, toastT)
       } else {
-        showToast(null, false)
+        showToast(null, false, logout, toastT)
       }
       await runSQL('DELETE FROM custom_categories WHERE id = ?', [id])
       qc.invalidateQueries({ queryKey: QK.customCategories })
     } catch {
-      showToast('LOCAL_ERROR', isLoggedIn, logout)
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
       throw new Error('Failed to delete category')
     }
   }

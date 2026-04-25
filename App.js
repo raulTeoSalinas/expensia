@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { Ionicons } from '@expo/vector-icons'
 import Toast from 'react-native-toast-message'
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 // Screens
@@ -115,6 +116,21 @@ const StackNavigation = () => {
   )
 }
 
+const AppShell = () => {
+  const insets = useSafeAreaInsets()
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <BottomSheetModalProvider>
+        <StatusBar style="dark" />
+        <NavigationContainer>
+          <StackNavigation />
+        </NavigationContainer>
+        <Toast topOffset={insets.top} />
+      </BottomSheetModalProvider>
+    </GestureHandlerRootView>
+  )
+}
+
 const App = () => {
   const [fontsLoaded] = useFonts({
     'Poppins-SemiBold': require('./assets/fonts/Poppins-SemiBold.ttf'),
@@ -127,15 +143,9 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
     <AuthContextProvider>
       <ExpensiaContextProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <BottomSheetModalProvider>
-            <StatusBar style="dark" />
-            <NavigationContainer>
-              <StackNavigation />
-            </NavigationContainer>
-            <Toast />
-          </BottomSheetModalProvider>
-        </GestureHandlerRootView>
+        <SafeAreaProvider>
+          <AppShell />
+        </SafeAreaProvider>
       </ExpensiaContextProvider>
     </AuthContextProvider>
     </QueryClientProvider>

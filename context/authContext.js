@@ -6,6 +6,7 @@ import * as apiService from '../services/apiService'
 import { login as apiLogin } from '../services/apiService'
 import { initialSync, pullFromBackend } from '../services/syncService'
 import Toast from 'react-native-toast-message'
+import { es, en } from '../utils/languages'
 
 const AuthContext = createContext(null)
 
@@ -54,10 +55,11 @@ export function AuthContextProvider({ children }) {
     const synced = await initialSync()
     // Force all queries to refetch from SQLite so the UI shows the pulled data
     qc.invalidateQueries()
+    const t = (user?.language === 'en' ? en : es).toast
     if (synced) {
-      Toast.show({ type: 'success', text1: 'Sesión iniciada', text2: 'Datos sincronizados con la nube' })
+      Toast.show({ type: 'success', text1: t.loginSuccessTitle, text2: t.loginSyncedSub })
     } else {
-      Toast.show({ type: 'warning', text1: 'Sesión iniciada', text2: 'Sin conexión — los datos se sincronizarán después' })
+      Toast.show({ type: 'warning', text1: t.loginSuccessTitle, text2: t.loginOfflineSub })
     }
   }
 

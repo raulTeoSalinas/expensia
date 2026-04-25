@@ -144,7 +144,21 @@ export const es = {
         descriptionDeleteTran: "Tu transacción se borrará para siempre y se ajustarán los totales de tus cuentas.",
         cancelBtn: "Cancelar",
         deleteBtn: "Borrar",
-    }
+    },
+    toast: {
+        savedLocal: "Guardado",
+        saveFailed: "No se pudo guardar",
+        savedSynced: "Guardado y sincronizado",
+        savedOfflineTitle: "Guardado sin conexión",
+        savedOfflineSub: "Se sincronizará al recuperar internet",
+        serverErrorTitle: "Error del servidor",
+        serverErrorSub: "El cambio se guardó localmente",
+        sessionExpiredTitle: "Sesión expirada",
+        sessionExpiredSub: "Inicia sesión nuevamente",
+        loginSuccessTitle: "Sesión iniciada",
+        loginSyncedSub: "Datos sincronizados con la nube",
+        loginOfflineSub: "Sin conexión — los datos se sincronizarán después",
+    },
 }
 
 export const en = {
@@ -294,5 +308,19 @@ export const en = {
         descriptionDeleteTran: "Your transaction will be permanently deleted and your account totals will be updated.",
         cancelBtn: "Cancel",
         deleteBtn: "Delete",
-    }
+    },
+    toast: {
+        savedLocal: "Saved",
+        saveFailed: "Could not save",
+        savedSynced: "Saved and synced",
+        savedOfflineTitle: "Saved offline",
+        savedOfflineSub: "Will sync when you're back online",
+        serverErrorTitle: "Server error",
+        serverErrorSub: "Your change was saved locally",
+        sessionExpiredTitle: "Session expired",
+        sessionExpiredSub: "Please sign in again",
+        loginSuccessTitle: "Signed in",
+        loginSyncedSub: "Data synced with the cloud",
+        loginOfflineSub: "Offline — data will sync when you're back online",
+    },
 }
