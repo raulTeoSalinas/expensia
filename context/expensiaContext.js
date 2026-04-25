@@ -36,7 +36,7 @@ function showToast(errorType, isLoggedIn, logoutFn) {
 }
 
 const ExpensiaContextProvider = ({ children }) => {
-  const { isLoggedIn, logout } = useAuth()
+  const { isLoggedIn, backendUser, loading: authLoading, logout } = useAuth()
   const qc = useQueryClient()
   const [user, setUser] = useState(null)
   const [dbReady, setDbReady] = useState(false)
@@ -68,6 +68,62 @@ const ExpensiaContextProvider = ({ children }) => {
     }
     bootstrap()
   }, [])
+
+  // Sesión remota sin fila local (p. ej. login oculto en bienvenida): crear usuario en SQLite para que la navegación muestre Tabs.
+  useEffect(() => {
+    if (!dbReady || authLoading || !isLoggedIn || user) return
+
+    let cancelled = false
+
+    async function hydrateLocalUserFromSession() {
+      const existing = await queryOneSQL('SELECT * FROM users LIMIT 1')
+      if (cancelled) return
+      if (existing) {
+        setUser(existing)
+        qc.setQueryData(QK.user, existing)
+        return
+      }
+
+      if (!backendUser) return
+
+      const id =
+        backendUser.id != null
+          ? String(backendUser.id)
+          : backendUser.sub != null
+            ? String(backendUser.sub)
+            : generateId()
+      const name =
+        (typeof backendUser.name === 'string' && backendUser.name.trim()) ||
+        (typeof backendUser.email === 'string' && backendUser.email.split('@')[0]) ||
+        'Usuario'
+      const language =
+        backendUser.language === 'en' || backendUser.language === 'es'
+          ? backendUser.language
+          : 'es'
+
+      try {
+        await runSQL(
+          'INSERT INTO users (id, name, language, isPrivacyEnabled) VALUES (?, ?, ?, 0)',
+          [id, name, language]
+        )
+      } catch (e) {
+        console.error('hydrateLocalUserFromSession', e)
+        return
+      }
+
+      if (cancelled) return
+      const row = await queryOneSQL('SELECT * FROM users LIMIT 1')
+      if (row) {
+        setUser(row)
+        qc.setQueryData(QK.user, row)
+      }
+    }
+
+    void hydrateLocalUserFromSession()
+    return () => {
+      cancelled = true
+    }
+  }, [dbReady, authLoading, isLoggedIn, backendUser, user, qc])
 
   // ─── User ─────────────────────────────────────────────────────────────────
 

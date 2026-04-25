@@ -1,6 +1,13 @@
 import { runSQL, querySQL, queryOneSQL } from './db'
 import { callAPI, ErrorType } from './apiService'
 
+function generateId() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+    const r = (Math.random() * 16) | 0
+    return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16)
+  })
+}
+
 // ─── Queue helpers ────────────────────────────────────────────────────────────
 
 async function enqueue(entity, operation, localId, payload) {
@@ -111,40 +118,142 @@ export async function processQueue() {
   }
 }
 
-// ─── initialSync — runs on first login ────────────────────────────────────────
+// ─── pullFromBackend — upserts backend data into SQLite ───────────────────────
+// Called on login and whenever the app comes back to the foreground (AppState active).
 
-export async function initialSync() {
-  // 1. Accounts
-  const accounts = await querySQL('SELECT * FROM accounts')
-  for (const acc of accounts) {
+export async function pullFromBackend() {
+
+  // 1. Pull accounts
+  const { data: accData, errorType: accErr } = await callAPI('/api/accounts', { method: 'GET' })
+  if (accErr === ErrorType.NETWORK) return false
+  for (const acc of accData?.accounts ?? []) {
+    const existing = await queryOneSQL('SELECT id FROM accounts WHERE backendId = ?', [acc.id])
+    if (existing) {
+      await runSQL(
+        `UPDATE accounts SET name = ?, icon = ?, isCC = ?, amount = ?, syncStatus = 'synced' WHERE backendId = ?`,
+        [acc.name, acc.icon, acc.isCC ? 1 : 0, acc.amount, acc.id]
+      )
+    } else {
+      await runSQL(
+        'INSERT INTO accounts (id, backendId, name, icon, isCC, amount, syncStatus) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [generateId(), acc.id, acc.name, acc.icon, acc.isCC ? 1 : 0, acc.amount, 'synced']
+      )
+    }
+  }
+
+  // 2. Pull custom categories
+  const { data: catData, errorType: catErr } = await callAPI('/api/categories/custom', { method: 'GET' })
+  if (catErr === ErrorType.NETWORK) return false
+  for (const cat of catData?.categories ?? []) {
+    const existing = await queryOneSQL('SELECT id FROM custom_categories WHERE backendId = ?', [cat.id])
+    if (existing) {
+      await runSQL(
+        `UPDATE custom_categories SET name = ?, type = ?, icon = ?, syncStatus = 'synced' WHERE backendId = ?`,
+        [cat.name, cat.type, cat.icon, cat.id]
+      )
+    } else {
+      await runSQL(
+        'INSERT INTO custom_categories (id, backendId, name, type, icon, syncStatus) VALUES (?, ?, ?, ?, ?, ?)',
+        [generateId(), cat.id, cat.name, cat.type, cat.icon, 'synced']
+      )
+    }
+  }
+
+  // 3. Pull transactions per account — avoids depending on idAccount in the response
+  //    (deployed backend strips idAccount via formatter; ?accountId filter works in all versions)
+  for (const acc of accData?.accounts ?? []) {
+    const accRow = await queryOneSQL('SELECT id FROM accounts WHERE backendId = ?', [acc.id])
+    if (!accRow) continue
+
+    let page = 0
+    const TX_LIMIT = 100
+    while (true) {
+      const { data: txData, errorType: txErr } = await callAPI(
+        `/api/transactions?accountId=${acc.id}&page=${page}&limit=${TX_LIMIT}`,
+        { method: 'GET' }
+      )
+      if (txErr === ErrorType.NETWORK) return false
+      const txList = txData?.transactions ?? []
+
+      for (const tx of txList) {
+        // Resolve local custom category id
+        // Use relation object as fallback since deployed backend may strip idCustomCategory
+        let localCatId = null
+        const backendCatId = tx.idCustomCategory ?? tx.customCategory?.id
+        if (backendCatId) {
+          const catRow = await queryOneSQL('SELECT id FROM custom_categories WHERE backendId = ?', [backendCatId])
+          localCatId = catRow?.id ?? null
+        }
+
+        // Same fallback for globalCategoryId
+        const globalCatId = tx.idGlobalCategory ?? tx.globalCategory?.id ?? null
+
+        // Backend returns ISO datetime ("2025-01-15T00:00:00.000Z") → slice to "YYYY-MM-DD"
+        const dateStr = typeof tx.date === 'string' ? tx.date.slice(0, 10) : tx.date
+
+        const existing = await queryOneSQL('SELECT id FROM transactions WHERE backendId = ?', [tx.id])
+        if (existing) {
+          await runSQL(
+            `UPDATE transactions
+             SET type = ?, amount = ?, date = ?, description = ?,
+                 accountId = ?, globalCategoryId = ?, customCategoryId = ?, syncStatus = 'synced'
+             WHERE backendId = ?`,
+            [tx.type, tx.amount, dateStr, tx.description ?? null,
+             accRow.id, globalCatId, localCatId, tx.id]
+          )
+        } else {
+          await runSQL(
+            `INSERT INTO transactions
+               (id, backendId, type, amount, date, description, accountId, globalCategoryId, customCategoryId, syncStatus)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [generateId(), tx.id, tx.type, tx.amount, dateStr,
+             tx.description ?? null, accRow.id,
+             globalCatId, localCatId, 'synced']
+          )
+        }
+      }
+
+      if (txList.length < TX_LIMIT) break
+      page++
+    }
+  }
+
+  return true
+}
+
+// ─── pushLocalOnly — uploads items created offline before login ───────────────
+
+async function pushLocalOnly() {
+
+  // 4. Push local-only accounts
+  const localAccounts = await querySQL("SELECT * FROM accounts WHERE syncStatus = 'local'")
+  for (const acc of localAccounts) {
     const { data, errorType } = await callAPI('/api/accounts', {
       method: 'POST',
       body: JSON.stringify({ name: acc.name, icon: acc.icon, isCC: !!acc.isCC, amount: acc.amount }),
     })
     if (errorType === ErrorType.NETWORK) return false
-    if (data?.account) {
-      await markSynced('account', acc.id, data.account.id)
-    }
+    if (data?.account) await markSynced('account', acc.id, data.account.id)
   }
 
-  // 2. Custom Categories
-  const categories = await querySQL('SELECT * FROM custom_categories')
-  for (const cat of categories) {
+  // 5. Push local-only custom categories
+  const localCategories = await querySQL("SELECT * FROM custom_categories WHERE syncStatus = 'local'")
+  for (const cat of localCategories) {
     const { data, errorType } = await callAPI('/api/categories/custom', {
       method: 'POST',
       body: JSON.stringify({ name: cat.name, type: cat.type, icon: cat.icon }),
     })
     if (errorType === ErrorType.NETWORK) return false
-    if (data?.category) {
-      await markSynced('customCategory', cat.id, data.category.id)
-    }
+    if (data?.category) await markSynced('customCategory', cat.id, data.category.id)
   }
 
-  // 3. Transactions
-  const transactions = await querySQL('SELECT * FROM transactions ORDER BY date ASC')
-  for (const tx of transactions) {
+  // 6. Push local-only transactions
+  const localTransactions = await querySQL(
+    "SELECT * FROM transactions WHERE syncStatus = 'local' ORDER BY date ASC"
+  )
+  for (const tx of localTransactions) {
     const accountRow = await queryOneSQL('SELECT backendId FROM accounts WHERE id = ?', [tx.accountId])
-    if (!accountRow?.backendId) continue // account didn't sync, skip
+    if (!accountRow?.backendId) continue
 
     let customCategoryBackendId = null
     if (tx.customCategoryId) {
@@ -165,11 +274,19 @@ export async function initialSync() {
       }),
     })
     if (errorType === ErrorType.NETWORK) return false
-    if (data?.transaction) {
-      await markSynced('transaction', tx.id, data.transaction.id)
-    }
+    if (data?.transaction) await markSynced('transaction', tx.id, data.transaction.id)
   }
 
+  return true
+}
+
+// ─── initialSync — runs on first login ────────────────────────────────────────
+// Strategy: PULL first (backend → SQLite), then PUSH (SQLite local-only → backend).
+
+export async function initialSync() {
+  const pulled = await pullFromBackend()
+  if (!pulled) return false
+  await pushLocalOnly()
   return true
 }
 

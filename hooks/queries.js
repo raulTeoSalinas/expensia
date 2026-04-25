@@ -235,8 +235,8 @@ export function useTransaction(id) {
        FROM transactions t
        LEFT JOIN accounts a ON t.accountId = a.id
        LEFT JOIN custom_categories c ON t.customCategoryId = c.id
-       WHERE t.id = ?`,
-      [id]
+       WHERE t.id = ? OR t.backendId = ?`,
+      [id, id]
     ),
     enabled: !!id,
     staleTime: 0,
