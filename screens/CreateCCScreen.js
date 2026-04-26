@@ -249,7 +249,7 @@ const CreateCCScreen = ({ navigation, route }) => {
                                 placeholderTextColor={Colors.placeholder}
                                 placeholder={strings.createAccountsScreen.accountName}
                                 blurOnSubmit
-                                maxLength={18}
+                                maxLength={50}
                             />
                         </View>
                         <Text style={styles.chooseIconText}>{strings.createAccountsScreen.chooseIconTxt}</Text>

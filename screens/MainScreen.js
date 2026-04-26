@@ -80,6 +80,10 @@ const MainScreen = ({ navigation }) => {
     return 0
   })
 
+  const liquidTotal = accounts.filter(a => !a.isCC).reduce((s, a) => s + a.amount, 0)
+  const ccDebt = accounts.filter(a => a.isCC).reduce((s, a) => s + a.amount, 0)
+  const netLiquidity = liquidTotal + ccDebt
+
   return (
     <ScreenContainer>
       <Header darkText={strings.mainScreen.headerDarkTxt} gradientText={user?.name} addBtn />
@@ -106,6 +110,31 @@ const MainScreen = ({ navigation }) => {
           <Text weight="bold">{strings.mainScreen.hideBtn}</Text>
         </TouchableOpacity>
       </View>
+
+      {accounts.length > 0 && (
+        <View style={styles.cardNetSummary}>
+          <View style={styles.netRow}>
+            <Text style={styles.netLabel}>{strings.mainScreen.liquidLabel}</Text>
+            <Text weight="bold" style={styles.netValuePositive}>
+              {user?.isPrivacyEnabled ? '•••••' : `$${formatNumberWithCommas(liquidTotal)}`}
+            </Text>
+          </View>
+          {ccDebt < 0 && (
+            <View style={styles.netRow}>
+              <Text style={styles.netLabel}>{strings.mainScreen.debtLabel}</Text>
+              <Text weight="bold" style={styles.netValueNegative}>
+                {user?.isPrivacyEnabled ? '•••••' : `-$${formatNumberWithCommas(Math.abs(ccDebt))}`}
+              </Text>
+            </View>
+          )}
+          <View style={[styles.netRow, styles.netRowTotal]}>
+            <Text weight="bold" style={styles.netLabelTotal}>{strings.mainScreen.netLabel}</Text>
+            <Text weight="bold" style={netLiquidity >= 0 ? styles.netValuePositive : styles.netValueNegative}>
+              {user?.isPrivacyEnabled ? '•••••' : `${netLiquidity < 0 ? '-' : ''}$${formatNumberWithCommas(Math.abs(netLiquidity))}`}
+            </Text>
+          </View>
+        </View>
+      )}
 
       <MonthSummary income={summary.income} expenses={summary.expenses} />
 
@@ -169,6 +198,44 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 7.49,
     elevation: 12,
+  },
+  cardNetSummary: {
+    marginHorizontal: 20,
+    marginTop: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 16,
+    backgroundColor: Colors.white,
+    borderWidth: 1,
+    borderColor: Colors.sheetBorder,
+  },
+  netRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  netRowTotal: {
+    marginTop: 6,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: Colors.sheetBorder,
+  },
+  netLabel: {
+    fontSize: 13,
+    color: Colors.primary,
+  },
+  netLabelTotal: {
+    fontSize: 14,
+    color: Colors.primary,
+  },
+  netValuePositive: {
+    fontSize: 13,
+    color: Colors.secondary,
+  },
+  netValueNegative: {
+    fontSize: 13,
+    color: Colors.accent,
   },
   markedContainer: {
     flexDirection: 'row',

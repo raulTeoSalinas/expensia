@@ -258,7 +258,7 @@ const CreateAccountsScreen = ({ navigation, route }) => {
                                 placeholderTextColor={Colors.placeholder}
                                 placeholder={strings.createAccountsScreen.accountName}
                                 blurOnSubmit
-                                maxLength={18}
+                                maxLength={50}
                             />
                         </View>
                         <View style={[styles.accountInputContainer, { marginTop: 10 }]}>

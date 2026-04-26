@@ -118,7 +118,8 @@ const WalletScreen = ({ navigation }) => {
             const icon = selectedIcon;
 
             if (!isEdited) {
-                const amount = parseFloat(initialBalance.replace(/,/g, '')) || 0
+                const raw = parseFloat(initialBalance.replace(/,/g, '')) || 0
+                const amount = isCC ? -Math.abs(raw) : raw
                 addAccount(name, icon, isCC, amount);
             } else {
                 const id = selectedAccount.id;
@@ -333,7 +334,7 @@ const WalletScreen = ({ navigation }) => {
                         inputMode='text'
                         placeholder="Ej. Banco"
                         blurOnSubmit
-                        maxLength={18}
+                        maxLength={50}
                     />
 
                 </View>

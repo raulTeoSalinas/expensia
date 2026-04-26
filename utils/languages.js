@@ -51,6 +51,9 @@ export const es = {
         summaryTitle: "Resumen del Mes",
         income: "Ingresos: ",
         expenses: "Gastos: ",
+        liquidLabel: "Cuentas líquidas",
+        debtLabel: "Deuda TDC",
+        netLabel: "Liquidez total",
     },
     transactionsScreen: {
         headerDarkTxt: "Mis ",
@@ -309,6 +312,9 @@ export const en = {
         summaryTitle: "Monthly Summary",
         income: "Income: ",
         expenses: "Expenses: ",
+        liquidLabel: "Liquid accounts",
+        debtLabel: "Credit card debt",
+        netLabel: "Net liquidity",
     },
     transactionsScreen: {
         headerDarkTxt: "My ",
