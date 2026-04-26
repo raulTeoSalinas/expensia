@@ -33,6 +33,16 @@ const TransactionScreen = ({ navigation, route }) => {
     const { data: existingTx } = useTransaction(idTransactionClicked)
     const strings = user?.language === 'en' ? en : es
 
+    // Params de prefill provenientes de IA
+    const prefillAmount          = route.params?.prefillAmount          ?? null
+    const prefillAccountId       = route.params?.prefillAccountId       ?? null
+    const prefillGlobalCategoryId = route.params?.prefillGlobalCategoryId ?? null
+    const prefillCustomCategoryId = route.params?.prefillCustomCategoryId ?? null
+    const prefillDescription     = route.params?.prefillDescription     ?? null
+    const prefillDate            = route.params?.prefillDate            ?? null
+    const prefillTranscript      = route.params?.prefillTranscript      ?? null
+    const isFromIA               = prefillTranscript != null
+
     const [modalDeleteTranVisible, setModalDeleteTranVisible] = useState(false)
     const [modalSelectVisible, setModalSelectVisible] = useState(false)
     const [modalSelectCategoryVisible, setModalSelectCategoryVisible] = useState(false)
@@ -42,8 +52,8 @@ const TransactionScreen = ({ navigation, route }) => {
     const [typeTrans, setTypeTrans] = useState(idTransactionClicked ? null : (route.params?.typeTrans ?? null))
 
     const [modalDateVisible, setModalDateVisible] = useState(false)
-    const [selectedDate, setSelectedDate] = useState(route.params?.date ?? getCurrentDate())
-    const [txtDescription, setTxtDescription] = useState('')
+    const [selectedDate, setSelectedDate] = useState(prefillDate ?? route.params?.date ?? getCurrentDate())
+    const [txtDescription, setTxtDescription] = useState(prefillDescription ?? '')
     const [text, setText] = useState('')
     const [isSaving, setIsSaving] = useState(false)
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true)
@@ -52,9 +62,31 @@ const TransactionScreen = ({ navigation, route }) => {
     // Set initial category when type is known (new transaction)
     useEffect(() => {
         if (!typeTrans || idTransactionClicked) return
+
+        if (prefillGlobalCategoryId) {
+            const cat = Category.find(c => c.id === prefillGlobalCategoryId)
+            if (cat) { setSelectedCategory(cat); return }
+        }
+        if (prefillCustomCategoryId) {
+            // La categoría custom se resuelve cuando accounts carga — se maneja más abajo
+            return
+        }
         const cats = Category.filter(c => c.type === typeTrans)
         setSelectedCategory(cats[0] ?? null)
     }, [typeTrans])
+
+    // Prefill de cuenta y amount desde IA
+    useEffect(() => {
+        if (!isFromIA || accounts.length === 0) return
+        if (prefillAmount) {
+            const formatted = String(prefillAmount).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+            setText(formatted)
+        }
+        if (prefillAccountId) {
+            const account = accounts.find(a => a.backendId === prefillAccountId)
+            if (account) setSelectedValue(account)
+        }
+    }, [accounts, isFromIA])
 
     // Pre-fill for edit mode — runs when existingTx loads from DB
     useEffect(() => {
@@ -181,6 +213,17 @@ const TransactionScreen = ({ navigation, route }) => {
                         <View style={{ width: 24 }} />
                     )}
                 </View>
+                {isFromIA && (
+                    <View style={styles.iaBanner}>
+                        <View style={styles.iaBannerHeader}>
+                            <MaterialIcons name="auto-awesome" size={14} color={Colors.secondary} />
+                            <Text style={styles.iaBannerLabel}>{strings.transactionScreen.iaBannerLabel}</Text>
+                        </View>
+                        <Text style={styles.iaBannerTranscriptLabel}>{strings.transactionScreen.iaBannerTranscript}</Text>
+                        <Text style={styles.iaBannerTranscript}>{prefillTranscript}</Text>
+                    </View>
+                )}
+
                 <ScrollView>
                     <Pressable onPress={Keyboard.dismiss} style={{ flex: 1 }}>
                         <View style={styles.row}>
@@ -358,5 +401,42 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: '10%',
-    }
+    },
+    iaBanner: {
+        marginHorizontal: 20,
+        marginTop: 12,
+        marginBottom: 4,
+        padding: 12,
+        borderRadius: 10,
+        backgroundColor: Colors.secondary + '12',
+        borderWidth: 1,
+        borderColor: Colors.secondary + '44',
+    },
+    iaBannerHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 5,
+        marginBottom: 6,
+    },
+    iaBannerLabel: {
+        color: Colors.secondary,
+        fontSize: 11,
+        fontFamily: 'Poppins-SemiBold',
+        letterSpacing: 0.4,
+        textTransform: 'uppercase',
+    },
+    iaBannerTranscriptLabel: {
+        color: Colors.primary,
+        fontSize: 11,
+        fontFamily: 'Poppins-SemiBold',
+        opacity: 0.6,
+        marginBottom: 2,
+    },
+    iaBannerTranscript: {
+        color: Colors.primary,
+        fontSize: 13,
+        fontFamily: 'Poppins-Light',
+        fontStyle: 'italic',
+        lineHeight: 18,
+    },
 })

@@ -10,7 +10,7 @@ import {
     Image,
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { useNavigation } from '@react-navigation/native'
+import { useNavigation, CommonActions } from '@react-navigation/native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import Text from '@components/Text'
 import Colors from '@constants/colors'
@@ -298,11 +298,31 @@ export default function IATransactionsScreen() {
             try {
                 const result = await stopAndParse()
                 console.log('[IATransactionsScreen] Respuesta del backend:', result)
-                Alert.alert(
-                    strings.alertBackendTitle,
-                    result ? JSON.stringify(result, null, 2) : strings.alertNoResponse,
-                    [{ text: strings.alertOkBtn }]
-                )
+                if (!result) {
+                    Alert.alert(strings.errorProcessing, strings.alertNoResponse)
+                    return
+                }
+                navigation.dispatch(state => {
+                    const routes = [
+                        ...state.routes.filter(
+                            r => r.name !== 'TypeTransaction' && r.name !== 'IATransactions'
+                        ),
+                        {
+                            name: 'Transaction',
+                            params: {
+                                typeTrans:               result.type,
+                                prefillAmount:           result.amount != null ? String(result.amount) : undefined,
+                                prefillAccountId:        result.idAccount ?? undefined,
+                                prefillGlobalCategoryId: result.globalCategoryId ?? undefined,
+                                prefillCustomCategoryId: result.customCategoryId ?? undefined,
+                                prefillDescription:      result.description ?? undefined,
+                                prefillDate:             result.date ?? undefined,
+                                prefillTranscript:       result.transcript ?? undefined,
+                            },
+                        },
+                    ]
+                    return CommonActions.reset({ ...state, routes, index: routes.length - 1 })
+                })
             } catch (e) {
                 Alert.alert(strings.errorProcessing, e.message ?? strings.errorGeneric)
             }

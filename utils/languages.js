@@ -133,6 +133,8 @@ export const es = {
         ],
     },
     transactionScreen: {
+        iaBannerLabel: "Obtenido de IA",
+        iaBannerTranscript: "Lo que dijiste:",
         headerRegister: "Registra un ",
         headerEdit: "Edita un ",
         headerIncome: "Ingreso",
@@ -370,6 +372,8 @@ export const en = {
         ],
     },
     transactionScreen: {
+        iaBannerLabel: "AI-generated",
+        iaBannerTranscript: "You said:",
         headerRegister: "Register ",
         headerEdit: "Edit ",
         headerIncome: "Income",
