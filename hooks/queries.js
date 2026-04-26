@@ -66,15 +66,51 @@ export function useTransactions({ type = 'all' } = {}) {
   })
 }
 
+// ─── Accent normalization helpers ─────────────────────────────────────────────
+
+export function normalizeText(str) {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .trim()
+}
+
+function accentStripSQL(col) {
+  const pairs = [
+    ['á','a'],['Á','a'],['é','e'],['É','e'],['í','i'],['Í','i'],
+    ['ó','o'],['Ó','o'],['ú','u'],['Ú','u'],['ü','u'],['Ü','u'],
+    ['ñ','n'],['Ñ','n'],
+  ]
+  let expr = col
+  for (const [from, to] of pairs) {
+    expr = `REPLACE(${expr},'${from}','${to}')`
+  }
+  return `LOWER(${expr})`
+}
+
 // ─── Transaction search (hits SQLite directly — no pagination) ─────────────────
 
-export function useTransactionSearch(text, type = 'all') {
-  const typeCondition = type === 'all' ? '' : 'AND t.type = ?'
-  const typeParam = type === 'all' ? [] : [type]
-  const searchParam = `%${text}%`
+export function useTransactionSearch(text, filters = {}) {
+  const { type = 'all', categoryId = null, categoryIsCustom = false, dateFrom = null, dateTo = null } = filters
+  const normalized = normalizeText(text)
+
+  const conditions = []
+  const params = []
+
+  conditions.push(`(${accentStripSQL('t.description')} LIKE ? OR CAST(t.amount AS TEXT) LIKE ?)`)
+  params.push(`%${normalized}%`, `%${text}%`)
+
+  if (type === 'e' || type === 'i') { conditions.push('t.type = ?'); params.push(type) }
+  if (categoryId) {
+    conditions.push(categoryIsCustom ? 't.customCategoryId = ?' : 't.globalCategoryId = ?')
+    params.push(categoryId)
+  }
+  if (dateFrom) { conditions.push('t.date >= ?'); params.push(dateFrom) }
+  if (dateTo)   { conditions.push('t.date <= ?'); params.push(dateTo) }
 
   return useQuery({
-    queryKey: QK.transactionSearch(text, type),
+    queryKey: ['transactionSearch', text, filters],
     queryFn: () => querySQL(
       `SELECT t.*,
          a.name AS accountName,
@@ -82,12 +118,57 @@ export function useTransactionSearch(text, type = 'all') {
        FROM transactions t
        LEFT JOIN accounts a ON t.accountId = a.id
        LEFT JOIN custom_categories c ON t.customCategoryId = c.id
-       WHERE (t.description LIKE ? OR t.amount LIKE ?) ${typeCondition}
+       WHERE ${conditions.join(' AND ')}
        ORDER BY t.date DESC, t.rowid DESC
-       LIMIT 100`,
-      [searchParam, searchParam, ...typeParam]
+       LIMIT 200`,
+      params
     ),
     enabled: text.length > 0,
+    staleTime: 0,
+  })
+}
+
+// ─── Filtered transactions (category, date range, sort — no pagination) ────────
+
+export function useFilteredTransactions(filters = {}, { enabled = true } = {}) {
+  const {
+    type = 'all',
+    categoryId = null,
+    categoryIsCustom = false,
+    dateFrom = null,
+    dateTo = null,
+    sortBy = 'date',
+    sortOrder = 'DESC',
+  } = filters
+
+  const conditions = ['1=1']
+  const params = []
+
+  if (type === 'e' || type === 'i') { conditions.push('t.type = ?'); params.push(type) }
+  if (categoryId) {
+    conditions.push(categoryIsCustom ? 't.customCategoryId = ?' : 't.globalCategoryId = ?')
+    params.push(categoryId)
+  }
+  if (dateFrom) { conditions.push('t.date >= ?'); params.push(dateFrom) }
+  if (dateTo)   { conditions.push('t.date <= ?'); params.push(dateTo) }
+
+  const orderCol = sortBy === 'amount' ? 'CAST(t.amount AS REAL)' : 't.date'
+
+  return useQuery({
+    queryKey: ['filteredTransactions', filters],
+    queryFn: () => querySQL(
+      `SELECT t.*,
+         a.name AS accountName,
+         c.name AS customCategoryName, c.icon AS customCategoryIcon, c.type AS customCategoryType
+       FROM transactions t
+       LEFT JOIN accounts a ON t.accountId = a.id
+       LEFT JOIN custom_categories c ON t.customCategoryId = c.id
+       WHERE ${conditions.join(' AND ')}
+       ORDER BY ${orderCol} ${sortOrder}, t.rowid DESC
+       LIMIT 500`,
+      params
+    ),
+    enabled,
     staleTime: 0,
   })
 }
@@ -251,6 +332,7 @@ export function useInvalidateAll() {
   return () => {
     qc.invalidateQueries({ queryKey: ['transactions'] })
     qc.invalidateQueries({ queryKey: ['transactionSearch'] })
+    qc.invalidateQueries({ queryKey: ['filteredTransactions'] })
     qc.invalidateQueries({ queryKey: ['monthSummary'] })
     qc.invalidateQueries({ queryKey: ['calendarDots'] })
     qc.invalidateQueries({ queryKey: ['monthCategoryBreakdown'] })

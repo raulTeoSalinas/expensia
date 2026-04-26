@@ -4,6 +4,7 @@ import {
     Animated,
     Easing,
     Modal,
+    StatusBar,
     StyleSheet,
     TouchableOpacity,
     View,
@@ -52,6 +53,13 @@ export default function IATransactionsScreen() {
     )
     const loadingMsgOpacity = useRef(new Animated.Value(1)).current
     const loadingMsgTranslateY = useRef(new Animated.Value(0)).current
+
+    useEffect(() => {
+        StatusBar.setBarStyle('light-content')
+        return () => {
+            StatusBar.setBarStyle('dark-content')
+        }
+    }, [])
 
     useEffect(() => {
         if (!isLoading) return
