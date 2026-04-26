@@ -22,13 +22,14 @@ import getCurrentDate from '../utils/getCurrentDay'
 import Colors from '../constants/colors'
 import { es, en } from '../utils/languages'
 import { ExpensiaContext } from '../context/expensiaContext'
-import { useAccounts, useTransaction } from '../hooks/queries'
+import { useAccounts, useTransaction, useCustomCategories } from '../hooks/queries'
 import Category from '../utils/category'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 const TransactionScreen = ({ navigation, route }) => {
     const { addTransaction, editTransaction, removeTransaction, user } = useContext(ExpensiaContext)
     const { data: accounts = [] } = useAccounts()
+    const { data: customCats = [] } = useCustomCategories()
     const idTransactionClicked = route.params?.id ?? null
     const { data: existingTx } = useTransaction(idTransactionClicked)
     const strings = user?.language === 'en' ? en : es
@@ -67,15 +68,12 @@ const TransactionScreen = ({ navigation, route }) => {
             const cat = Category.find(c => c.id === prefillGlobalCategoryId)
             if (cat) { setSelectedCategory(cat); return }
         }
-        if (prefillCustomCategoryId) {
-            // La categoría custom se resuelve cuando accounts carga — se maneja más abajo
-            return
-        }
+        if (prefillCustomCategoryId) return
         const cats = Category.filter(c => c.type === typeTrans)
         setSelectedCategory(cats[0] ?? null)
     }, [typeTrans])
 
-    // Prefill de cuenta y amount desde IA
+    // Prefill de cuenta, amount y custom category desde IA
     useEffect(() => {
         if (!isFromIA || accounts.length === 0) return
         if (prefillAmount) {
@@ -86,7 +84,11 @@ const TransactionScreen = ({ navigation, route }) => {
             const account = accounts.find(a => a.backendId === prefillAccountId)
             if (account) setSelectedValue(account)
         }
-    }, [accounts, isFromIA])
+        if (prefillCustomCategoryId) {
+            const cat = customCats.find(c => c.backendId === prefillCustomCategoryId)
+            if (cat) setSelectedCategory({ id: cat.id, nameEN: cat.name, nameES: cat.name, type: cat.type, icon: cat.icon })
+        }
+    }, [accounts, customCats, isFromIA])
 
     // Pre-fill for edit mode — runs when existingTx loads from DB
     useEffect(() => {
