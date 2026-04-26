@@ -11,6 +11,7 @@ export const DEFAULT_FILTERS = {
     type: 'all',
     categoryId: null,
     categoryIsCustom: false,
+    accountId: null,
     dateFrom: null,
     dateTo: null,
     sortBy: 'date',
@@ -21,12 +22,13 @@ export function countActiveFilters(filters) {
     let n = 0
     if (filters.type !== 'all') n++
     if (filters.categoryId != null) n++
+    if (filters.accountId != null) n++
     if (filters.dateFrom != null || filters.dateTo != null) n++
     if (filters.sortBy !== 'date' || filters.sortOrder !== 'DESC') n++
     return n
 }
 
-export default function FilterSheet({ visible, onClose, filters, onApply, customCats = [], strings }) {
+export default function FilterSheet({ visible, onClose, filters, onApply, customCats = [], accounts = [], strings }) {
     const sheetRef = useRef(null)
     const snapPoints = useMemo(() => ['88%'], [])
 
@@ -43,14 +45,28 @@ export default function FilterSheet({ visible, onClose, filters, onApply, custom
         }
     }, [visible])
 
-    const set = (key, value) => setDraft(d => ({ ...d, [key]: value }))
+    const set = (key, value) => setDraft(d => {
+        const next = { ...d, [key]: value }
+        if (key === 'type' && next.categoryId != null) {
+            const allCats = [
+                ...Category.map(c => ({ id: c.id, type: c.type, isCustom: false })),
+                ...customCats.map(c => ({ id: c.id, type: c.type, isCustom: true })),
+            ]
+            const selected = allCats.find(c => c.id === next.categoryId && c.isCustom === next.categoryIsCustom)
+            if (selected && value !== 'all' && selected.type !== value) {
+                next.categoryId = null
+                next.categoryIsCustom = false
+            }
+        }
+        return next
+    })
 
     const handleApply = () => { onApply(draft); onClose() }
     const handleReset = () => { onApply(DEFAULT_FILTERS); onClose() }
 
     const renderFooter = useCallback((props) => (
-        <BottomSheetFooter {...props} bottomInset={24}>
-            <View style={styles.btnRow}>
+        <BottomSheetFooter {...props}>
+            <View style={[styles.btnRow, { paddingBottom: 24 }]}>
                 <TouchableOpacity style={styles.btnCancel} onPress={onClose}>
                     <Text weight="bold" color="primary">{strings.cancel}</Text>
                 </TouchableOpacity>
@@ -62,9 +78,9 @@ export default function FilterSheet({ visible, onClose, filters, onApply, custom
     ), [draft, strings])
 
     const allCategories = [
-        ...Category.map(c => ({ id: c.id, label: c.nameES, icon: c.icon, isCustom: false })),
-        ...customCats.map(c => ({ id: c.id, label: c.name, icon: c.icon, isCustom: true })),
-    ]
+        ...Category.map(c => ({ id: c.id, label: c.nameES, icon: c.icon, type: c.type, isCustom: false })),
+        ...customCats.map(c => ({ id: c.id, label: c.name, icon: c.icon, type: c.type, isCustom: true })),
+    ].filter(c => draft.type === 'all' || c.type === draft.type)
 
     const today = new Date().toISOString().split('T')[0]
 
@@ -115,6 +131,39 @@ export default function FilterSheet({ visible, onClose, filters, onApply, custom
                             </TouchableOpacity>
                         ))}
                     </View>
+
+                    {/* Cuenta */}
+                    {accounts.length > 0 && <>
+                        <Text weight="bold" color="primary" style={styles.label}>{strings.account}</Text>
+                        <View style={styles.catWrap}>
+                            <TouchableOpacity
+                                style={[styles.catChip, !draft.accountId && styles.catChipActive]}
+                                onPress={() => set('accountId', null)}
+                            >
+                                <Text weight="bold" color={!draft.accountId ? 'light' : 'primary'} style={styles.catLabel}>{strings.all}</Text>
+                            </TouchableOpacity>
+                            {accounts.map(acc => {
+                                const isSelected = draft.accountId === acc.id
+                                return (
+                                    <TouchableOpacity
+                                        key={acc.id}
+                                        style={[styles.catChip, isSelected && styles.catChipActive]}
+                                        onPress={() => set('accountId', acc.id)}
+                                    >
+                                        <MaterialCommunityIcons
+                                            name={acc.icon}
+                                            size={13}
+                                            color={isSelected ? Colors.white : Colors.primary}
+                                            style={{ marginRight: 4 }}
+                                        />
+                                        <Text weight="bold" color={isSelected ? 'light' : 'primary'} style={styles.catLabel}>
+                                            {acc.name}
+                                        </Text>
+                                    </TouchableOpacity>
+                                )
+                            })}
+                        </View>
+                    </>}
 
                     {/* Categoría */}
                     <Text weight="bold" color="primary" style={styles.label}>{strings.category}</Text>

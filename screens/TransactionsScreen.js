@@ -20,7 +20,7 @@ import {
     useTransactions,
     useTransactionSearch,
     useFilteredTransactions,
-    normalizeText,
+    useAccounts,
 } from '../hooks/queries'
 import { useCustomCategories } from '../hooks/queries'
 import FilterSheet, { DEFAULT_FILTERS, countActiveFilters } from '../components/FilterSheet'
@@ -36,6 +36,7 @@ const TransactionsScreen = () => {
     const [filterVisible, setFilterVisible] = useState(false)
 
     const { data: customCats = [] } = useCustomCategories()
+    const { data: accounts = [] } = useAccounts()
 
     const isSearching = txtSearch.length > 0
     const activeCount = countActiveFilters(filters)
@@ -137,6 +138,7 @@ const TransactionsScreen = () => {
                     filters={filters}
                     onApply={setFilters}
                     customCats={customCats}
+                    accounts={accounts}
                     strings={strings.filterSheet}
                 />
         </SafeAreaView>

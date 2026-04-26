@@ -92,7 +92,7 @@ function accentStripSQL(col) {
 // ─── Transaction search (hits SQLite directly — no pagination) ─────────────────
 
 export function useTransactionSearch(text, filters = {}) {
-  const { type = 'all', categoryId = null, categoryIsCustom = false, dateFrom = null, dateTo = null } = filters
+  const { type = 'all', categoryId = null, categoryIsCustom = false, accountId = null, dateFrom = null, dateTo = null } = filters
   const normalized = normalizeText(text)
 
   const conditions = []
@@ -106,6 +106,7 @@ export function useTransactionSearch(text, filters = {}) {
     conditions.push(categoryIsCustom ? 't.customCategoryId = ?' : 't.globalCategoryId = ?')
     params.push(categoryId)
   }
+  if (accountId) { conditions.push('t.accountId = ?'); params.push(accountId) }
   if (dateFrom) { conditions.push('t.date >= ?'); params.push(dateFrom) }
   if (dateTo)   { conditions.push('t.date <= ?'); params.push(dateTo) }
 
@@ -135,6 +136,7 @@ export function useFilteredTransactions(filters = {}, { enabled = true } = {}) {
     type = 'all',
     categoryId = null,
     categoryIsCustom = false,
+    accountId = null,
     dateFrom = null,
     dateTo = null,
     sortBy = 'date',
@@ -149,6 +151,7 @@ export function useFilteredTransactions(filters = {}, { enabled = true } = {}) {
     conditions.push(categoryIsCustom ? 't.customCategoryId = ?' : 't.globalCategoryId = ?')
     params.push(categoryId)
   }
+  if (accountId) { conditions.push('t.accountId = ?'); params.push(accountId) }
   if (dateFrom) { conditions.push('t.date >= ?'); params.push(dateFrom) }
   if (dateTo)   { conditions.push('t.date <= ?'); params.push(dateTo) }
 
