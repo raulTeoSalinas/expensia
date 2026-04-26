@@ -1,34 +1,83 @@
-// React / React-Native
-import { useEffect, useState, useRef, useMemo, useContext } from "react";
-import {
-    Modal,
-    View,
-    TouchableOpacity,
-    StyleSheet,
-    Pressable,
-    ScrollView,
-} from "react-native";
-import Text from "@components/Text";
-import Colors from "../constants/colors";
-import { es, en } from "../utils/languages";
-import { ExpensiaContext } from "../context/expensiaContext";
+import { useEffect, useState, useRef, useMemo, useContext } from 'react'
+import { Modal, View, FlatList, StyleSheet, TouchableWithoutFeedback, TouchableOpacity } from 'react-native'
+import Text from '@components/Text'
+import Colors from '../constants/colors'
+import { es, en } from '../utils/languages'
+import { ExpensiaContext } from '../context/expensiaContext'
 
-const YEAR_MIN = 1955;
-const YEAR_MAX = 2050;
-/** Altura de cada fila (cell + marginBottom); debe coincidir con estilos */
-const PICKER_ITEM_STRIDE = 52;
-const PICKER_VIEWPORT_HEIGHT = 260;
+const ITEM_HEIGHT = 44
+const VISIBLE_ITEMS = 5
+const PICKER_HEIGHT = ITEM_HEIGHT * VISIBLE_ITEMS
+const YEAR_MIN = 1955
+const YEAR_MAX = 2050
 
-/**
- * Selector modal de mes y año (listas desplazables).
- * @param {object} props
- * @param {boolean} props.visible
- * @param {() => void} props.onRequestClose
- * @param {{ month: number, year: number }} props.onConfirm — month 1–12
- * @param {string[]} props.monthNames — 12 nombres, índice 0 = enero
- * @param {number} props.initialYear
- * @param {number} props.initialMonth — 1–12
- */
+function WheelColumn({ data, selectedIndex, onSelect, renderLabel }) {
+    const listRef = useRef(null)
+
+    useEffect(() => {
+        const id = requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                listRef.current?.scrollToOffset({
+                    offset: selectedIndex * ITEM_HEIGHT,
+                    animated: false,
+                })
+            })
+        })
+        return () => cancelAnimationFrame(id)
+    }, [selectedIndex])
+
+    const getItemLayout = (_, index) => ({
+        length: ITEM_HEIGHT,
+        offset: index * ITEM_HEIGHT,
+        index,
+    })
+
+    const handleScrollEnd = (e) => {
+        const index = Math.round(e.nativeEvent.contentOffset.y / ITEM_HEIGHT)
+        onSelect(Math.max(0, Math.min(data.length - 1, index)))
+    }
+
+    const renderItem = ({ item, index }) => {
+        const dist = Math.abs(index - selectedIndex)
+        const opacity = dist === 0 ? 1 : dist === 1 ? 0.45 : 0.18
+        const fontSize = dist === 0 ? 17 : dist === 1 ? 15 : 13
+        return (
+            <View style={styles.item}>
+                <Text
+                    weight={dist === 0 ? 'bold' : 'regular'}
+                    color="primary"
+                    style={{ opacity, fontSize }}
+                    numberOfLines={1}
+                >
+                    {renderLabel(item)}
+                </Text>
+            </View>
+        )
+    }
+
+    return (
+        <View style={styles.column}>
+            <FlatList
+                ref={listRef}
+                data={data}
+                keyExtractor={(_, i) => String(i)}
+                renderItem={renderItem}
+                getItemLayout={getItemLayout}
+                showsVerticalScrollIndicator={false}
+                snapToInterval={ITEM_HEIGHT}
+                decelerationRate="fast"
+                onMomentumScrollEnd={handleScrollEnd}
+                contentContainerStyle={{ paddingVertical: ITEM_HEIGHT * 2 }}
+                style={{ height: PICKER_HEIGHT }}
+                extraData={selectedIndex}
+                nestedScrollEnabled
+            />
+            {/* Selection band */}
+            <View style={styles.selectionBand} pointerEvents="none" />
+        </View>
+    )
+}
+
 const MonthYearPickerModal = ({
     visible,
     onRequestClose,
@@ -37,51 +86,25 @@ const MonthYearPickerModal = ({
     initialYear,
     initialMonth,
 }) => {
-    const { user } = useContext(ExpensiaContext);
-    const strings = user && user.language === "en" ? en : es;
-    const { title, confirm: confirmLabel, cancel: cancelLabel } = strings.monthYearPicker;
-    const [selMonth, setSelMonth] = useState(initialMonth);
-    const [selYear, setSelYear] = useState(initialYear);
-    const monthScrollRef = useRef(null);
-    const yearScrollRef = useRef(null);
+    const { user } = useContext(ExpensiaContext)
+    const strings = user?.language === 'en' ? en : es
+    const { title, confirm: confirmLabel, cancel: cancelLabel } = strings.monthYearPicker
+
+    const [selMonth, setSelMonth] = useState(initialMonth)
+    const [selYear, setSelYear] = useState(initialYear)
 
     useEffect(() => {
         if (visible) {
-            setSelMonth(initialMonth);
-            setSelYear(initialYear);
+            setSelMonth(initialMonth)
+            setSelYear(initialYear)
         }
-    }, [visible, initialMonth, initialYear]);
+    }, [visible, initialMonth, initialYear])
 
     const years = useMemo(() => {
-        const list = [];
-        for (let y = YEAR_MIN; y <= YEAR_MAX; y += 1) {
-            list.push(y);
-        }
-        return list;
-    }, []);
-
-    useEffect(() => {
-        if (!visible) {
-            return;
-        }
-        const id = requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                const centerOffset = PICKER_VIEWPORT_HEIGHT / 2 - PICKER_ITEM_STRIDE / 2;
-                const monthIndex = Math.max(0, Math.min(11, selMonth - 1));
-                const monthY = Math.max(0, monthIndex * PICKER_ITEM_STRIDE - centerOffset);
-                monthScrollRef.current?.scrollTo({ y: monthY, animated: false });
-
-                const yearIndex = Math.max(0, Math.min(years.length - 1, selYear - YEAR_MIN));
-                const yearY = Math.max(0, yearIndex * PICKER_ITEM_STRIDE - centerOffset);
-                yearScrollRef.current?.scrollTo({ y: yearY, animated: false });
-            });
-        });
-        return () => cancelAnimationFrame(id);
-    }, [visible, selMonth, selYear, years]);
-
-    const handleConfirm = () => {
-        onConfirm({ month: selMonth, year: selYear });
-    };
+        const list = []
+        for (let y = YEAR_MIN; y <= YEAR_MAX; y++) list.push(y)
+        return list
+    }, [])
 
     return (
         <Modal
@@ -90,100 +113,59 @@ const MonthYearPickerModal = ({
             animationType="fade"
             onRequestClose={onRequestClose}
         >
-            <Pressable style={styles.overlay} onPress={onRequestClose}>
-                <Pressable style={styles.sheet} onPress={(e) => e.stopPropagation()}>
+            <View style={styles.overlay}>
+                <TouchableWithoutFeedback onPress={onRequestClose}>
+                    <View style={StyleSheet.absoluteFillObject} />
+                </TouchableWithoutFeedback>
+                <View style={styles.sheet}>
                     <Text weight="bold" color="primary" size="l" style={styles.title}>
                         {title}
                     </Text>
+
                     <View style={styles.columns}>
-                        <ScrollView
-                            ref={monthScrollRef}
-                            style={styles.scroll}
-                            showsVerticalScrollIndicator={false}
-                            nestedScrollEnabled
-                        >
-                            {monthNames.map((name, i) => {
-                                const m = i + 1;
-                                const active = selMonth === m;
-                                return (
-                                    <TouchableOpacity
-                                        key={m}
-                                        style={[styles.cell, active && styles.cellActive]}
-                                        onPress={() => setSelMonth(m)}
-                                        activeOpacity={0.7}
-                                    >
-                                        <Text
-                                            weight="bold"
-                                            color={active ? "light" : "primary"}
-                                            style={styles.cellText}
-                                            numberOfLines={1}
-                                        >
-                                            {name}
-                                        </Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </ScrollView>
-                        <ScrollView
-                            ref={yearScrollRef}
-                            style={styles.scroll}
-                            showsVerticalScrollIndicator={false}
-                            nestedScrollEnabled
-                        >
-                            {years.map((y) => {
-                                const active = selYear === y;
-                                return (
-                                    <TouchableOpacity
-                                        key={y}
-                                        style={[styles.cell, active && styles.cellActive]}
-                                        onPress={() => setSelYear(y)}
-                                        activeOpacity={0.7}
-                                    >
-                                        <Text
-                                            weight="bold"
-                                            color={active ? "light" : "primary"}
-                                            style={styles.cellText}
-                                        >
-                                            {String(y)}
-                                        </Text>
-                                    </TouchableOpacity>
-                                );
-                            })}
-                        </ScrollView>
+                        <WheelColumn
+                            data={monthNames}
+                            selectedIndex={selMonth - 1}
+                            onSelect={(i) => setSelMonth(i + 1)}
+                            renderLabel={(name) => name}
+                        />
+                        <WheelColumn
+                            data={years}
+                            selectedIndex={selYear - YEAR_MIN}
+                            onSelect={(i) => setSelYear(years[i])}
+                            renderLabel={(y) => String(y)}
+                        />
                     </View>
+
                     <View style={styles.actions}>
                         <TouchableOpacity
                             style={[styles.btn, styles.btnGhost]}
                             onPress={onRequestClose}
                             activeOpacity={0.7}
                         >
-                            <Text weight="bold" color="primary">
-                                {cancelLabel}
-                            </Text>
+                            <Text weight="bold" color="primary">{cancelLabel}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={[styles.btn, styles.btnPrimary]}
-                            onPress={handleConfirm}
+                            onPress={() => onConfirm({ month: selMonth, year: selYear })}
                             activeOpacity={0.7}
                         >
-                            <Text weight="bold" color="light">
-                                {confirmLabel}
-                            </Text>
+                            <Text weight="bold" color="light">{confirmLabel}</Text>
                         </TouchableOpacity>
                     </View>
-                </Pressable>
-            </Pressable>
+                </View>
+            </View>
         </Modal>
-    );
-};
+    )
+}
 
-export default MonthYearPickerModal;
+export default MonthYearPickerModal
 
 const styles = StyleSheet.create({
     overlay: {
         flex: 1,
         backgroundColor: Colors.overlay,
-        justifyContent: "center",
+        justifyContent: 'center',
         paddingHorizontal: 24,
     },
     sheet: {
@@ -195,35 +177,36 @@ const styles = StyleSheet.create({
         borderColor: Colors.sheetBorder,
     },
     title: {
-        textAlign: "center",
+        textAlign: 'center',
         marginBottom: 12,
     },
     columns: {
-        flexDirection: "row",
-        gap: 12,
-        maxHeight: PICKER_VIEWPORT_HEIGHT,
+        flexDirection: 'row',
+        gap: 8,
     },
-    scroll: {
+    column: {
         flex: 1,
+        position: 'relative',
     },
-    cell: {
-        minHeight: 48,
-        justifyContent: "center",
-        paddingVertical: 10,
-        paddingHorizontal: 8,
-        borderRadius: 10,
-        marginBottom: 4,
+    item: {
+        height: ITEM_HEIGHT,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
-    cellActive: {
-        backgroundColor: Colors.primary,
-    },
-    cellText: {
-        textAlign: "center",
-        fontSize: 15,
+    selectionBand: {
+        position: 'absolute',
+        left: 8,
+        right: 8,
+        top: ITEM_HEIGHT * 2,
+        height: ITEM_HEIGHT,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: Colors.primary,
+        borderRadius: 2,
     },
     actions: {
-        flexDirection: "row",
-        justifyContent: "space-between",
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         marginTop: 16,
         gap: 12,
     },
@@ -231,8 +214,8 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 12,
         borderRadius: 12,
-        alignItems: "center",
-        justifyContent: "center",
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     btnGhost: {
         borderWidth: 1,
@@ -241,4 +224,4 @@ const styles = StyleSheet.create({
     btnPrimary: {
         backgroundColor: Colors.secondary,
     },
-});
+})
