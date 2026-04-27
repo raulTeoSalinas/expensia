@@ -24,7 +24,6 @@ import { es, en } from '../utils/languages'
 import { ExpensiaContext } from '../context/expensiaContext'
 import { useAccounts, useTransaction, useCustomCategories } from '../hooks/queries'
 import Category from '../utils/category'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 const TransactionScreen = ({ navigation, route }) => {
     const { addTransaction, editTransaction, removeTransaction, user } = useContext(ExpensiaContext)
@@ -184,8 +183,7 @@ const TransactionScreen = ({ navigation, route }) => {
         : typeTrans === 'e' ? strings.transactionScreen.headerExpense : ''
 
     return (
-        <BottomSheetModalProvider>
-            <SafeAreaView style={styles.mainContainer}>
+        <SafeAreaView style={styles.mainContainer}>
                 {/* Custom header — bypasses iOS 26 UIKit glass on nav bar buttons */}
                 <View style={styles.customHeader}>
                     <TouchableOpacity onPress={navigation.goBack} hitSlop={12}>
@@ -309,8 +307,7 @@ const TransactionScreen = ({ navigation, route }) => {
                         onPressDelete={onPressDelete}
                     />
                 </ScrollView>
-            </SafeAreaView>
-        </BottomSheetModalProvider>
+        </SafeAreaView>
     )
 }
 

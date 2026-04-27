@@ -3,7 +3,6 @@ import { View, TouchableOpacity, ScrollView, StyleSheet, SafeAreaView } from 're
 import Text from '@components/Text'
 import GradientText from '../components/TextGradient'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import ModalDelete from '@components/ModalDelete'
 import CreateCategorySheet from '../components/CreateCategorySheet'
 import Colors from '../constants/colors'
@@ -58,8 +57,7 @@ const CustomCategoriesScreen = ({ navigation }) => {
   )
 
   return (
-    <BottomSheetModalProvider>
-      <SafeAreaView style={styles.main}>
+    <SafeAreaView style={styles.main}>
         {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity onPress={navigation.goBack} hitSlop={12}>
@@ -108,8 +106,7 @@ const CustomCategoriesScreen = ({ navigation }) => {
           setModalVisible={(v) => { if (!v) setDeletingCategory(null) }}
           onPressDelete={handleDeleteConfirm}
         />
-      </SafeAreaView>
-    </BottomSheetModalProvider>
+    </SafeAreaView>
   )
 }
 

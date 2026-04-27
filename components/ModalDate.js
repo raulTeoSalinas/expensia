@@ -13,6 +13,7 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
 import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal } from '@gorhom/bottom-sheet';
+import containerComponent from '@utils/bottomSheetContainer'
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import MonthYearPickerModal from "./MonthYearPickerModal";
 import CalendarTappableMonthTitle from "./CalendarTappableMonthTitle";
@@ -103,6 +104,7 @@ const ModalDate = ({ modalVisible, setModalVisible, selectedDate, setSelectedDat
             snapPoints={snapPoints}
             enableDynamicSizing={false}
             enableDismissOnClose
+            containerComponent={containerComponent}
             onDismiss={() => {
                 closeMonthPicker();
                 setModalVisible(false);

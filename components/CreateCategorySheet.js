@@ -3,6 +3,7 @@ import { View, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react
 import Text from '@components/Text'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { BottomSheetModal, TouchableOpacity as BSTouch } from '@gorhom/bottom-sheet'
+import containerComponent from '@utils/bottomSheetContainer'
 import Colors from '../constants/colors'
 import { getCategoryIconRows } from '../constants/categoryIcons'
 import { ExpensiaContext } from '../context/expensiaContext'
@@ -70,6 +71,7 @@ export default function CreateCategorySheet({
       snapPoints={snapPoints}
       enableDynamicSizing={false}
       enableDismissOnClose
+      containerComponent={containerComponent}
       onDismiss={onClose}
       handleIndicatorStyle={{ backgroundColor: Colors.sheetHandle }}
       handleComponent={() => (

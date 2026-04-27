@@ -19,6 +19,7 @@ import { ExpensiaContext } from "../context/expensiaContext";
 import { es, en } from "../utils/languages";
 import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal } from '@gorhom/bottom-sheet';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import containerComponent from '@utils/bottomSheetContainer'
 
 const ModalSelect = ({ modalVisible, setModalVisible, data, selectedValue, handleSelectedModal }) => {
 
@@ -61,6 +62,7 @@ const ModalSelect = ({ modalVisible, setModalVisible, data, selectedValue, handl
             snapPoints={snapPoints}
             enableDynamicSizing={false}
             enableDismissOnClose
+            containerComponent={containerComponent}
             onDismiss={() => setModalVisible(false)}
             handleIndicatorStyle={{ backgroundColor: Colors.sheetHandle }}
             handleComponent={() => <View style={{ justifyContent: "center", alignItems: "center" }}>

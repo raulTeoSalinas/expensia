@@ -8,6 +8,7 @@ import { es, en } from '../utils/languages'
 import Category from '../utils/category'
 import { useCustomCategories } from '../hooks/queries'
 import { TouchableOpacity as BSTouch, BottomSheetModal } from '@gorhom/bottom-sheet'
+import containerComponent from '@utils/bottomSheetContainer'
 import CreateCategorySheet from './CreateCategorySheet'
 
 const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, handleSelectedModal, type }) => {
@@ -71,6 +72,7 @@ const ModalSelectCategory = ({ modalVisible, setModalVisible, selectedValue, han
         snapPoints={snapPoints}
         enableDynamicSizing={false}
         enableDismissOnClose
+        containerComponent={containerComponent}
         onDismiss={() => {
           setModalVisible(false)
           if (pendingOpenCreateRef.current) {
