@@ -28,7 +28,7 @@ export function countActiveFilters(filters) {
     return n
 }
 
-export default function FilterSheet({ visible, onClose, filters, onApply, customCats = [], accounts = [], strings }) {
+export default function FilterSheet({ visible, onClose, filters, onApply, customCats = [], accounts = [], strings, language = 'es' }) {
     const sheetRef = useRef(null)
     const snapPoints = useMemo(() => ['88%'], [])
 
@@ -78,7 +78,7 @@ export default function FilterSheet({ visible, onClose, filters, onApply, custom
     ), [draft, strings])
 
     const allCategories = [
-        ...Category.map(c => ({ id: c.id, label: c.nameES, icon: c.icon, type: c.type, isCustom: false })),
+        ...Category.map(c => ({ id: c.id, label: language === 'en' ? c.nameEN : c.nameES, icon: c.icon, type: c.type, isCustom: false })),
         ...customCats.map(c => ({ id: c.id, label: c.name, icon: c.icon, type: c.type, isCustom: true })),
     ].filter(c => draft.type === 'all' || c.type === draft.type)
 

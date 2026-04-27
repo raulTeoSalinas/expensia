@@ -140,6 +140,7 @@ const TransactionsScreen = () => {
                     customCats={customCats}
                     accounts={accounts}
                     strings={strings.filterSheet}
+                    language={user?.language ?? 'es'}
                 />
         </SafeAreaView>
     )
