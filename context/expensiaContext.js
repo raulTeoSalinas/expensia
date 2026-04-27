@@ -250,6 +250,53 @@ const ExpensiaContextProvider = ({ children }) => {
 
   // ─── Transactions ──────────────────────────────────────────────────────────
 
+  async function addTransfer({ fromAccountId, toAccountId, amount, fromName, toName }) {
+    const now = new Date()
+    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`
+    const parsed = parseFloat(amount)
+    const expenseId = generateId()
+    const incomeId = generateId()
+    try {
+      await runSQL(
+        `INSERT INTO transactions (id, type, amount, date, description, accountId, globalCategoryId, customCategoryId, syncStatus)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [expenseId, 'e', parsed, date, `→ ${toName}`, fromAccountId, 'transfer_out', null, isLoggedIn ? 'pending' : 'local']
+      )
+      await runSQL('UPDATE accounts SET amount = amount - ? WHERE id = ?', [parsed, fromAccountId])
+
+      await runSQL(
+        `INSERT INTO transactions (id, type, amount, date, description, accountId, globalCategoryId, customCategoryId, syncStatus)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [incomeId, 'i', parsed, date, `← ${fromName}`, toAccountId, 'transfer_in', null, isLoggedIn ? 'pending' : 'local']
+      )
+      await runSQL('UPDATE accounts SET amount = amount + ? WHERE id = ?', [parsed, toAccountId])
+
+      invalidateTransactionQueries()
+      invalidateAccountQueries()
+
+      if (isLoggedIn) {
+        const fromRow = await queryOneSQL('SELECT backendId FROM accounts WHERE id = ?', [fromAccountId])
+        const toRow   = await queryOneSQL('SELECT backendId FROM accounts WHERE id = ?', [toAccountId])
+        const online  = await getIsOnline()
+        await syncOne('transaction', 'CREATE', expenseId, {
+          type: 'e', amount: parsed, date, description: `→ ${toName}`,
+          idAccount: fromRow?.backendId ?? null, idCustomCategory: null, idGlobalCategory: 'transfer_out',
+        }, online)
+        const errorType = await syncOne('transaction', 'CREATE', incomeId, {
+          type: 'i', amount: parsed, date, description: `← ${fromName}`,
+          idAccount: toRow?.backendId ?? null, idCustomCategory: null, idGlobalCategory: 'transfer_in',
+        }, online)
+        invalidateTransactionQueries()
+        showToast(errorType, isLoggedIn, logout, toastT)
+      } else {
+        showToast(null, false, logout, toastT)
+      }
+    } catch (e) {
+      showToast('LOCAL_ERROR', isLoggedIn, logout, toastT)
+      throw new Error('Failed to save transfer')
+    }
+  }
+
   async function addTransaction({ type, amount, accountId, date, globalCategoryId, customCategoryId, description }) {
     const id = generateId()
     try {
@@ -438,6 +485,7 @@ const ExpensiaContextProvider = ({ children }) => {
     editAccount,
     deleteAccount,
     addOrRestAmount,
+    addTransfer,
     // Transactions
     addTransaction,
     editTransaction,

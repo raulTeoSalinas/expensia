@@ -1,6 +1,9 @@
 import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { querySQL, queryOneSQL } from '../services/db'
 import Colors from '../constants/colors'
+import { TRANSFER_CATEGORY_IDS } from '../utils/category'
+
+const TRANSFER_EXCLUSION = `AND (globalCategoryId IS NULL OR globalCategoryId NOT IN (${TRANSFER_CATEGORY_IDS.map(() => '?').join(',')}))`
 
 // ─── Query Keys ──────────────────────────────────────────────────────────────
 
@@ -192,8 +195,9 @@ export function useMonthSummary(month) {
         `SELECT type, SUM(amount) as total
          FROM transactions
          WHERE date >= ? AND date < ?
+         ${TRANSFER_EXCLUSION}
          GROUP BY type`,
-        [start, next]
+        [start, next, ...TRANSFER_CATEGORY_IDS]
       )
 
       let income = 0, expenses = 0
@@ -263,8 +267,9 @@ export function useMonthCategoryBreakdown(month) {
            SUM(amount) as total
          FROM transactions
          WHERE date >= ? AND date < ?
+         ${TRANSFER_EXCLUSION}
          GROUP BY type, categoryId`,
-        [start, next]
+        [start, next, ...TRANSFER_CATEGORY_IDS]
       )
 
       const typeI = {}, typeE = {}

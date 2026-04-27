@@ -32,7 +32,7 @@ import { TouchableOpacity as TouchableOpacityMod, BottomSheetModal, BottomSheetT
 const WalletScreen = ({ navigation }) => {
 
 
-    const { addOrRestAmount, editAccount, addAccount, deleteAccount, user } = useContext(ExpensiaContext);
+    const { addOrRestAmount, addTransfer, editAccount, addAccount, deleteAccount, user } = useContext(ExpensiaContext);
     const { data: accounts = [] } = useAccounts();
     const strings = user && user.language === "en" ? en : es;
 
@@ -149,35 +149,34 @@ const WalletScreen = ({ navigation }) => {
         setSelectedAccount(account)
     }
 
-    const handleTransfer = async () => {
+    const [transferConfirmVisible, setTransferConfirmVisible] = useState(false)
+
+    const handleTransfer = () => {
         if (textAmount === '' || textAmount === '.') {
             setTxtEmptyLoad(false)
-        } else {
-            if (selectedFrom.id === selectedTo.id) {
-                Alert.alert(strings.walletScreen.alertSameAccountTitle, strings.walletScreen.alertSameAccountDesc)
-                return
-            }
-            if (selectedFrom.amount < parseFloat(textAmount.replace(/,/g, ''))) {
-                Alert.alert(strings.walletScreen.alertFailedTransferTitle, strings.walletScreen.alertFailedTransferDesc)
-            } else {
+            return
+        }
+        if (selectedFrom.id === selectedTo.id) {
+            Alert.alert(strings.walletScreen.alertSameAccountTitle, strings.walletScreen.alertSameAccountDesc)
+            return
+        }
+        setTransferConfirmVisible(true)
+    }
 
-                setIsTransferring(true);
-
-                const typeIncome = "i";
-                const typeExpense = "e";
-                const amount = textAmount.replace(/,/g, '');
-                const from = selectedFrom;
-                const to = selectedTo;
-
-                addOrRestAmount(amount, typeExpense, from.id);
-                addOrRestAmount(amount, typeIncome, to.id);
-                setTimeout(() => {
-                    setIsTransferring(false); // Establecer el texto del botón en "Transferir" después de medio segundo
-                }, 1500);
-            }
-
-            setTextAmount("")
-
+    const confirmTransfer = async () => {
+        setTransferConfirmVisible(false)
+        setIsTransferring(true)
+        try {
+            await addTransfer({
+                fromAccountId: selectedFrom.id,
+                toAccountId: selectedTo.id,
+                amount: textAmount.replace(/,/g, ''),
+                fromName: selectedFrom.name,
+                toName: selectedTo.name,
+            })
+        } finally {
+            setIsTransferring(false)
+            setTextAmount('')
         }
     }
 
@@ -292,6 +291,28 @@ const WalletScreen = ({ navigation }) => {
             />
 
         </ScreenContainer>
+
+        {/* Transfer confirmation modal */}
+        <Modal visible={transferConfirmVisible} transparent animationType="fade" onRequestClose={() => setTransferConfirmVisible(false)}>
+            <View style={styles.confirmOverlay}>
+                <View style={styles.confirmCard}>
+                    <Text weight="bold" color="primary" style={styles.confirmTitle}>{strings.transferConfirm.title}</Text>
+                    <Text color="primary" style={styles.confirmBody}>
+                        {strings.transferConfirm.body(selectedFrom?.name ?? '', selectedTo?.name ?? '', textAmount)}
+                    </Text>
+                    <Text style={styles.confirmNote}>{strings.transferConfirm.note}</Text>
+                    <View style={styles.confirmActions}>
+                        <TouchableOpacity style={styles.confirmBtnGhost} onPress={() => setTransferConfirmVisible(false)}>
+                            <Text weight="bold" color="primary">{strings.transferConfirm.cancel}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.confirmBtnPrimary} onPress={confirmTransfer}>
+                            <Text weight="bold" color="light">{strings.transferConfirm.confirm}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+
         <BottomSheetModal
             index={0}
             ref={presentRef}
@@ -435,6 +456,54 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: '8%',
         marginHorizontal: '8%'
+    },
+    confirmOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        paddingHorizontal: 24,
+    },
+    confirmCard: {
+        backgroundColor: Colors.white,
+        borderRadius: 20,
+        padding: 24,
+        borderWidth: 1,
+        borderColor: Colors.sheetBorder,
+    },
+    confirmTitle: {
+        fontSize: 17,
+        textAlign: 'center',
+        marginBottom: 12,
+    },
+    confirmBody: {
+        fontSize: 15,
+        textAlign: 'center',
+        marginBottom: 10,
+    },
+    confirmNote: {
+        fontSize: 12,
+        textAlign: 'center',
+        lineHeight: 18,
+        marginBottom: 20,
+    },
+    confirmActions: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    confirmBtnGhost: {
+        flex: 1,
+        paddingVertical: 12,
+        borderRadius: 12,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: Colors.sheetBorder,
+    },
+    confirmBtnPrimary: {
+        flex: 1,
+        paddingVertical: 12,
+        borderRadius: 12,
+        alignItems: 'center',
+        backgroundColor: Colors.secondary,
     },
     viewFakeInput: {
         backgroundColor: Colors.white,

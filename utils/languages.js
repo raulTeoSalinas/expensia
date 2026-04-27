@@ -64,6 +64,13 @@ export const es = {
         selectTypeExpenses: "Gastos",
         emptyListTxt: "No hay transacciones",
     },
+    transferConfirm: {
+        title: "¿Confirmar transferencia?",
+        body: (from, to, amount) => `Transferir $${amount} de ${from} a ${to}.`,
+        note: "Se crearán dos transacciones (un gasto y un ingreso). No se contabilizarán en el resumen del mes ni en los gráficos.",
+        cancel: "Cancelar",
+        confirm: "Transferir",
+    },
     walletScreen: {
         headerDarkTxt: "Mi ",
         headerGradientTxt: "Cartera",
@@ -325,6 +332,13 @@ export const en = {
         selectTypeIncome: "Income",
         selectTypeExpenses: "Expenses",
         emptyListTxt: "No transactions",
+    },
+    transferConfirm: {
+        title: "Confirm transfer?",
+        body: (from, to, amount) => `Transfer $${amount} from ${from} to ${to}.`,
+        note: "Two transactions will be created (an expense and an income). They won't count toward your monthly summary or charts.",
+        cancel: "Cancel",
+        confirm: "Transfer",
     },
     walletScreen: {
         headerDarkTxt: "My ",
