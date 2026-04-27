@@ -139,10 +139,6 @@ const TransactionScreen = ({ navigation, route }) => {
             return
         }
         const amount = text.replace(/,/g, '')
-        if (parseFloat(amount) > parseFloat(selectedValue?.amount ?? 0) && typeTrans !== 'i' && !selectedValue?.isCC) {
-            Alert.alert(strings.walletScreen.alertFailedTransferTitle, strings.walletScreen.alertFailedTransferDesc)
-            return
-        }
         setIsSaving(true)
 
         const isGlobalCat = selectedCategory && Category.some(c => c.id === selectedCategory.id)
