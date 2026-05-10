@@ -166,7 +166,7 @@ const TransactionCard = ({
               color={amountColor}
               style={styles.dateRowIcon}
             />
-            <Text weight="bold" color="primary" size="s" style={styles.dateRowText}>
+            <Text color="primary" size="s" style={styles.dateRowText}>
               {dateLong}
             </Text>
           </View>

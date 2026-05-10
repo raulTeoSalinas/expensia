@@ -158,6 +158,14 @@ export function useFilteredTransactions(filters = {}, { enabled = true } = {}) {
   if (dateFrom) { conditions.push('t.date >= ?'); params.push(dateFrom) }
   if (dateTo)   { conditions.push('t.date <= ?'); params.push(dateTo) }
 
+  const excludeTransfers = filters.excludeTransfers === true
+  if (excludeTransfers) {
+    conditions.push(
+      `(t.globalCategoryId IS NULL OR t.globalCategoryId NOT IN (${TRANSFER_CATEGORY_IDS.map(() => '?').join(',')}))`
+    )
+    params.push(...TRANSFER_CATEGORY_IDS)
+  }
+
   const orderCol = sortBy === 'amount' ? 'CAST(t.amount AS REAL)' : 't.date'
 
   return useQuery({
@@ -177,6 +185,37 @@ export function useFilteredTransactions(filters = {}, { enabled = true } = {}) {
     enabled,
     staleTime: 0,
   })
+}
+
+/** Last calendar day of month as `YYYY-MM-DD` (for inclusive `dateTo`). */
+export function lastDayOfMonthIso(monthYYYYMM) {
+  const [y, m] = monthYYYYMM.split('-').map(Number)
+  const last = new Date(y, m, 0)
+  return `${y}-${String(m).padStart(2, '0')}-${String(last.getDate()).padStart(2, '0')}`
+}
+
+/** Transactions in `month` for one category (pie legend drill-down). */
+export function usePieChartCategoryTransactions(month, type, categoryId, categoryIsCustom) {
+  const dateFrom = month ? `${month}-01` : null
+  const dateTo = month ? lastDayOfMonthIso(month) : null
+  const enabled =
+    !!month &&
+    !!categoryId &&
+    (type === 'e' || type === 'i')
+
+  return useFilteredTransactions(
+    {
+      type,
+      categoryId,
+      categoryIsCustom,
+      dateFrom,
+      dateTo,
+      sortBy: 'date',
+      sortOrder: 'DESC',
+      excludeTransfers: true,
+    },
+    { enabled }
+  )
 }
 
 // ─── Month summary (income + expenses totals) ──────────────────────────────────

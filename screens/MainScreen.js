@@ -171,12 +171,12 @@ const MainScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.pieChartContainer}>
-        {Object.values(breakdown.typeE).length > 0 &&
-          <PieChartCategory type="e" data={breakdown.typeE} />
-        }
-        {Object.values(breakdown.typeI).length > 0 &&
-          <PieChartCategory data={breakdown.typeI} />
-        }
+        {Object.values(breakdown.typeE).length > 0 && (
+          <PieChartCategory key={`pie-e-${monthOnDisplay}`} type="e" data={breakdown.typeE} month={monthOnDisplay} />
+        )}
+        {Object.values(breakdown.typeI).length > 0 && (
+          <PieChartCategory key={`pie-i-${monthOnDisplay}`} type="i" data={breakdown.typeI} month={monthOnDisplay} />
+        )}
       </View>
     </ScreenContainer>
   )

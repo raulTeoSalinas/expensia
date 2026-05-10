@@ -66,6 +66,11 @@ export const es = {
         selectTypeExpenses: "Gastos",
         emptyListTxt: "No hay transacciones",
     },
+    pieChartCategory: {
+        loadingList: "Cargando…",
+        emptyList: "Sin movimientos este mes.",
+        moreCount: (n) => `+${n} más`,
+    },
     transferConfirm: {
         title: "¿Confirmar transferencia?",
         body: (from, to, amount) => `Transferir $${amount} de ${from} a ${to}.`,
@@ -352,6 +357,11 @@ export const en = {
         selectTypeIncome: "Income",
         selectTypeExpenses: "Expenses",
         emptyListTxt: "No transactions",
+    },
+    pieChartCategory: {
+        loadingList: "Loading…",
+        emptyList: "No movements this month.",
+        moreCount: (n) => `+${n} more`,
     },
     transferConfirm: {
         title: "Confirm transfer?",
