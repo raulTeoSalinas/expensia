@@ -238,8 +238,15 @@ const TransactionScreen = ({ navigation, route }) => {
                         <View style={styles.row}>
                             <Text weight="bold" color="primary">{strings.transactionScreen.account}</Text>
                             <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalSelectVisible(true)}>
-                                <Text color="primary" style={styles.txtFakeInput}>{selectedValue?.name ?? ''}</Text>
-                                <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
+                                <Text
+                                    color="primary"
+                                    style={[styles.txtFakeInput, styles.txtFakeInputEllipsis]}
+                                    numberOfLines={1}
+                                    ellipsizeMode="tail"
+                                >
+                                    {selectedValue?.name ?? ''}
+                                </Text>
+                                <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} style={styles.fakeInputChevron} />
                             </TouchableOpacity>
                         </View>
                         <View style={styles.row}>
@@ -375,6 +382,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Poppins-Light',
         fontSize: 15,
         color: Colors.primary
+    },
+    txtFakeInputEllipsis: {
+        flex: 1,
+        minWidth: 0,
+    },
+    fakeInputChevron: {
+        flexShrink: 0,
     },
     btnContainer: {
         backgroundColor: Colors.secondary,
