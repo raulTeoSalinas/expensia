@@ -1,4 +1,4 @@
-import { LogBox, View, ActivityIndicator } from 'react-native'
+import { LogBox, View, ActivityIndicator, Text } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import { useContext, useCallback } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -44,9 +44,23 @@ const queryClient = new QueryClient()
 const Stack = createNativeStackNavigator()
 const Tab = createMaterialTopTabNavigator()
 
+const tabScreen = (title, iconName) => ({
+  tabBarIcon: ({ color }) => <Ionicons name={iconName} size={22} color={color} />,
+  tabBarLabel: ({ color }) => (
+    <Text
+      numberOfLines={1}
+      ellipsizeMode="tail"
+      style={{ color, fontFamily: 'Poppins-Light', fontSize: 10 }}
+    >
+      {title}
+    </Text>
+  ),
+})
+
 const TabNavigation = () => {
   const { user } = useContext(ExpensiaContext)
   const { isLoggedIn } = useAuth()
+  const insets = useSafeAreaInsets()
   const strings = user && user.language === 'en' ? en : es
 
   return (
@@ -54,28 +68,28 @@ const TabNavigation = () => {
       tabBarPosition="bottom"
       initialRouteName="Summary"
       screenOptions={{
-        tabBarStyle: { backgroundColor: Colors.primary, width: 'auto' },
-        tabBarLabelStyle: { fontFamily: 'Poppins-Light', fontSize: 10 },
+        tabBarStyle: { backgroundColor: Colors.primary, width: 'auto', paddingBottom: insets.bottom >= 8 ? insets.bottom - 8 : 0 },
         tabBarInactiveTintColor: Colors.tabBarInactive,
         tabBarActiveTintColor: Colors.light,
-        tabBarIndicatorStyle: { backgroundColor: Colors.accent, top: 0, height: 4 }
+        tabBarIndicatorStyle: { backgroundColor: Colors.accent, top: 0, height: 4 },
+        tabBarItemStyle: { paddingHorizontal: 4, paddingBottom: 0 },
       }}>
       <Tab.Screen name="Summary" component={MainScreen}
-        options={{ tabBarIcon: ({ color }) => <Ionicons name="calendar-outline" size={24} color={color} />, title: strings.appJS.summary }}
+        options={tabScreen(strings.appJS.summary, 'calendar-outline')}
       />
       <Tab.Screen name="Transactions" component={TransactionsScreen}
-        options={{ tabBarIcon: ({ color }) => <Ionicons name="list" size={24} color={color} />, title: strings.appJS.transactions }}
+        options={tabScreen(strings.appJS.transactions, 'list')}
       />
       <Tab.Screen name="Wallet" component={WalletScreen}
-        options={{ tabBarIcon: ({ color }) => <Ionicons name="wallet-outline" size={24} color={color} />, title: strings.appJS.wallet }}
+        options={tabScreen(strings.appJS.wallet, 'wallet-outline')}
       />
       {isLoggedIn && (
         <Tab.Screen name="AIChat" component={ChatScreen}
-          options={{ tabBarIcon: ({ color }) => <Ionicons name="chatbubble-ellipses-outline" size={24} color={color} />, title: strings.appJS.chat }}
+          options={tabScreen(strings.appJS.chat, 'chatbubble-ellipses-outline')}
         />
       )}
       <Tab.Screen name="Settings" component={SettingsScreen}
-        options={{ tabBarIcon: ({ color }) => <Ionicons name="settings-outline" size={24} color={color} />, title: strings.appJS.settings }}
+        options={tabScreen(strings.appJS.settings, 'settings-outline')}
       />
     </Tab.Navigator>
   )
