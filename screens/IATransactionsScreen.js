@@ -17,6 +17,7 @@ import Text from '@components/Text'
 import Colors from '@constants/colors'
 import { closeFabContainerStyle, closeFabIconStyle } from '@utils/closeFabLayout'
 import { useVoiceTransaction } from '@hooks/useVoiceTransaction'
+import { useImageTransaction } from '@hooks/useImageTransaction'
 import { useTranslation } from '@hooks/useTranslation'
 
 // idle | recording | processing
@@ -25,8 +26,12 @@ export default function IATransactionsScreen() {
     const insets = useSafeAreaInsets()
     const navigation = useNavigation()
     const strings = useTranslation().iaTransactionsScreen
-    const { isRecording, isLoading, meteringDb, startRecording, stopAndParse, cancelRecording } =
+    const { isRecording, isLoading: voiceIsLoading, meteringDb, startRecording, stopAndParse, cancelRecording } =
         useVoiceTransaction()
+    const { isLoading: imageIsLoading, parseFromCamera, parseFromGallery, parseFromDocument } =
+        useImageTransaction()
+
+    const isLoading = voiceIsLoading || imageIsLoading
 
     const [isHelpModalVisible, setIsHelpModalVisible] = useState(false)
 
@@ -290,6 +295,30 @@ export default function IATransactionsScreen() {
     }, [meteringDb, isRecording])
 
     // ── Handlers ──────────────────────────────────────────────────────────────
+    const navigateWithResult = (result) => {
+        navigation.dispatch(state => {
+            const routes = [
+                ...state.routes.filter(
+                    r => r.name !== 'TypeTransaction' && r.name !== 'IATransactions'
+                ),
+                {
+                    name: 'Transaction',
+                    params: {
+                        typeTrans:               result.type,
+                        prefillAmount:           result.amount != null ? String(result.amount) : undefined,
+                        prefillAccountId:        result.idAccount ?? undefined,
+                        prefillGlobalCategoryId: result.globalCategoryId ?? undefined,
+                        prefillCustomCategoryId: result.customCategoryId ?? undefined,
+                        prefillDescription:      result.description ?? undefined,
+                        prefillDate:             result.date ?? undefined,
+                        prefillTranscript:       result.transcript ?? undefined,
+                    },
+                },
+            ]
+            return CommonActions.reset({ ...state, routes, index: routes.length - 1 })
+        })
+    }
+
     const handlePress = async () => {
         if (screenState === 'processing') return
 
@@ -310,30 +339,46 @@ export default function IATransactionsScreen() {
                     Alert.alert(strings.errorProcessing, strings.alertNoResponse)
                     return
                 }
-                navigation.dispatch(state => {
-                    const routes = [
-                        ...state.routes.filter(
-                            r => r.name !== 'TypeTransaction' && r.name !== 'IATransactions'
-                        ),
-                        {
-                            name: 'Transaction',
-                            params: {
-                                typeTrans:               result.type,
-                                prefillAmount:           result.amount != null ? String(result.amount) : undefined,
-                                prefillAccountId:        result.idAccount ?? undefined,
-                                prefillGlobalCategoryId: result.globalCategoryId ?? undefined,
-                                prefillCustomCategoryId: result.customCategoryId ?? undefined,
-                                prefillDescription:      result.description ?? undefined,
-                                prefillDate:             result.date ?? undefined,
-                                prefillTranscript:       result.transcript ?? undefined,
-                            },
-                        },
-                    ]
-                    return CommonActions.reset({ ...state, routes, index: routes.length - 1 })
-                })
+                navigateWithResult(result)
             } catch (e) {
                 Alert.alert(strings.errorProcessing, e.message ?? strings.errorGeneric)
             }
+        }
+    }
+
+    const mapPermissionError = (msg) => {
+        if (msg === 'camera_permission_denied') return strings.errorPermissionCamera
+        if (msg === 'gallery_permission_denied') return strings.errorPermissionGallery
+        return strings.errorGeneric
+    }
+
+    const handleCamera = async () => {
+        try {
+            const result = await parseFromCamera()
+            console.log('[IATransactionsScreen] Backend response:', result)
+            if (result) navigateWithResult(result)
+        } catch (e) {
+            Alert.alert(strings.errorProcessing, mapPermissionError(e.message))
+        }
+    }
+
+    const handleGallery = async () => {
+        try {
+            const result = await parseFromGallery()
+            console.log('[IATransactionsScreen] Backend response:', result)
+            if (result) navigateWithResult(result)
+        } catch (e) {
+            Alert.alert(strings.errorProcessing, mapPermissionError(e.message))
+        }
+    }
+
+    const handleDocument = async () => {
+        try {
+            const result = await parseFromDocument()
+            console.log('[IATransactionsScreen] Backend response:', result)
+            if (result) navigateWithResult(result)
+        } catch (e) {
+            Alert.alert(strings.errorProcessing, e.message ?? strings.errorGeneric)
         }
     }
 
@@ -474,9 +519,50 @@ export default function IATransactionsScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* Footer: status / loading copy */}
+            {/* Hint label — sits just below the circle, close to the tap target */}
+            {screenState !== 'processing' && (
+                <View style={styles.hintRow}>
+                    <Text style={styles.hintMsg}>{circleLabel}</Text>
+                    {screenState === 'recording' && (
+                        <TouchableOpacity
+                            style={styles.retryBtn}
+                            activeOpacity={0.7}
+                            onPress={async () => {
+                                await cancelRecording()
+                            }}
+                        >
+                            <Text style={styles.retryBtnText}>↺  {strings.retryBtn}</Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+            )}
+
+            {/* Image/PDF source bar — only visible in idle state */}
+            {screenState === 'idle' && (
+                <>
+                    <Text style={styles.orSeparator}>{strings.orUploadHint}</Text>
+                    <View style={styles.sourceBar}>
+                        <TouchableOpacity style={styles.sourceBtn} onPress={handleCamera} activeOpacity={0.75}>
+                            <MaterialCommunityIcons name="camera-outline" size={22} color={Colors.light} />
+                            <Text style={styles.sourceBtnLabel}>{strings.sourceCamera}</Text>
+                        </TouchableOpacity>
+                        <View style={styles.sourceDivider} />
+                        <TouchableOpacity style={styles.sourceBtn} onPress={handleGallery} activeOpacity={0.75}>
+                            <MaterialCommunityIcons name="image-outline" size={22} color={Colors.light} />
+                            <Text style={styles.sourceBtnLabel}>{strings.sourceGallery}</Text>
+                        </TouchableOpacity>
+                        <View style={styles.sourceDivider} />
+                        <TouchableOpacity style={styles.sourceBtn} onPress={handleDocument} activeOpacity={0.75}>
+                            <MaterialCommunityIcons name="file-pdf-box" size={22} color={Colors.light} />
+                            <Text style={styles.sourceBtnLabel}>{strings.sourceDocument}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </>
+            )}
+
+            {/* Footer: loading copy while processing / bottom padding */}
             <View style={styles.footer}>
-                {screenState === 'processing' ? (
+                {screenState === 'processing' && (
                     <Animated.View
                         style={{
                             opacity: loadingMsgOpacity,
@@ -487,22 +573,6 @@ export default function IATransactionsScreen() {
                             {strings.loadingMsgs[loadingMsgIndex]}
                         </Text>
                     </Animated.View>
-                ) : (
-                    <>
-                        <Text style={styles.hintMsg}>{circleLabel}</Text>
-                        {screenState === 'recording' && (
-                            <TouchableOpacity
-                                style={styles.retryBtn}
-                                activeOpacity={0.7}
-                                onPress={async () => {
-                                    await cancelRecording()
-                                    // Back to idle; user taps the circle to record again
-                                }}
-                            >
-                                <Text style={styles.retryBtnText}>↺  {strings.retryBtn}</Text>
-                            </TouchableOpacity>
-                        )}
-                    </>
                 )}
             </View>
 
@@ -519,6 +589,8 @@ export default function IATransactionsScreen() {
                         <Text style={styles.helpBody}>{strings.helpHowToUseBody}</Text>
                         <Text weight="bold" style={styles.helpSectionTitle}>{strings.helpLimitationsTitle}</Text>
                         <Text style={styles.helpBody}>{strings.helpLimitationsBody}</Text>
+                        <Text weight="bold" style={styles.helpSectionTitle}>{strings.helpImageTitle}</Text>
+                        <Text style={styles.helpBody}>{strings.helpImageBody}</Text>
 
                         <TouchableOpacity
                             activeOpacity={0.8}
@@ -636,11 +708,27 @@ const styles = StyleSheet.create({
         borderColor: Colors.secondary,
         shadowColor: Colors.secondary,
     },
+    hintRow: {
+        paddingTop: 14,
+        paddingBottom: 8,
+        paddingHorizontal: 32,
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 44,
+    },
+    orSeparator: {
+        color: Colors.light,
+        fontSize: 12,
+        opacity: 0.45,
+        textAlign: 'center',
+        marginBottom: 10,
+        paddingHorizontal: 32,
+    },
     footer: {
         paddingBottom: 40,
         paddingHorizontal: 32,
         alignItems: 'center',
-        minHeight: 80,
+        minHeight: 60,
         justifyContent: 'center',
     },
     loadingMsg: {
@@ -716,5 +804,30 @@ const styles = StyleSheet.create({
         color: Colors.white,
         fontSize: 14,
         fontWeight: '600',
+    },
+    sourceBar: {
+        flexDirection: 'row',
+        marginHorizontal: 32,
+        marginBottom: 12,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: Colors.light + '22',
+        overflow: 'hidden',
+    },
+    sourceBtn: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 12,
+        gap: 4,
+    },
+    sourceBtnLabel: {
+        color: Colors.light,
+        fontSize: 11,
+        opacity: 0.75,
+    },
+    sourceDivider: {
+        width: StyleSheet.hairlineWidth,
+        backgroundColor: Colors.light + '44',
     },
 })

@@ -44,6 +44,8 @@ const TransactionScreen = ({ navigation, route }) => {
     const prefillDate            = route.params?.prefillDate            ?? null
     const prefillTranscript      = route.params?.prefillTranscript      ?? null
     const isFromIA               = prefillTranscript != null
+    // True for both voice (has transcript) and image/PDF (no transcript but has other prefill data)
+    const hasAIPrefill           = isFromIA || prefillAmount != null || prefillGlobalCategoryId != null || prefillCustomCategoryId != null
 
     const [modalDeleteTranVisible, setModalDeleteTranVisible] = useState(false)
     const [modalSelectVisible, setModalSelectVisible] = useState(false)
@@ -104,7 +106,7 @@ const TransactionScreen = ({ navigation, route }) => {
 
     // AI prefill: amount and custom category (account handled in separate effect)
     useEffect(() => {
-        if (!isFromIA || accounts.length === 0) return
+        if (!hasAIPrefill || accounts.length === 0) return
         if (prefillAmount) {
             const formatted = String(prefillAmount).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             setText(formatted)
@@ -113,7 +115,7 @@ const TransactionScreen = ({ navigation, route }) => {
             const cat = customCats.find(c => c.backendId === prefillCustomCategoryId)
             if (cat) setSelectedCategory({ id: cat.id, nameEN: cat.name, nameES: cat.name, type: cat.type, icon: cat.icon })
         }
-    }, [accounts, customCats, isFromIA])
+    }, [accounts, customCats, hasAIPrefill])
 
     // Pre-fill for edit mode — runs when existingTx loads from DB
     useEffect(() => {
@@ -148,7 +150,7 @@ const TransactionScreen = ({ navigation, route }) => {
         if (!accounts.length || idTransactionClicked) return
 
         setSelectedValue((prev) => {
-            if (isFromIA && prefillAccountId) {
+            if (hasAIPrefill && prefillAccountId) {
                 const prefillAcc = accounts.find((a) => a.backendId === prefillAccountId)
                 if (prefillAcc) return prefillAcc
             }
@@ -158,7 +160,7 @@ const TransactionScreen = ({ navigation, route }) => {
             if (!accounts.some((a) => a.id === prev.id)) return first
             return prev
         })
-    }, [accounts, idTransactionClicked, isFromIA, prefillAccountId])
+    }, [accounts, idTransactionClicked, hasAIPrefill, prefillAccountId])
 
     const handleChangeText = (inputText) => {
         if (inputText === '') { setText(''); return }
