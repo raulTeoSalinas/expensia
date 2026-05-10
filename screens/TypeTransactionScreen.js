@@ -49,14 +49,10 @@ const TypeTransactionScreen = ({ route }) => {
                     <View style={styles.brandRow}>
                         <Text weight="bold" color="white" style={styles.txtType}>Expens </Text>
                         <View style={styles.iaContainer}>
-                            <GradientText style={[styles.txtType,]} weight="bold">IA</GradientText>
+                            <GradientText style={styles.txtType} weight="bold">IA</GradientText>
                         </View>
-                        
                     </View>
-                    {/* microphone icon material icons */}
-
                     <MaterialIcons name="mic" size={24} color={Colors.white} />
-
                 </TouchableOpacity>
             )}
 
@@ -85,7 +81,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     iaContainer: {
-
         backgroundColor: Colors.primary,
         justifyContent: 'center',
         alignItems: 'center',

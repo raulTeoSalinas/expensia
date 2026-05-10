@@ -3,7 +3,8 @@ export const es = {
         summary: "Resumen",
         transactions: "Transacciones",
         wallet: "Cartera",
-        settings: "Ajustes"
+        settings: "Ajustes",
+        chat: "Chat IA"
     },
     createUserScreen: {
         welcomeTxt: "Bienvenido a ",
@@ -101,6 +102,7 @@ export const es = {
     typeTransactionScreen: {
         addIncomeTxt: "Añade un Ingreso",
         addExpenseTxt: "Añade un Gasto",
+        chatBtn: "Chat IA",
     },
     iaTransactionsScreen: {
         title: "Transacción por voz",
@@ -264,6 +266,21 @@ export const es = {
         cancel: "Cancelar",
         apply: "Aplicar",
     },
+    chatScreen: {
+        title: 'ExpensIA Chat',
+        newChatBtn: 'Nueva conversación',
+        inputPlaceholder: '¿En qué te puedo ayudar?',
+        emptyTitle: 'Hola, soy ExpensIA',
+        emptySubtitle: 'Pregúntame sobre tus finanzas. Puedo analizar tus gastos, sugerirte planes de ahorro y ayudarte a alcanzar tus metas financieras.',
+        suggestions: [
+            '¿En qué categoría estoy gastando de más y cómo lo reduzco?',
+            'Analiza mi tendencia de gastos de los últimos 3 meses',
+            '¿Qué tan lejos estoy de poder retirarme antes de los 50?',
+            'Dime mis gastos hormiga y cuánto suman al año',
+        ],
+        errorGeneric: 'Algo salió mal. Intenta de nuevo.',
+        typingLabel: 'ExpensIA está pensando...',
+    },
 }
 
 export const en = {
@@ -271,7 +288,8 @@ export const en = {
         summary: "Summary",
         transactions: "Transactions",
         wallet: "Wallet",
-        settings: "Settings"
+        settings: "Settings",
+        chat: "AI Chat"
     },
     createUserScreen: {
         welcomeTxt: "Welcome to ",
@@ -370,6 +388,7 @@ export const en = {
     typeTransactionScreen: {
         addIncomeTxt: "Add an Income",
         addExpenseTxt: "Add an Expense",
+        chatBtn: "AI Chat",
     },
     iaTransactionsScreen: {
         title: "Voice Transaction",
@@ -532,5 +551,20 @@ export const en = {
         reset: "Reset",
         cancel: "Cancel",
         apply: "Apply",
+    },
+    chatScreen: {
+        title: 'ExpensIA Chat',
+        newChatBtn: 'New chat',
+        inputPlaceholder: 'Ask me anything about your finances',
+        emptyTitle: "Hi, I'm ExpensIA",
+        emptySubtitle: 'Ask me about your finances. I can analyze your spending, suggest savings plans, and help you reach your financial goals.',
+        suggestions: [
+            'Which category am I overspending on and how do I fix it?',
+            'Analyze my spending trend over the last 3 months',
+            'How far am I from retiring before 50?',
+            'Find my micro-expenses and show me what they add up to yearly',
+        ],
+        errorGeneric: 'Something went wrong. Please try again.',
+        typingLabel: 'ExpensIA is thinking...',
     },
 }

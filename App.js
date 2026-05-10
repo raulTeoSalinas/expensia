@@ -24,6 +24,7 @@ import DayTransactionScreen from './screens/DayTransactionScreen'
 import CreateCCScreen from './screens/CreateCCScreen'
 import CustomCategoriesScreen from './screens/CustomCategoriesScreen'
 import IATransactionsScreen from './screens/IATransactionsScreen'
+import ChatScreen from './screens/ChatScreen'
 // Components
 // Context
 import ExpensiaContextProvider, { ExpensiaContext } from './context/expensiaContext'
@@ -45,6 +46,7 @@ const Tab = createMaterialTopTabNavigator()
 
 const TabNavigation = () => {
   const { user } = useContext(ExpensiaContext)
+  const { isLoggedIn } = useAuth()
   const strings = user && user.language === 'en' ? en : es
 
   return (
@@ -67,6 +69,11 @@ const TabNavigation = () => {
       <Tab.Screen name="Wallet" component={WalletScreen}
         options={{ tabBarIcon: ({ color }) => <Ionicons name="wallet-outline" size={24} color={color} />, title: strings.appJS.wallet }}
       />
+      {isLoggedIn && (
+        <Tab.Screen name="AIChat" component={ChatScreen}
+          options={{ tabBarIcon: ({ color }) => <Ionicons name="chatbubble-ellipses-outline" size={24} color={color} />, title: strings.appJS.chat }}
+        />
+      )}
       <Tab.Screen name="Settings" component={SettingsScreen}
         options={{ tabBarIcon: ({ color }) => <Ionicons name="settings-outline" size={24} color={color} />, title: strings.appJS.settings }}
       />
