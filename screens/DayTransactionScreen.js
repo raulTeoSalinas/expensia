@@ -49,9 +49,11 @@ const DayTransactionScreen = ({ route, navigation }) => {
                         description={item.description}
                         accountId={item.accountId}
                         accountName={item.accountName}
+                        accountIcon={item.accountIcon}
                         globalCategoryId={item.globalCategoryId}
                         customCategoryId={item.customCategoryId}
                         customCategoryName={item.customCategoryName}
+                        customCategoryIcon={item.customCategoryIcon}
                         syncStatus={item.syncStatus}
                     />
                 )}

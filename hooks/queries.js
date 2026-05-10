@@ -51,7 +51,7 @@ export function useTransactions({ type = 'all' } = {}) {
     queryFn: async ({ pageParam = 0 }) => {
       return querySQL(
         `SELECT t.*,
-           a.name AS accountName,
+           a.name AS accountName, a.icon AS accountIcon,
            c.name AS customCategoryName, c.icon AS customCategoryIcon, c.type AS customCategoryType
          FROM transactions t
          LEFT JOIN accounts a ON t.accountId = a.id
@@ -117,7 +117,7 @@ export function useTransactionSearch(text, filters = {}) {
     queryKey: ['transactionSearch', text, filters],
     queryFn: () => querySQL(
       `SELECT t.*,
-         a.name AS accountName,
+         a.name AS accountName, a.icon AS accountIcon,
          c.name AS customCategoryName, c.icon AS customCategoryIcon, c.type AS customCategoryType
        FROM transactions t
        LEFT JOIN accounts a ON t.accountId = a.id
@@ -164,7 +164,7 @@ export function useFilteredTransactions(filters = {}, { enabled = true } = {}) {
     queryKey: ['filteredTransactions', filters],
     queryFn: () => querySQL(
       `SELECT t.*,
-         a.name AS accountName,
+         a.name AS accountName, a.icon AS accountIcon,
          c.name AS customCategoryName, c.icon AS customCategoryIcon, c.type AS customCategoryType
        FROM transactions t
        LEFT JOIN accounts a ON t.accountId = a.id
@@ -291,7 +291,7 @@ export function useDayTransactions(date) {
     queryKey: QK.dayTransactions(date),
     queryFn: () => querySQL(
       `SELECT t.*,
-         a.name AS accountName,
+         a.name AS accountName, a.icon AS accountIcon,
          c.name AS customCategoryName, c.icon AS customCategoryIcon, c.type AS customCategoryType
        FROM transactions t
        LEFT JOIN accounts a ON t.accountId = a.id
@@ -321,7 +321,7 @@ export function useTransaction(id) {
     queryKey: ['transaction', id],
     queryFn: () => queryOneSQL(
       `SELECT t.*,
-         a.name AS accountName,
+         a.name AS accountName, a.icon AS accountIcon,
          c.name AS customCategoryName, c.icon AS customCategoryIcon, c.type AS customCategoryType
        FROM transactions t
        LEFT JOIN accounts a ON t.accountId = a.id
