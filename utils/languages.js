@@ -226,7 +226,14 @@ export const es = {
         noDescription: "No hay descripción.",
     },
     modalSelect: {
-        chooseAccount: 'Seleccione su cuenta'
+        chooseAccount: 'Seleccione su cuenta',
+        searchPlaceholder: 'Buscar por nombre',
+        noResults: 'Sin cuentas con ese nombre',
+    },
+    modalSelectCategory: {
+        chooseCategory: 'Selecciona una categoría',
+        searchPlaceholder: 'Buscar categoría',
+        noResults: 'Sin categorías con ese nombre',
     },
     monthYearPicker: {
         title: "Mes y año",
@@ -518,7 +525,14 @@ export const en = {
         noDescription: "No description."
     },
     modalSelect: {
-        chooseAccount: 'Select Your Account'
+        chooseAccount: 'Select Your Account',
+        searchPlaceholder: 'Search by name',
+        noResults: 'No accounts match that name',
+    },
+    modalSelectCategory: {
+        chooseCategory: 'Choose a category',
+        searchPlaceholder: 'Search categories',
+        noResults: 'No categories match that search',
     },
     monthYearPicker: {
         title: "Month & year",

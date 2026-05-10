@@ -24,6 +24,8 @@ import { es, en } from '../utils/languages'
 import { ExpensiaContext } from '../context/expensiaContext'
 import { useAccounts, useTransaction, useCustomCategories } from '../hooks/queries'
 import Category from '../utils/category'
+import { sortAccountsByName } from '../utils/sortAccountsByName'
+import { sortCategoriesByDisplayName } from '../utils/sortCategoriesByDisplayName'
 
 const TransactionScreen = ({ navigation, route }) => {
     const { addTransaction, editTransaction, removeTransaction, user } = useContext(ExpensiaContext)
@@ -47,7 +49,7 @@ const TransactionScreen = ({ navigation, route }) => {
     const [modalSelectVisible, setModalSelectVisible] = useState(false)
     const [modalSelectCategoryVisible, setModalSelectCategoryVisible] = useState(false)
 
-    const [selectedValue, setSelectedValue] = useState(accounts[0] ?? null)
+    const [selectedValue, setSelectedValue] = useState(null)
     const [selectedCategory, setSelectedCategory] = useState(null)
     const [typeTrans, setTypeTrans] = useState(idTransactionClicked ? null : (route.params?.typeTrans ?? null))
 
@@ -59,18 +61,46 @@ const TransactionScreen = ({ navigation, route }) => {
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true)
     const [prefilled, setPrefilled] = useState(false)
 
-    // Set initial category when type is known (new transaction)
+    // Categoría por defecto (nueva transacción): primera global en orden alfabético (no las propias).
     useEffect(() => {
         if (!typeTrans || idTransactionClicked) return
 
         if (prefillGlobalCategoryId) {
-            const cat = Category.find(c => c.id === prefillGlobalCategoryId)
-            if (cat) { setSelectedCategory(cat); return }
+            const cat = Category.find((c) => c.id === prefillGlobalCategoryId)
+            if (cat) {
+                setSelectedCategory(cat)
+                return
+            }
         }
         if (prefillCustomCategoryId) return
-        const cats = Category.filter(c => c.type === typeTrans)
-        setSelectedCategory(cats[0] ?? null)
-    }, [typeTrans])
+
+        const lang = user?.language === 'en' ? 'en' : 'es'
+        const globalsSorted = sortCategoriesByDisplayName(
+            Category.filter((c) => c.type === typeTrans),
+            lang
+        )
+        const firstGlobal = globalsSorted[0] ?? null
+
+        const customForType = customCats
+            .filter((c) => c.type === typeTrans)
+            .map((c) => ({
+                id: c.id,
+                nameEN: c.name,
+                nameES: c.name,
+                type: c.type,
+                icon: c.icon,
+                isCustom: true,
+            }))
+
+        setSelectedCategory((prev) => {
+            if (!prev) return firstGlobal
+            const prevStillValid =
+                globalsSorted.some((c) => c.id === prev.id) ||
+                customForType.some((c) => c.id === prev.id)
+            if (prevStillValid) return prev
+            return firstGlobal
+        })
+    }, [typeTrans, customCats, user?.language, idTransactionClicked, prefillGlobalCategoryId, prefillCustomCategoryId])
 
     // Prefill de cuenta, amount y custom category desde IA
     useEffect(() => {
@@ -78,10 +108,6 @@ const TransactionScreen = ({ navigation, route }) => {
         if (prefillAmount) {
             const formatted = String(prefillAmount).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
             setText(formatted)
-        }
-        if (prefillAccountId) {
-            const account = accounts.find(a => a.backendId === prefillAccountId)
-            if (account) setSelectedValue(account)
         }
         if (prefillCustomCategoryId) {
             const cat = customCats.find(c => c.backendId === prefillCustomCategoryId)
@@ -117,6 +143,23 @@ const TransactionScreen = ({ navigation, route }) => {
 
     }, [existingTx, accounts])
 
+    // Cuenta por defecto: primera alfabéticamente; en prefill IA con cuenta válida, esa cuenta.
+    useEffect(() => {
+        if (!accounts.length || idTransactionClicked) return
+
+        setSelectedValue((prev) => {
+            if (isFromIA && prefillAccountId) {
+                const prefillAcc = accounts.find((a) => a.backendId === prefillAccountId)
+                if (prefillAcc) return prefillAcc
+            }
+            const sorted = sortAccountsByName(accounts)
+            const first = sorted[0] ?? null
+            if (!prev) return first
+            if (!accounts.some((a) => a.id === prev.id)) return first
+            return prev
+        })
+    }, [accounts, idTransactionClicked, isFromIA, prefillAccountId])
+
     const handleChangeText = (inputText) => {
         if (inputText === '') { setText(''); return }
         const numericValue = inputText.replace(/[^0-9.]/g, '')
@@ -137,6 +180,7 @@ const TransactionScreen = ({ navigation, route }) => {
             setTxtEmptyLoad(false)
             return
         }
+        if (!selectedValue?.id) return
         const amount = text.replace(/,/g, '')
         setIsSaving(true)
 

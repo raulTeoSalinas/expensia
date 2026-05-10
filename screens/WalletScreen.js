@@ -20,6 +20,7 @@ import { es, en } from "../utils/languages";
 // Context
 import { ExpensiaContext } from "../context/expensiaContext";
 import { useAccounts } from '../hooks/queries';
+import { sortAccountsByName } from '../utils/sortAccountsByName';
 // Components
 import Knob from "../components/Knob";
 import ModalSelect from "../components/ModalSelect";
@@ -36,19 +37,32 @@ const WalletScreen = ({ navigation }) => {
     const { data: accounts = [] } = useAccounts();
     const strings = user && user.language === "en" ? en : es;
 
+    const sortedAccounts = useMemo(() => sortAccountsByName(accounts), [accounts]);
+    const sortedLiquidAccounts = useMemo(
+        () => sortedAccounts.filter((a) => !a?.isCC),
+        [sortedAccounts]
+    );
+
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true);
-    const [selectedFrom, setSelectedFrom] = useState(accounts[0] ?? "");
-    const [selectedTo, setSelectedTo] = useState(accounts[1] ?? "");
+    const [selectedFrom, setSelectedFrom] = useState(null);
+    const [selectedTo, setSelectedTo] = useState(null);
     const [selectedAccount, setSelectedAccount] = useState();
     const [modalFromVisible, setModalFromVisible] = useState(false);
     const [modalToVisible, setModalToVisible] = useState(false);
 
     useEffect(() => {
-        if (accounts.length > 1) {
-            setSelectedFrom(accounts[0]);
-            setSelectedTo(accounts[1]);
-        }
-    }, [accounts])
+        if (!sortedAccounts.length) return;
+
+        const fromDefault = sortedLiquidAccounts[0] ?? null;
+        const toDefault =
+            (fromDefault && sortedAccounts.find((a) => a.id !== fromDefault.id)) ??
+            sortedAccounts[1] ??
+            sortedAccounts[0] ??
+            null;
+
+        setSelectedFrom(fromDefault);
+        setSelectedTo(toDefault);
+    }, [sortedAccounts, sortedLiquidAccounts]);
 
     const [textAmount, setTextAmount] = useState('');
 
@@ -156,6 +170,7 @@ const WalletScreen = ({ navigation }) => {
             setTxtEmptyLoad(false)
             return
         }
+        if (!selectedFrom?.id || !selectedTo?.id) return
         if (selectedFrom.id === selectedTo.id) {
             Alert.alert(strings.walletScreen.alertSameAccountTitle, strings.walletScreen.alertSameAccountDesc)
             return
@@ -165,6 +180,7 @@ const WalletScreen = ({ navigation }) => {
 
     const confirmTransfer = async () => {
         setTransferConfirmVisible(false)
+        if (!selectedFrom?.id || !selectedTo?.id) return
         setIsTransferring(true)
         try {
             await addTransfer({
@@ -232,6 +248,14 @@ const WalletScreen = ({ navigation }) => {
                 <View style={styles.row}>
                     <Text color="light">{strings.walletScreen.fromTxt}</Text>
                     <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalFromVisible(!modalFromVisible)}>
+                        {selectedFrom ? (
+                            <MaterialCommunityIcons
+                                name={selectedFrom.icon || 'bank'}
+                                size={22}
+                                color={Colors.primary}
+                                style={styles.fakeInputAccountIcon}
+                            />
+                        ) : null}
                         <View style={styles.fakeInputLabelWrap}>
                             <Text weight="bold" color="primary" style={styles.txtFakeInput} numberOfLines={1} ellipsizeMode="tail">
                                 {selectedFrom?.name ?? ''}
@@ -243,6 +267,14 @@ const WalletScreen = ({ navigation }) => {
                 <View style={styles.row}>
                     <Text color="light">{strings.walletScreen.toTxt}</Text>
                     <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalToVisible(!modalToVisible)}>
+                        {selectedTo ? (
+                            <MaterialCommunityIcons
+                                name={selectedTo.icon || 'bank'}
+                                size={22}
+                                color={Colors.primary}
+                                style={styles.fakeInputAccountIcon}
+                            />
+                        ) : null}
                         <View style={styles.fakeInputLabelWrap}>
                             <Text weight="bold" color="primary" style={styles.txtFakeInput} numberOfLines={1} ellipsizeMode="tail">
                                 {selectedTo?.name ?? ''}
@@ -538,6 +570,10 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         borderColor: Colors.secondary,
         includeFontPadding: false
+    },
+    fakeInputAccountIcon: {
+        marginRight: 6,
+        flexShrink: 0,
     },
     fakeInputLabelWrap: {
         flex: 1,
