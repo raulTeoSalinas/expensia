@@ -15,26 +15,37 @@ import * as Haptics from 'expo-haptics';
 import { ExpensiaContext } from "../context/expensiaContext";
 import { useCustomCategories } from "../hooks/queries";
 
-// Generates n visually distinct colors within a hue range using HSL
-const generateColors = (n, hueStart, hueEnd) =>
-    Array.from({ length: n }, (_, i) => {
-        const hue = n === 1 ? hueStart : hueStart + (i / (n - 1)) * (hueEnd - hueStart);
-        return `hsl(${Math.round(hue)}, 75%, 55%)`;
+/**
+ * Income: distinct blue→cyan stops (`Colors.incomeSpectrumPalette`). First slice = largest category (`secondary`),
+ * last = smallest (`turquoise`). Same sampling idea as `generateExpenseSpectrumColors`.
+ */
+const generateIncomeSpectrumColors = (n) => {
+    const pal = Colors.incomeSpectrumPalette;
+    if (n === 1) {
+        return [Colors.secondary];
+    }
+    const maxIdx = pal.length - 1;
+    return Array.from({ length: n }, (_, i) => {
+        const u = i / (n - 1);
+        return pal[Math.round(u * maxIdx)];
     });
+};
 
-/** Expenses: magenta/pink → red → orange; stops before yellow so hues never read as yellow‑green (income uses cool blues). */
-const generateExpenseSpectrumColors = (n) =>
-    Array.from({ length: n }, (_, i) => {
-        if (n === 1) {
-            return 'hsl(332, 78%, 54%)';
-        }
-        const t = i / (n - 1);
-        // Hue sweep 285° → crosses 0° → ends ~40° (orange/amber). Avoids 50–75° (yellow / yellow‑green).
-        const hue = ((285 + t * 115) % 360 + 360) % 360;
-        const saturation = 68 + ((i * 3) % 5) * 4;
-        const lightness = 46 + ((i * 2) % 6) * 2.5;
-        return `hsl(${Math.round(hue)}, ${Math.round(saturation)}%, ${Math.round(lightness)}%)`;
+/**
+ * Expenses: distinct pink→purple stops (`Colors.expenseSpectrumPalette`). First slice = largest category (accent pink),
+ * last = smallest (deepest violet). Spreads indices across the palette so adjacent slices don’t look “the same”.
+ */
+const generateExpenseSpectrumColors = (n) => {
+    const pal = Colors.expenseSpectrumPalette;
+    if (n === 1) {
+        return [pal[0]];
+    }
+    const maxIdx = pal.length - 1;
+    return Array.from({ length: n }, (_, i) => {
+        const u = i / (n - 1);
+        return pal[Math.round(u * maxIdx)];
     });
+};
 
 const PieChartCategory = ({ data, type }) => {
 
@@ -58,10 +69,10 @@ const PieChartCategory = ({ data, type }) => {
 
     const dataKeys = Object.keys(data);
     const n = dataKeys.length;
-    // Income: blues/teal. Expenses: magenta→pink→red→orange (no yellow‑green band; S/L varies per slice).
+    // Income: sampled blue→turquoise palette (`incomeSpectrumPalette`). Expenses: pink→violet (`expenseSpectrumPalette`).
     const sliceColors = type === "e"
         ? generateExpenseSpectrumColors(n)
-        : generateColors(n, 190, 240);
+        : generateIncomeSpectrumColors(n);
 
     const [pressedLegendIndex, setPressedLegendIndex] = useState(null);
 

@@ -268,7 +268,8 @@ export function useMonthCategoryBreakdown(month) {
          FROM transactions
          WHERE date >= ? AND date < ?
          ${TRANSFER_EXCLUSION}
-         GROUP BY type, categoryId`,
+         GROUP BY type, categoryId
+         ORDER BY type ASC, total DESC`,
         [start, next, ...TRANSFER_CATEGORY_IDS]
       )
 
