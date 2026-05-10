@@ -21,7 +21,8 @@
         "credentialsSource": "remote"
       },
       "ios": {
-        "credentialsSource": "remote"
+        "credentialsSource": "remote",
+        "autoIncrement": true
       }
     }
   },
