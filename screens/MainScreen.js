@@ -254,6 +254,7 @@ const styles = StyleSheet.create({
     marginRight: '5%'
   },
   pieChartContainer: {
-    marginBottom: '5%'
-  }
+    marginHorizontal: 20,
+    marginBottom: '5%',
+  },
 })
