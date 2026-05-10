@@ -275,7 +275,6 @@ export const es = {
         suggestions: [
             '¿En qué categoría estoy gastando de más y cómo lo reduzco?',
             'Analiza mi tendencia de gastos de los últimos 3 meses',
-            '¿Qué tan lejos estoy de poder retirarme antes de los 50?',
             'Dime mis gastos hormiga y cuánto suman al año',
         ],
         errorGeneric: 'Algo salió mal. Intenta de nuevo.',
@@ -561,7 +560,6 @@ export const en = {
         suggestions: [
             'Which category am I overspending on and how do I fix it?',
             'Analyze my spending trend over the last 3 months',
-            'How far am I from retiring before 50?',
             'Find my micro-expenses and show me what they add up to yearly',
         ],
         errorGeneric: 'Something went wrong. Please try again.',

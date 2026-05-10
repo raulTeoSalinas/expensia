@@ -98,17 +98,19 @@ const TransactionCard = ({
       activeOpacity={0.92}
       onPress={() => navigation.navigate('Transaction', { id })}
     >
-      <View style={styles.cardOuter}>
+      <View style={styles.cardShadow}>
+        <View style={styles.cardClip}>
         <View style={[styles.typeColorRow, { backgroundColor: barColor }]}>
           <View style={styles.typeColorRowInner}>
             <View style={styles.metaInline}>
               <View style={styles.metaChunk}>
-                <MaterialCommunityIcons
-                  name={categoryIcon}
-                  size={20}
-                  color={Colors.white}
-                  style={styles.metaChunkIcon}
-                />
+                <View style={styles.categoryIconCircle}>
+                  <MaterialCommunityIcons
+                    name={categoryIcon}
+                    size={15}
+                    color={amountColor}
+                  />
+                </View>
                 <Text
                   weight="bold"
                   color="white"
@@ -169,6 +171,7 @@ const TransactionCard = ({
             </Text>
           </View>
         </View>
+        </View>
       </View>
     </TouchableOpacity>
   )
@@ -177,20 +180,26 @@ const TransactionCard = ({
 export default TransactionCard
 
 const styles = StyleSheet.create({
-  cardOuter: {
+  /** Sombra: sin `overflow: hidden` para que iOS pueda dibujar fuera del rectángulo. */
+  cardShadow: {
     alignSelf: 'stretch',
     width: width - 40,
     marginVertical: 8,
     borderRadius: 16,
-    backgroundColor: Colors.white,
+    backgroundColor: 'transparent',
+    shadowColor: Colors.shadow,
+    shadowOffset: { width: 2, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  /** Recorte redondeado del contenido; la sombra vive en `cardShadow`. */
+  cardClip: {
+    borderRadius: 16,
     overflow: 'hidden',
+    backgroundColor: Colors.white,
     borderWidth: 1,
     borderColor: Colors.sheetBorder,
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
   },
   typeColorRow: {
     width: '100%',
@@ -226,6 +235,15 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     maxWidth: '47%',
     minWidth: 0,
+  },
+  categoryIconCircle: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: Colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 6,
   },
   metaChunkIcon: {
     marginRight: 6,
