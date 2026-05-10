@@ -88,9 +88,9 @@ const WalletScreen = ({ navigation }) => {
             setTextAmount('');
             return;
         }
-        // Remover caracteres no numéricos excepto puntos decimales
+        // Strip non-numeric characters except decimal points
         const numericValue = inputText.replace(/[^0-9.]/g, '');
-        // Validar el formato del número decimal
+        // Validate decimal number shape
         const parts = numericValue.split('.');
         if (parts.length > 2) {
             return;

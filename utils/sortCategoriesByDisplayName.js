@@ -1,5 +1,5 @@
 /**
- * Ordena categorías por el nombre mostrado según idioma (insensible a mayúsculas / acentos).
+ * Sort categories by display name for the given language (case- and accent-insensitive).
  * @param {Array<{ nameEN?: string, nameES?: string }>} categories
  * @param {'en' | 'es'} [language='es']
  */

@@ -3,7 +3,7 @@ const Colors = {
     secondary: '#2706f9',
     turquoise: '#0bbeeb',
     accent: '#f906d8',
-    /** Pie gastos: solo rosa/fucsia/violeta; orden del mayor al menor trozo en la query */
+    /** Expense pie: pink/fuchsia/violet only; same slice order as the query (largest to smallest). */
     expensePurpleEnd: '#7c3aed',
     expenseSpectrumPalette: [
         '#f906d8',
@@ -37,7 +37,7 @@ const Colors = {
         '#553c9a',
         '#4a148c',
     ],
-    /** Pie ingresos: azul eléctrico → cian/turquesa (`secondary` → `turquoise`); mismo orden que la query (mayor → menor). */
+    /** Income pie: electric blue → cyan/turquoise (`secondary` → `turquoise`); same order as the query (largest to smallest). */
     incomeSpectrumPalette: [
         '#2706f9',
         '#2d10ef',

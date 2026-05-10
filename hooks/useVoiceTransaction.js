@@ -3,7 +3,7 @@ import { Audio } from 'expo-av'
 import * as FileSystem from 'expo-file-system/legacy'
 import { callAPI } from '../services/apiService'
 
-// Devuelve la fecha local en formato YYYY-MM-DD, respetando el timezone del dispositivo
+// Returns local date as YYYY-MM-DD using the device timezone
 function formatLocalDate(date) {
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
@@ -17,7 +17,7 @@ export function useVoiceTransaction() {
   const [meteringDb, setMeteringDb] = useState(-160)
   const recordingRef = useRef(null)
 
-  // Limpia la grabación si el componente se desmonta mientras está activa
+  // Stop recording if the component unmounts while recording is active
   useEffect(() => {
     return () => {
       if (recordingRef.current) {
@@ -43,7 +43,7 @@ export function useVoiceTransaction() {
         if (status.metering == null) return
         setMeteringDb(status.metering)
       },
-      100 // intervalo en ms
+      100 // metering callback interval (ms)
     )
     recordingRef.current = recording
     setIsRecording(true)
@@ -62,24 +62,24 @@ export function useVoiceTransaction() {
       try {
         await recordingRef.current.stopAndUnloadAsync()
       } catch (stopErr) {
-        // Android lanza E_AUDIO_NODATA si la grabación fue demasiado corta
-        // o no capturó datos. Tratamos ese caso como error legible.
-        throw new Error('Grabación demasiado corta o sin datos de audio')
+        // Android may throw E_AUDIO_NODATA if the recording was too short
+        // or captured no audio — surface a clear error to the user.
+        throw new Error('Recording too short or no audio data')
       }
 
-      if (!uri) throw new Error('No se pudo obtener el archivo de audio grabado')
+      if (!uri) throw new Error('Could not get recorded audio file URI')
 
-      // Verificar que el archivo exista y tenga contenido antes de leerlo
+      // Ensure the file exists and is non-empty before reading
       const fileInfo = await FileSystem.getInfoAsync(uri)
       if (!fileInfo.exists || fileInfo.size === 0) {
-        throw new Error('El archivo de audio está vacío o no existe')
+        throw new Error('Audio file is empty or missing')
       }
 
       const audioBase64 = await FileSystem.readAsStringAsync(uri, {
         encoding: FileSystem.EncodingType.Base64,
       })
 
-      if (!audioBase64) throw new Error('No se pudo leer el archivo de audio')
+      if (!audioBase64) throw new Error('Could not read audio file')
 
       const { data, errorType } = await callAPI('/api/voice-parse', {
         method: 'POST',
@@ -97,7 +97,7 @@ export function useVoiceTransaction() {
     } finally {
       recordingRef.current = null
       setIsLoading(false)
-      // Restaurar modo de audio para reproducción normal
+      // Restore audio session for normal playback
       await Audio.setAudioModeAsync({ allowsRecordingIOS: false }).catch(() => {})
     }
   }

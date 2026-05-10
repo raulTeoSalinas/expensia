@@ -82,7 +82,7 @@ const TransactionCard = ({
 
   const isIncome = type === 'i'
   const amountColor = isIncome ? Colors.secondary : Colors.accent
-  /** Izquierda → derecha: color de tipo dominante, luego transición suave al tono complementario del tema. */
+  /** Left → right: dominant type color, then a smooth transition toward the theme complement. */
   const typeHeaderGradientColors = useMemo(
     () =>
       isIncome
@@ -204,7 +204,7 @@ const TransactionCard = ({
 export default TransactionCard
 
 const styles = StyleSheet.create({
-  /** Sombra: sin `overflow: hidden` para que iOS pueda dibujar fuera del rectángulo. */
+  /** Shadow: no `overflow: hidden` so iOS can paint outside the card bounds. */
   cardShadow: {
     alignSelf: 'stretch',
     width: width - 40,
@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 4,
   },
-  /** Recorte redondeado del contenido; la sombra vive en `cardShadow`. */
+  /** Rounded clip for content; shadow lives on `cardShadow`. */
   cardClip: {
     borderRadius: 16,
     overflow: 'hidden',

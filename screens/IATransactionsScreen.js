@@ -30,7 +30,7 @@ export default function IATransactionsScreen() {
 
     const [isHelpModalVisible, setIsHelpModalVisible] = useState(false)
 
-    // Estado derivado de la pantalla
+    // Derived UI state for this screen
     const screenState = isLoading
         ? 'processing'
         : isRecording
@@ -38,7 +38,7 @@ export default function IATransactionsScreen() {
         : 'idle'
 
 
-    // ── Mensaje rotativo de carga ──────────────────────────────────────────────
+    // ── Rotating loading copy while processing ─────────────────────────────────
     const randomIndex = (length, exclude) => {
         if (length <= 1) return 0
         let next = Math.floor(Math.random() * length)
@@ -89,25 +89,25 @@ export default function IATransactionsScreen() {
         ]).start()
     }, [isLoading, loadingMsgIndex, loadingMsgOpacity, loadingMsgTranslateY])
 
-    // ── Animaciones ───────────────────────────────────────────────────────────
-    // Pulso exterior (ondas)
+    // ── Animations ───────────────────────────────────────────────────────────
+    // Outer pulse rings
     const pulse1 = useRef(new Animated.Value(1)).current
     const pulse2 = useRef(new Animated.Value(1)).current
     const pulse1Opacity = useRef(new Animated.Value(0.6)).current
     const pulse2Opacity = useRef(new Animated.Value(0.4)).current
 
-    // Glow exterior
+    // Outer glow
     const glowScale = useRef(new Animated.Value(1)).current
     const glowOpacity = useRef(new Animated.Value(0.2)).current
 
-    // Escala del círculo central (reacciona al metering)
+    // Main circle scale (reacts to input metering)
     const circleScale = useRef(new Animated.Value(1)).current
 
-    // Círculo interior rosa reactivo al volumen
+    // Inner pink ring driven by voice level
     const voiceRingScale = useRef(new Animated.Value(1)).current
     const voiceRingOpacity = useRef(new Animated.Value(0)).current
 
-    // ── Bucle de ondas ─────────────────────────────────────────────────────────
+    // ── Wave loop ─────────────────────────────────────────────────────────
     useEffect(() => {
         const wave = (anim, opacityAnim, delay) =>
             Animated.loop(
@@ -153,7 +153,7 @@ export default function IATransactionsScreen() {
         }
     }, [isRecording])
 
-    // ── Glow rosa activo solo al grabar ───────────────────────────────────────
+    // ── Pink glow loop while recording only ───────────────────────────────────────
     useEffect(() => {
         let glowLoop
         if (isRecording) {
@@ -190,10 +190,10 @@ export default function IATransactionsScreen() {
         return () => glowLoop?.stop()
     }, [isRecording])
 
-    // ── Glow de "pensando" mientras procesa ────────────────────────────────────
-    // Usamos un único Animated.Value que oscila 0→1→0 infinitamente para evitar
-    // el glitch de frame que produce Animated.loop con sequence+parallel.
-    // Valor inicial -1 = invisible (fuera del inputRange útil)
+    // ── "Thinking" glow while processing ────────────────────────────────────
+    // Single Animated.Value oscillating 0→1→0 to avoid the one-frame glitch
+    // from Animated.loop with nested sequence + parallel.
+    // Initial value -1 = invisible (outside the useful inputRange)
     const processingBreath = useRef(new Animated.Value(-1)).current
     const processingLoopRef = useRef(null)
     const processingActiveRef = useRef(false)
@@ -240,7 +240,7 @@ export default function IATransactionsScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [screenState])
 
-    // ── Círculo central + anillo de voz reactivos al micrófono ───────────────
+    // ── Main circle + voice ring react to the mic ───────────────
     useEffect(() => {
         if (!isRecording) {
             Animated.parallel([
@@ -261,11 +261,11 @@ export default function IATransactionsScreen() {
             return
         }
 
-        // meteringDb va de -160 (silencio) a 0 (máximo)
-        // Usamos un rango más sensible (-50 a 0) para respuesta visual más dramática
+        // meteringDb ranges from -160 (silence) to 0 (max)
+        // Use a tighter band (-50 to 0) for a stronger visual response
         const normalized = Math.max(0, Math.min(1, (meteringDb + 50) / 50))
 
-        // Círculo principal: expansión sutil
+        // Main circle: subtle scale bump
         Animated.spring(circleScale, {
             toValue: 1 + normalized * 0.12,
             speed: 60,
@@ -273,7 +273,7 @@ export default function IATransactionsScreen() {
             useNativeDriver: true,
         }).start()
 
-        // Anillo interior rosa: expansión mucho más dramática
+        // Inner pink ring: stronger scale response
         Animated.spring(voiceRingScale, {
             toValue: 1 + normalized * 1.1,
             speed: 50,
@@ -281,7 +281,7 @@ export default function IATransactionsScreen() {
             useNativeDriver: true,
         }).start()
 
-        // Opacidad del anillo: más alto cuando más sonido
+        // Ring opacity: louder input → more visible
         Animated.timing(voiceRingOpacity, {
             toValue: 0.15 + normalized * 0.55,
             duration: 60,
@@ -305,7 +305,7 @@ export default function IATransactionsScreen() {
         if (screenState === 'recording') {
             try {
                 const result = await stopAndParse()
-                console.log('[IATransactionsScreen] Respuesta del backend:', result)
+                console.log('[IATransactionsScreen] Backend response:', result)
                 if (!result) {
                     Alert.alert(strings.errorProcessing, strings.alertNoResponse)
                     return
@@ -337,7 +337,7 @@ export default function IATransactionsScreen() {
         }
     }
 
-    // ── Etiqueta del botón central ────────────────────────────────────────────
+    // ── Central circle label ────────────────────────────────────────────
     const circleLabel =
         screenState === 'idle'
             ? strings.hintIdle
@@ -356,7 +356,7 @@ export default function IATransactionsScreen() {
                 <Text style={styles.helpFabText}>{strings.helpBtn}</Text>
             </TouchableOpacity>
 
-            {/* Botón cerrar */}
+            {/* Close */}
             <TouchableOpacity
                 activeOpacity={0.7}
                 style={closeFabContainerStyle(insets)}
@@ -369,7 +369,7 @@ export default function IATransactionsScreen() {
                 />
             </TouchableOpacity>
 
-            {/* Título */}
+            {/* Title */}
             <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
                 <Text style={styles.title}>{strings.title}</Text>
                 <Text style={styles.subtitle}>
@@ -381,9 +381,9 @@ export default function IATransactionsScreen() {
                 </Text>
             </View>
 
-            {/* Área central con animaciones */}
+            {/* Center area — animated rings */}
             <View style={styles.center}>
-                {/* Glow exterior difuso */}
+                {/* Outer soft glow */}
                 <Animated.View
                     style={[
                         styles.glow,
@@ -411,7 +411,7 @@ export default function IATransactionsScreen() {
                     ]}
                 />
 
-                {/* Onda rosa 1 */}
+                {/* Pink wave ring 1 */}
                 <Animated.View
                     style={[
                         styles.pulseRing,
@@ -422,7 +422,7 @@ export default function IATransactionsScreen() {
                     ]}
                 />
 
-                {/* Onda rosa 2 */}
+                {/* Pink wave ring 2 */}
                 <Animated.View
                     style={[
                         styles.pulseRing,
@@ -433,7 +433,7 @@ export default function IATransactionsScreen() {
                     ]}
                 />
 
-                {/* Anillo de voz interior rosa — reactivo al volumen */}
+                {/* Inner voice ring — reacts to volume */}
                 <Animated.View
                     style={[
                         styles.voiceRing,
@@ -445,7 +445,7 @@ export default function IATransactionsScreen() {
                     pointerEvents="none"
                 />
 
-                {/* Círculo principal */}
+                {/* Main tap target */}
                 <TouchableOpacity
                     activeOpacity={0.85}
                     onPress={handlePress}
@@ -474,7 +474,7 @@ export default function IATransactionsScreen() {
                 </TouchableOpacity>
             </View>
 
-            {/* Mensaje de estado / loading */}
+            {/* Footer: status / loading copy */}
             <View style={styles.footer}>
                 {screenState === 'processing' ? (
                     <Animated.View
@@ -496,7 +496,7 @@ export default function IATransactionsScreen() {
                                 activeOpacity={0.7}
                                 onPress={async () => {
                                     await cancelRecording()
-                                    // vuelve a idle; el usuario toca el círculo para grabar de nuevo
+                                    // Back to idle; user taps the circle to record again
                                 }}
                             >
                                 <Text style={styles.retryBtnText}>↺  {strings.retryBtn}</Text>
@@ -534,7 +534,7 @@ export default function IATransactionsScreen() {
     )
 }
 
-// ─── Estilos ──────────────────────────────────────────────────────────────────
+// ─── Styles ──────────────────────────────────────────────────────────────────
 const CIRCLE_SIZE = 140
 const PULSE_SIZE = CIRCLE_SIZE + 40
 const GLOW_SIZE = CIRCLE_SIZE + 120

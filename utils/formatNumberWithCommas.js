@@ -1,15 +1,15 @@
 const formatNumberWithCommas = (number) => {
-  // Convierte el número a un formato de cadena con 2 decimales
+  // Format number as string with 2 decimal places
   const roundedNumber = Number(number).toFixed(2);
   const numberString = roundedNumber.toString();
-  const isNegative = number < 0; // Verifica si el número es negativo
+  const isNegative = number < 0; // Track negative for sign re-application
   const parts = numberString.split(".");
   let integerPart = parts[0];
   const decimalPart = parts[1] || "";
 
-  // Elimina el signo negativo para el formateo
+  // Strip minus for comma grouping
   if (isNegative) {
-    integerPart = integerPart.slice(1); // Elimina el signo negativo
+    integerPart = integerPart.slice(1); // Remove leading minus
   }
 
   let formattedNumber = "";
@@ -23,7 +23,7 @@ const formatNumberWithCommas = (number) => {
     formattedNumber += "." + decimalPart;
   }
 
-  // Añade el signo negativo de nuevo si el número original era negativo
+  // Restore minus if original value was negative
   if (isNegative) {
     formattedNumber = "-" + formattedNumber;
   }

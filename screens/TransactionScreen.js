@@ -35,7 +35,7 @@ const TransactionScreen = ({ navigation, route }) => {
     const { data: existingTx } = useTransaction(idTransactionClicked)
     const strings = user?.language === 'en' ? en : es
 
-    // Params de prefill provenientes de IA
+    // Route params for AI prefill
     const prefillAmount          = route.params?.prefillAmount          ?? null
     const prefillAccountId       = route.params?.prefillAccountId       ?? null
     const prefillGlobalCategoryId = route.params?.prefillGlobalCategoryId ?? null
@@ -61,7 +61,7 @@ const TransactionScreen = ({ navigation, route }) => {
     const [txtEmpyLoad, setTxtEmptyLoad] = useState(true)
     const [prefilled, setPrefilled] = useState(false)
 
-    // Categoría por defecto (nueva transacción): primera global en orden alfabético (no las propias).
+    // Default category (new transaction): first global category alphabetically (custom categories excluded from default).
     useEffect(() => {
         if (!typeTrans || idTransactionClicked) return
 
@@ -102,7 +102,7 @@ const TransactionScreen = ({ navigation, route }) => {
         })
     }, [typeTrans, customCats, user?.language, idTransactionClicked, prefillGlobalCategoryId, prefillCustomCategoryId])
 
-    // Prefill de cuenta, amount y custom category desde IA
+    // AI prefill: amount and custom category (account handled in separate effect)
     useEffect(() => {
         if (!isFromIA || accounts.length === 0) return
         if (prefillAmount) {
@@ -143,7 +143,7 @@ const TransactionScreen = ({ navigation, route }) => {
 
     }, [existingTx, accounts])
 
-    // Cuenta por defecto: primera alfabéticamente; en prefill IA con cuenta válida, esa cuenta.
+    // Default account: first alphabetically; if AI prefill includes a valid account, use that.
     useEffect(() => {
         if (!accounts.length || idTransactionClicked) return
 

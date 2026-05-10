@@ -73,7 +73,7 @@ const ExpensiaContextProvider = ({ children }) => {
     bootstrap()
   }, [])
 
-  // Sesión remota sin fila local (p. ej. login oculto en bienvenida): crear usuario en SQLite para que la navegación muestre Tabs.
+  // Remote session without a local row (e.g. hidden login on welcome): create SQLite user so navigation shows Tabs.
   useEffect(() => {
     if (!dbReady || authLoading || !isLoggedIn || user) return
 

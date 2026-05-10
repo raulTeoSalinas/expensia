@@ -165,7 +165,7 @@ export default function FilterSheet({ visible, onClose, filters, onApply, custom
                         </View>
                     </>}
 
-                    {/* Categoría */}
+                    {/* Category */}
                     <Text weight="bold" color="primary" style={styles.label}>{strings.category}</Text>
                     <View style={styles.catWrap}>
                         <TouchableOpacity

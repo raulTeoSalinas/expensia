@@ -1,5 +1,5 @@
 /**
- * Ordena cuentas por nombre (insensible a mayúsculas / acentos).
+ * Sort accounts by name (case- and accent-insensitive).
  * @param {Array<{ id: string, name?: string }>} accounts
  * @returns {Array<{ id: string, name?: string }>}
  */

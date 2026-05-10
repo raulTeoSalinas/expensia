@@ -3,27 +3,27 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getNextId = async () => {
     try {
-      // Obtén las transacciones existentes de AsyncStorage
+      // Load existing transactions from AsyncStorage
       const existingTransactions = await AsyncStorage.getItem('transactions');
       let transactions = [];
   
       if (existingTransactions !== null) {
-        // Si hay transacciones existentes, conviértelas en un array de objetos
+        // Parse stored transactions into an object array
         transactions = JSON.parse(existingTransactions);
       }
   
       if (transactions.length === 0) {
-        // Si no hay transacciones, devuelve 1 como el próximo id
+        // No transactions yet — next id is 1
         return 1;
       } else {
-        // Si hay transacciones, obtén el último id y calcula el siguiente id
+        // Use last transaction id + 1
         const lastTransaction = transactions[transactions.length - 1];
         const lastId = lastTransaction.id;
         const nextId = lastId + 1;
         return nextId;
       }
     } catch (error) {
-      console.log('Error al obtener el próximo id:', error);
+      console.log('Error getting next id:', error);
       return null;
     }
   };
