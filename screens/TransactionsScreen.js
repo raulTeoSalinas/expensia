@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 8,
         width: width - 40,
+        marginBottom: 6,
     },
     txtSearch: {
         height: 40,

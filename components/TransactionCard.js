@@ -9,6 +9,7 @@ import SyncStatusIcon from './SyncStatusIcon'
 import { useNavigation } from '@react-navigation/native'
 import { ExpensiaContext } from '../context/expensiaContext'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { LinearGradient } from 'expo-linear-gradient'
 
 const { width } = Dimensions.get('window')
 
@@ -80,8 +81,16 @@ const TransactionCard = ({
   ])
 
   const isIncome = type === 'i'
-  const barColor = isIncome ? Colors.secondary : Colors.accent
   const amountColor = isIncome ? Colors.secondary : Colors.accent
+  /** Izquierda → derecha: color de tipo dominante, luego transición suave al tono complementario del tema. */
+  const typeHeaderGradientColors = useMemo(
+    () =>
+      isIncome
+        ? [Colors.secondary, Colors.secondary, Colors.turquoise]
+        : [Colors.accent, Colors.accent, Colors.expensePurpleEnd],
+    [isIncome]
+  )
+  const typeHeaderGradientLocations = [0, 0.42, 1]
   const accountIconName = accountIcon || 'wallet-outline'
   const sign = isIncome ? '+' : '-'
   const absAmount = Math.abs(Number(amount))
@@ -100,7 +109,13 @@ const TransactionCard = ({
     >
       <View style={styles.cardShadow}>
         <View style={styles.cardClip}>
-        <View style={[styles.typeColorRow, { backgroundColor: barColor }]}>
+        <LinearGradient
+          colors={typeHeaderGradientColors}
+          locations={typeHeaderGradientLocations}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.typeColorRow}
+        >
           <View style={styles.typeColorRowInner}>
             <View style={styles.metaInline}>
               <View style={styles.metaChunk}>
@@ -141,7 +156,7 @@ const TransactionCard = ({
             </View>
             <SyncStatusIcon syncStatus={syncStatus} size={14} tintColor={Colors.white} />
           </View>
-        </View>
+        </LinearGradient>
 
         <View style={styles.cardInner}>
           <Text weight="bold" size="xl" style={{ color: amountColor }}>
@@ -158,17 +173,26 @@ const TransactionCard = ({
           </Text>
         </View>
 
-        <View style={[styles.dateRow, { borderTopColor: barColor }]}>
-          <View style={styles.dateRowContent}>
-            <MaterialCommunityIcons
-              name="calendar-month-outline"
-              size={18}
-              color={amountColor}
-              style={styles.dateRowIcon}
-            />
-            <Text color="primary" size="s" style={styles.dateRowText}>
-              {dateLong}
-            </Text>
+        <View style={styles.dateRowBlock}>
+          <LinearGradient
+            colors={typeHeaderGradientColors}
+            locations={typeHeaderGradientLocations}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.dateRowGradientTop}
+          />
+          <View style={styles.dateRow}>
+            <View style={styles.dateRowContent}>
+              <MaterialCommunityIcons
+                name="calendar-month-outline"
+                size={18}
+                color={amountColor}
+                style={styles.dateRowIcon}
+              />
+              <Text weight="bold" color="primary" size="s" style={styles.dateRowText}>
+                {dateLong}
+              </Text>
+            </View>
           </View>
         </View>
         </View>
@@ -252,9 +276,16 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     minWidth: 0,
   },
+  dateRowBlock: {
+    width: '100%',
+  },
+  dateRowGradientTop: {
+    width: '100%',
+    height: 2,
+  },
   dateRow: {
     width: '100%',
-    borderTopWidth: 2,
+    backgroundColor: Colors.white,
     paddingVertical: 10,
     paddingHorizontal: 14,
     alignItems: 'flex-start',
