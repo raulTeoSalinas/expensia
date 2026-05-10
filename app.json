@@ -37,6 +37,20 @@
         {
           "microphonePermission": "Expensia needs access to your microphone to record your voice transactions."
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Expensia needs access to your camera to take photos of receipts and extract transaction details.",
+          "microphonePermission": false,
+          "photosPermission": "Expensia needs access to your photo library to upload receipt images and extract transaction details."
+        }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
       ]
     ],
     "android": {
