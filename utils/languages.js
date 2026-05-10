@@ -33,6 +33,7 @@ export const es = {
         header2: "Tarjetas de Crédito",
         registerTxt: "Ahora, añade tus tarjetas de crédito para completar la configuración de las cuentas.", registerTDC: "Podrás añadir tus tarjetas de crédito en la siguiente pantalla.",
         onlyAdd: "Por favor, añade únicamente el monto total que debes a cada tarjeta.",
+        ccDebtBanner: "Solo ingresa cuánto debes a cada tarjeta (positivo). El saldo se guardará como deuda.",
         registerTDC: "Puedes saltar esta pantalla si no tienes tarjetas de crédito.",
         bank: "Crédito Banco",
         startBtn: "Comenzar",
@@ -98,6 +99,7 @@ export const es = {
         alertFailedDeleAccDesc: "No se puede eliminar una cuenta con fondos existentes. Transfiere antes tus ingresos a otra cuenta.",
         deleteAccountTitle: "¿Borrar cuenta?",
         deleteAccountDesc: "Esta cuenta se eliminará para siempre, así como sus transacciones. Esta acción no se puede deshacer.",
+        ccDebtBanner: "Solo ingresa cuánto debes a la tarjeta (saldo de deuda). Escribe el monto en positivo; guardamos tu cuenta como deuda.",
     },
     typeTransactionScreen: {
         addIncomeTxt: "Añade un Ingreso",
@@ -317,6 +319,7 @@ export const en = {
         header2: "Credit Cards",
         registerTxt: "Now, let's add your credit cards to complete the account setup.",
         onlyAdd: "Please only enter the total amount you owe to each card.",
+        ccDebtBanner: "Only enter what you owe on each card (positive amount). The balance will be saved as debt.",
         registerTDC: "You can skip this screen if you don't have credit cards.",
         noAccounts: "Please add at least one liquid account.",
         bank: "Bank Credit",
@@ -383,6 +386,7 @@ export const en = {
         alertFailedDeleAccDesc: "You cannot delete an account with existing funds. Please transfer your balance to another account first.",
         deleteAccountTitle: "Delete account?",
         deleteAccountDesc: "This account will be permanently deleted, along with its transactions. This action cannot be undone.",
+        ccDebtBanner: "Only enter what you owe on the card (debt balance). Type a positive amount; we save it as debt.",
     },
     typeTransactionScreen: {
         addIncomeTxt: "Add an Income",

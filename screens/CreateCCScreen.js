@@ -166,6 +166,12 @@ const CreateCCScreen = ({ navigation, route }) => {
                 </View>
                 <Text color="primary" size="l" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.registerTxt}</Text>
                 <Text color="primary" size="l" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.onlyAdd}</Text>
+                <View style={[styles.ccDebtBanner, { marginHorizontal: 30, marginTop: 12 }]}>
+                    <MaterialCommunityIcons name="information-outline" size={18} color={Colors.secondary} style={{ marginTop: 1 }} />
+                    <Text size="s" color="primary" style={styles.ccDebtBannerText}>
+                        {strings.createCCScreen.ccDebtBanner}
+                    </Text>
+                </View>
                 {/* <Text weight="bold" color="primary" size="s" style={{ textAlign: 'justify', marginTop: 7, paddingHorizontal: 30 }}>{strings.createCCScreen.registerTDC}</Text> */}
                 {accounts.map((account, i) => (
                     <View key={i} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginHorizontal: "6%" }}>
@@ -177,7 +183,8 @@ const CreateCCScreen = ({ navigation, route }) => {
                                 </View>
                                 <View>
                                     <View style={{ flexDirection: 'row', backgroundColor: Colors.white, borderRadius: 10, justifyContent: 'center', alignItems: "center", padding: 4 }}>
-                                        <MaterialIcons name="attach-money" size={20} color={Colors.primary} />
+                                        <Text weight="bold" color="primary" style={styles.ccDebtMinus}>-</Text>
+                                        <MaterialIcons name="attach-money" size={20} color={Colors.primary} style={{ marginRight: 2 }} />
                                         <TextInput
                                             style={[styles.txtInput]}
                                             onChangeText={handleChangeAmount.bind(null, account.id)}
@@ -322,6 +329,26 @@ const styles = StyleSheet.create({
     txtAccount: {
         includeFontPadding: false,
         marginLeft: 10
+    },
+    ccDebtBanner: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        backgroundColor: 'rgba(39, 6, 249, 0.11)',
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderWidth: 1,
+        borderColor: 'rgba(39, 6, 249, 0.22)',
+        gap: 8,
+    },
+    ccDebtBannerText: {
+        flex: 1,
+        lineHeight: 18,
+    },
+    ccDebtMinus: {
+        fontSize: 18,
+        marginRight: 2,
+        fontFamily: 'Poppins-SemiBold',
     },
     txtInput: {
         width: 100,

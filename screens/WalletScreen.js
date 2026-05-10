@@ -365,8 +365,21 @@ const WalletScreen = ({ navigation }) => {
                             <Text weight="bold" style={{ marginRight: 4 }}>{strings.walletScreen.isCC}</Text>
                             <Knob isActive={isCC} onPress={changeIsCC} />
                         </View>
+                        {isCC && (
+                            <View style={styles.ccDebtBanner}>
+                                <MaterialCommunityIcons name="information-outline" size={18} color={Colors.secondary} style={{ marginTop: 1 }} />
+                                <Text size="s" color="primary" style={styles.ccDebtBannerText}>
+                                    {strings.walletScreen.ccDebtBanner}
+                                </Text>
+                            </View>
+                        )}
                         <View style={{ flexDirection: "row", alignItems: "center", marginTop: 10 }}>
-                            <MaterialIcons name="attach-money" size={20} color={Colors.primary} />
+                            {isCC && (
+                                <Text weight="bold" color="primary" style={styles.ccDebtMinus}>
+                                    -
+                                </Text>
+                            )}
+                            <MaterialIcons name="attach-money" size={20} color={Colors.primary} style={isCC ? { marginRight: 4 } : undefined} />
                             <BottomSheetTextInput
                                 style={styles.txtAccountInput}
                                 onChangeText={handleChangeInitialBalance}
@@ -584,6 +597,27 @@ const styles = StyleSheet.create({
         borderColor: Colors.secondary,
         color: Colors.primary,
 
+    },
+    ccDebtBanner: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        backgroundColor: 'rgba(39, 6, 249, 0.11)',
+        borderRadius: 12,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        marginTop: 10,
+        borderWidth: 1,
+        borderColor: 'rgba(39, 6, 249, 0.22)',
+        gap: 8,
+    },
+    ccDebtBannerText: {
+        flex: 1,
+        lineHeight: 18,
+    },
+    ccDebtMinus: {
+        fontSize: 18,
+        marginRight: 2,
+        fontFamily: 'Poppins-SemiBold',
     },
     iconPickerGrid: {
         marginTop: 20,
