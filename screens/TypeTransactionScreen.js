@@ -52,7 +52,6 @@ const TypeTransactionScreen = ({ route }) => {
                             <GradientText style={styles.txtType} weight="bold">IA</GradientText>
                         </View>
                     </View>
-                    <MaterialIcons name="mic" size={24} color={Colors.white} />
                 </TouchableOpacity>
             )}
 
