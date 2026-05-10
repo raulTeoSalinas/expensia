@@ -232,15 +232,23 @@ const WalletScreen = ({ navigation }) => {
                 <View style={styles.row}>
                     <Text color="light">{strings.walletScreen.fromTxt}</Text>
                     <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalFromVisible(!modalFromVisible)}>
-                        <Text weight="bold" color="primary" style={styles.txtFakeInput}>{selectedFrom.name} </Text>
-                        <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
+                        <View style={styles.fakeInputLabelWrap}>
+                            <Text weight="bold" color="primary" style={styles.txtFakeInput} numberOfLines={1} ellipsizeMode="tail">
+                                {selectedFrom?.name ?? ''}
+                            </Text>
+                        </View>
+                        <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} style={styles.fakeInputChevron} />
                     </TouchableOpacity>
                 </View>
                 <View style={styles.row}>
                     <Text color="light">{strings.walletScreen.toTxt}</Text>
                     <TouchableOpacity activeOpacity={0.5} style={styles.viewFakeInput} onPress={() => setModalToVisible(!modalToVisible)}>
-                        <Text weight="bold" color="primary" style={styles.txtFakeInput}>{selectedTo.name} </Text>
-                        <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} />
+                        <View style={styles.fakeInputLabelWrap}>
+                            <Text weight="bold" color="primary" style={styles.txtFakeInput} numberOfLines={1} ellipsizeMode="tail">
+                                {selectedTo?.name ?? ''}
+                            </Text>
+                        </View>
+                        <MaterialIcons name="arrow-drop-down" size={24} color={Colors.primary} style={styles.fakeInputChevron} />
                     </TouchableOpacity>
                 </View>
 
@@ -523,13 +531,22 @@ const styles = StyleSheet.create({
         height: 40,
         width: '70%',
         borderRadius: 10,
-        paddingHorizontal: 5,
+        paddingHorizontal: 8,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         borderWidth: 0.5,
         borderColor: Colors.secondary,
         includeFontPadding: false
+    },
+    fakeInputLabelWrap: {
+        flex: 1,
+        minWidth: 0,
+        marginRight: 4,
+        justifyContent: 'center',
+    },
+    fakeInputChevron: {
+        flexShrink: 0,
     },
     txtFakeInput: {
         fontSize: 15,
